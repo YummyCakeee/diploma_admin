@@ -1,0 +1,97 @@
+import React, { useRef, useState, useEffect, createRef } from "react";
+import { StyleSheet, TextInput, View } from "react-native";
+
+type codeInputFieldProps = {
+    value: string,
+    onChange: (value: string) => void,
+    length: number,
+    style?: {}
+}
+
+const CodeInputField: React.FC<codeInputFieldProps> = ({
+    value = "",
+    onChange,
+    length = 4,
+    style
+}) => {
+    const sectionsRefs = useRef<React.RefObject<TextInput>[]>([])
+    const [values, setValues] = useState(new Map<number, string>([]))
+    useEffect(() => {
+        sectionsRefs.current = []
+        const vals = new Map<number, string>([])
+        for (let i = 0; i < length; i++) {
+            sectionsRefs.current.push(createRef())
+            vals.set(i, value.charAt(i))
+        }
+        setValues(vals)
+    }, [length, value])
+
+    const onChangeText = (value: string, index: number) => {
+        const vals = values
+        vals.set(index, value)
+        setValues(vals)
+        let newValue = ""
+        vals.forEach(el => newValue += el)
+        onChange(newValue)
+        if (value) {
+            focusOnFirstEmpty(newValue)
+        }
+        else {
+            focusOnLastNonEmpty(newValue)
+        }
+    }
+
+    const onFocus = (value: string) => {
+        if (value === '')
+            focusOnFirstEmpty(value)
+    }
+
+    const focusOnFirstEmpty = (value: string) => {
+        sectionsRefs.current[value.length]?.current?.focus()
+    }
+
+    const focusOnLastNonEmpty = (value: string) => {
+        sectionsRefs.current[value.length - 1]?.current?.focus()
+    }
+
+    return (
+        <View
+            style={[styles.inputField, style]}
+        >
+            {sectionsRefs.current.map((el, index) => (
+                <TextInput
+                    key={index}
+                    ref={el}
+                    style={styles.inputFieldSection}
+                    maxLength={1}
+                    value={value.charAt(index)}
+                    onFocus={() => onFocus(value)}
+                    onChangeText={
+                        (value) => onChangeText(value, index)
+                    }
+                    keyboardType='decimal-pad'
+                />))
+            }
+        </View>
+    )
+}
+
+
+const styles = StyleSheet.create({
+    inputField: {
+        display: 'flex',
+        flexDirection: 'row',
+    },
+    inputFieldSection: {
+        borderRadius: 10,
+        borderColor: 'white',
+        borderWidth: 1,
+        width: 40,
+        marginHorizontal: 3,
+        color: 'white',
+        fontSize: 20,
+        textAlign: 'center'
+    },
+})
+
+export default CodeInputField

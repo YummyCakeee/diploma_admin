@@ -3,10 +3,14 @@ import { View, Text, StyleSheet, Animated, Easing, Alert } from "react-native";
 import globalStyles from "global/styles/styles";
 import Button from "components/Elements/Button/Button";
 import { phoneNumberMask } from "utils/textMasking";
-import { passwordValidator, phoneNumberValidator } from "utils/validators";
+import { 
+    passwordValidator, 
+    phoneNumberValidator,
+    smsCodeValidator
+ } from "utils/validators";
 import { Formik, Field } from "formik";
 import FormFieldInput from "containers/Forms/FormFieldInput";
-import CodeInputField from "components/Elements/CodeInputField/CodeInputField";
+import FormCodeFieldInput from "containers/Forms/FormCodeFieldInput";
 import axiosAPI from "utils/axios";
 import { ENDPOINT_MAIN_AUTH } from "constants/endpoints";
 
@@ -15,19 +19,10 @@ const Authorization = ({
     onAuthSuccess = () => { },
     onToggleSignType = () => { }
 }) => {
-    const [code, setCode] = useState("")
-    const [stage, setStage] = useState(0)
+    const [stage, setStage] = useState(1)
     const [usePassword, setUsePassword] = useState(false)
     const passwordFieldHeight = useRef(new Animated.Value(0)).current
     const usePasswordTextHeight = useRef(new Animated.Value(0)).current
-    const buttonTitles = new Map([
-        [0, 'Далее'],
-        [1, 'Отправить'],
-        [2, 'Войти']
-    ])
-
-    const asyncSetUsePassword = () => 
-        new Promise((resolve) => setUsePassword(!usePassword, resolve))
 
     useEffect(() => {
         Animated.timing(usePasswordTextHeight,
@@ -46,15 +41,21 @@ const Authorization = ({
             formData.append('phone', values.phone)
             if (usePassword)
                 formData.append('password', values.password)
-                return axiosAPI.post(ENDPOINT_MAIN_AUTH, formData)
+            return axiosAPI.post(ENDPOINT_MAIN_AUTH, formData)
                 .then(res => {
-                    if (res.data?.success && usePassword)
-                        setStage(2)
-                    else setStage(1)
+                    if (res.data?.success) {
+                        if (usePassword)
+                            onAuthSuccess()
+                        else setStage(1)
+                    }
                 })
                 .catch(() => {
                     Alert.alert('Ошибка', 'Не удалось отправить форму')
                 })
+        }
+        if (stage === 1) {
+            formData.append('code', values.code)
+
         }
 
 
@@ -163,12 +164,10 @@ const Authorization = ({
                                         </Text>, ниже:
                                     </Text>
                                     <Field
-                                        name="sms_code"
-                                        component={CodeInputField}
+                                        name="code"
+                                        component={FormCodeFieldInput}
                                         secureTextEntry
-                                        value={code}
-                                        onChange={setCode}
-                                        style={globalStyles.centeredElement}
+                                        validate={smsCodeValidator}
                                     />
                                 </>
                             )}
@@ -212,7 +211,12 @@ const Authorization = ({
                             </>
                         )}
                         <Button
-                            title={buttonTitles.get(stage)}
+                            title={
+                                stage === 0 ?
+                                usePassword ? 
+                                'Войти' : 'Далее' :
+                                'Отправить'
+                            }
                             style={globalStyles.centeredElement}
                             onPress={handleSubmit}
                             disabled={!isValid}

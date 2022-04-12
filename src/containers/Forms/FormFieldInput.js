@@ -18,11 +18,11 @@ const FormFieldInput = (props) => {
             <InputField
                 value={value}
                 onChange={(text) => onChange(name)(text)}
-                error={hasError ? errors[name] : null}
                 onBlur={() => {
                     setFieldTouched(name)
                     onBlur(name)
                 }}
+                error={hasError ? errors[name] : null}
                 {...inputProps}
             />
         </>

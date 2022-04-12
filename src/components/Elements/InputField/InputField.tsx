@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react'
 import { StyleSheet, Text, TextInput, View, Animated, Easing } from 'react-native'
+import AnimatedFieldError from '../AnimatedFieldError/AnimatedFieldError'
 
 type inputFieldProps = {
     value?: string,
@@ -7,8 +8,7 @@ type inputFieldProps = {
     label?: string,
     keyboardType?: 'default' | 'phone-pad',
     mask?: (value: string) => string,
-    error?: string,
-    animatedError: boolean,
+    error: string,
     style: {},
 }
 
@@ -18,42 +18,15 @@ const InputField: React.FC<inputFieldProps> =
         onChange = (value) => { },
         label = "",
         mask = (value) => value,
-        error,
-        animatedError = true,
+        error = '',
         style,
         ...props
     }) => {
-        const errorContainerHeight = useRef(new Animated.Value(0)).current
-        const [lastError, setLastError] = useState(error)
         const onChangeText = (text: string) => {
             text = mask(text)
             onChange(text)
         }
 
-        useEffect(() => {
-            if (error){
-                Animated.timing(errorContainerHeight,
-                    {
-                        toValue: 100,
-                        duration: 400,
-                        easing: Easing.out(Easing.linear),
-                        useNativeDriver: false,
-                    }).start()
-                setLastError(error)
-            }
-            else {
-                Animated.timing(errorContainerHeight,
-                    {
-                        toValue: 0,
-                        duration: 400,
-                        easing: Easing.out(Easing.linear),
-                        useNativeDriver: false,
-                    }).start()
-                setTimeout(() => {
-                    setLastError(error)
-                }, 400);
-            }
-        }, [error])
         
         return (
             <View
@@ -69,13 +42,12 @@ const InputField: React.FC<inputFieldProps> =
                         {...props}
                     />
                 </View>
-                <Animated.View
-                    style={[styles.errorContainer, {maxHeight: errorContainerHeight}]}
-                >
-                    <Text
-                        style={styles.errorText}
-                    >{lastError}</Text>
-                </Animated.View>
+                <AnimatedFieldError
+                    {...{
+                        error: error,
+                        ...props
+                    }}
+                />
             </View>
         )
     }
@@ -105,15 +77,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         paddingBottom: 0,
     },
-    errorContainer: {
-        position: 'relative',
-        overflow: 'hidden',
-    },
-    errorText: {
-        marginTop: 3,
-        color: '#FF6200',
-        fontSize: 14,
-    }
 })
 
 

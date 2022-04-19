@@ -1,14 +1,13 @@
 import React from "react"
 import { Provider } from "react-redux"
-import { combineReducers } from "redux"
 import { configureStore } from "@reduxjs/toolkit"
 import userReducer from "store/reducers/userSlice"
 
-const mainReducer = combineReducers({
-    user: userReducer,
-})
+
 const store = configureStore({
-    reducer: mainReducer,
+    reducer: {
+        user: userReducer,
+    }
 })
 
 const StoreWrapper = ({children}) => {

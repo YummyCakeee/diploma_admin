@@ -4,6 +4,8 @@ import * as actionTypes from "store/constants/user"
 import produce from "immer"
 
 const initialState: userType = {
+    authToken: '',
+    refreshToken: '',
     surname: '',
     name: '',
     patronymic: '',

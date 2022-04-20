@@ -1,21 +1,23 @@
-import React from "react";
-import InputField from "components/Elements/InputField/InputField";
+import React from "react"
+import CodeInputField from "components/Elements/CodeInputField/CodeInputField"
 
-const FormFieldInput = (props) => {
+const FormCodeFieldInput = (props) => {
     const {
-        field: { 
+        field: {
             name,
             onBlur,
             onChange,
             value
         },
-        form: { errors, touched, setFieldTouched },
+        form: {
+            errors, touched, setFieldTouched
+        },
         ...inputProps
     } = props
     const hasError = errors[name] && touched[name]
     return (
         <>
-            <InputField
+            <CodeInputField 
                 value={value}
                 onChange={(text) => onChange(name)(text)}
                 onBlur={() => {
@@ -30,4 +32,4 @@ const FormFieldInput = (props) => {
 }
 
 
-export default FormFieldInput
+export default FormCodeFieldInput

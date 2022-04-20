@@ -1,27 +1,28 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, Animated, Easing } from "react-native";
-import InputField from "components/Elements/InputField/InputField";
+import { View, Text, StyleSheet, Animated, Easing, Alert } from "react-native";
 import globalStyles from "global/styles/styles";
 import Button from "components/Elements/Button/Button";
+import { Formik, Field } from "formik";
+import FormFieldInput from "containers/Forms/FormFieldInput";
+import FormCodeFieldInput from "containers/Forms/FormCodeFieldInput";
+import axiosAPI from "utils/axios";
+import { phoneNumberFormatter, simplePhoneNumberFormatter } from "utils/formatters";
+import { passwordValidator, phoneNumberValidator, smsCodeValidator } from "utils/validators";
+import { ORGANIZATION_ID, USER_TYPE } from "constants/application";
+import { ENDPOINT_MAIN_REG } from "constants/endpoints";
+import { useDispatch } from "react-redux";
+import { updateUser } from "store/actions/userSlice";
+import { NativeModules } from "react-native";
 
 const Registration = ({
     onRegSuccess = () => { },
     onToggleSignType = () => { }
 }) => {
-    
+    const [stage, setStage] = useState(0)
     const passwordFieldHeight = useRef(new Animated.Value(0)).current
-
-    const onToggleSignTypePreCallback = () => {
-        Animated.timing(passwordFieldHeight,
-            {
-                toValue: 0,
-                duration: 400,
-                easing: Easing.out(Easing.linear),
-                useNativeDriver: false,
-            }).start()
-            setTimeout(() => onToggleSignType(), 400)
-    }
-
+    const [sendCodeRemainingTime, setSendCodeRemainingTime] = useState(90)
+    const dispatch = useDispatch()
+    console.log(NativeModules.PlatformConstants.Fingerprint)
     useEffect(() => {
         Animated.timing(passwordFieldHeight,
             {
@@ -32,42 +33,194 @@ const Registration = ({
             }).start()
     }, [])
 
+    const onSubmit = (values) => {
+        if (stage === 0) {
+            const data = {
+                action: "request",
+                org: ORGANIZATION_ID,
+                phone: simplePhoneNumberFormatter(values.phone),
+                userType: USER_TYPE
+            }
+            return axiosAPI.post(ENDPOINT_MAIN_REG, data)
+                .then(res => {
+                    if (res.data?.success){
+                        setSendCodeRemainingTime(res.data.data.remainingTime)
+                        setStage(1)
+                    } else if (!res.data?.success) {
+                        Alert.alert('Ошибка', res.data.error_msg)
+                    }
+                })
+                .catch(error => {
+                    Alert.alert('Ошибка', 'Произошла ошибка при отправке данных.')
+                })
+        }
+        if (stage === 1) {
+            const data = {
+                action: "confirm",
+                org: ORGANIZATION_ID,
+                phone: simplePhoneNumberFormatter(values.phone),
+                password: values.password,
+                code: Number(values.code),
+                userType: USER_TYPE,
+            }
+            return axiosAPI.post(ENDPOINT_MAIN_REG, data).then(
+                res => {
+                    if (res.data?.success){
+                        const userData = {
+                            authToken: res.data.data.auth,
+                            refreshToken: res.data.data.refresh
+                        }
+                        dispatch(updateUser(userData))
+                        onRegSuccess()
+                    }
+                }).catch(error => {
+                    Alert.alert('Ошибка', 'Произошла ошибка при отправке данных.')
+                })
+        }
+
+    }
+
+    const onCodeResendRequest = async (phone) => {
+        const data = {
+            action: "request",
+            org: ORGANIZATION_ID,
+            phone: simplePhoneNumberFormatter(phone),
+            userType: USER_TYPE
+        }
+        await axiosAPI.post(ENDPOINT_MAIN_REG, data)
+            .then(res => {
+                if (res.data?.success){
+                    setSendCodeRemainingTime(res.data.data.remainingTime)
+                    setStage(1)
+                } else if (!res.data?.success) {
+                    Alert.alert('Ошибка', res.data.error_msg)
+                }
+            })
+            .catch(error => {
+                Alert.alert('Ошибка', 'Произошла ошибка при отправке.')
+            })
+    }
+
+    const onToggleSignTypePreCallback = () => {
+        Animated.timing(passwordFieldHeight,
+            {
+                toValue: 0,
+                duration: 400,
+                easing: Easing.out(Easing.linear),
+                useNativeDriver: false,
+            }).start()
+        setTimeout(() => onToggleSignType(), 400)
+    }
+
     return (
         <View>
-            <View
-                style={styles.dataSection}
+            <Formik
+                validateOnMount
+                initialValues={{
+                    phone: '+7',
+                    password: ''
+                }}
+                onSubmit={onSubmit}
             >
-                <InputField
-                    label="Телефон:"
-                    keyboardType="phone-pad"
-                    style={globalStyles.centeredElement}
-                />
-                <Animated.View
-                    style={[
-                        styles.passwordField,
-                        { maxHeight: passwordFieldHeight }
-                    ]}
-                >
-                    <InputField
-                        label="Пароль:"
-                        style={globalStyles.centeredElement}
-                    />
-                </Animated.View>
-            </View>
-            <Text
-                style={[
-                    globalStyles.text,
-                    globalStyles.centeredElement,
-                    { marginVertical: 10 }
-                ]}
-                onPress={() => onToggleSignTypePreCallback()}
-            >
-                Войти в существующий аккаунт
-            </Text>
-            <Button
-                title='Регистрация'
-                style={globalStyles.centeredElement}
-            />
+                {({ handleSubmit, isValid, values }) => (
+                    <View>
+                        <View
+                            style={styles.dataSection}
+                        >
+                            {stage === 0 && (
+                                <>
+                                    <Field
+                                        name="phone"
+                                        label="Телефон:"
+                                        component={FormFieldInput}
+                                        mask={phoneNumberFormatter}
+                                        validate={phoneNumberValidator}
+                                    />
+                                    <Animated.View
+                                        style={[
+                                            styles.passwordField,
+                                            { maxHeight: passwordFieldHeight }
+                                        ]}
+                                    >
+                                        <Field
+                                            name="password"
+                                            label="Пароль:"
+                                            component={FormFieldInput}
+                                            validate={passwordValidator}
+                                            secureTextEntry
+                                        />
+                                    </Animated.View>
+                                </>
+                            )}
+                            {stage === 1 && (
+                                <>
+                                    <Text
+                                        style={[
+                                            globalStyles.text,
+                                            globalStyles.centeredElement,
+                                            styles.enterCodeText
+                                        ]}
+                                    >
+                                        Введите код, отправленный{'\n'}
+                                        в СМС на номер{'\n'}
+                                        <Text
+                                            style={styles.enterCodeTextPhone}
+                                        >
+                                            {values.phone}
+                                        </Text>, ниже:
+                                    </Text>
+                                    <Field
+                                        name="code"
+                                        component={FormCodeFieldInput}
+                                        validate={smsCodeValidator}
+                                        startRemainingTime={sendCodeRemainingTime}
+                                        onCodeResendRequest={() => onCodeResendRequest(values.phone)}
+                                    />
+                                </>
+                            )}
+                        </View>
+                        {stage === 0 && (
+                        <Text
+                            style={[
+                                globalStyles.text,
+                                globalStyles.centeredElement,
+                                { marginVertical: 10 }
+                            ]}
+                            onPress={() => onToggleSignTypePreCallback()}
+                        >
+                            Войти в существующий аккаунт
+                            </Text>
+                        )}
+                        {stage === 1 && (
+                            <Text
+                                style={[
+                                    globalStyles.text,
+                                    globalStyles.centeredElement,
+                                    { marginVertical: 10 }
+                                ]}
+                                onPress={() => {
+                                    values.code = ''
+                                    setStage(0)
+                                }}
+                            >
+                                Вернуться назад
+                            </Text>
+                        )}
+                        <Button
+                            title={
+                                stage === 0 ? 
+                                'Далее' :
+                                stage === 1 ? 
+                                'Отправить' :
+                                'Регистрация'
+                            }
+                            style={globalStyles.centeredElement}
+                            onPress={handleSubmit}
+                            disabled={!isValid}
+                        />
+                    </View>
+                )}
+            </Formik>
         </View>
     )
 }
@@ -78,6 +231,13 @@ const styles = StyleSheet.create({
     },
     passwordField: {
         overflow: "hidden"
+    },
+    enterCodeText: {
+        textAlign: 'center',
+        marginBottom: 10,
+    },
+    enterCodeTextPhone: {
+        color: '#1B70E0'
     }
 })
 

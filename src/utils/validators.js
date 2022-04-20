@@ -1,11 +1,17 @@
 export const phoneNumberValidator = (value) => 
-    value && !/^(8|\+7)[ ]\(?\d{3}\)?[ ]?\d{3}[\-]?\d{2}[\-]\d{2}$/.test(value) ?
+    !/^(8|\+7)[ ]\(?\d{3}\)?[ ]?\d{3}[\-]?\d{2}[\-]\d{2}$/.test(value) ?
     'Введите корректный номер телефона' :
     undefined
 
-export  const passwordValidator = (value) => {
+export const passwordValidator = (value) => {
+    const minLength = 9
     if (!value) return 'Введите пароль'
-    if (value.length < 6) return 'Пароль должен быть длиннее 6 символов'
+    if (value.length < minLength) return `Пароль должен быть длиннее ${minLength - 1} символов`
 
     return undefined
 }
+
+export const smsCodeValidator = (value) => 
+    (!value || value.length !== 4) ? 
+    'Введите код из смс' : 
+    undefined

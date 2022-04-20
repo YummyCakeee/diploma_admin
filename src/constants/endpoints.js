@@ -1,2 +1,3 @@
-export const ENDPOINT_USER = '/api/main/user.php'
-export const ENDPOINT_MAIN_AUTH = '/api/main/auth.php'
+export const ENDPOINT_MAIN_REG = '/users/signup'
+export const ENDPOINT_MAIN_AUTH = '/users/signin'
+export const ENDPOINT_USER_UPDATE = ''

@@ -1,4 +1,4 @@
-export const phoneNumberMask = (value: string): string => {
+export const phoneNumberFormatter = (value: string): string => {
     const cleanedUpNumber = value.replace(/(\+7)?\D*/g, '')
     const match = cleanedUpNumber.match(/^(\d{1,3})?(\d{1,3})?(\d{1,2})?(\d{1,2})?\d*$/)
     if (!match) return cleanedUpNumber
@@ -11,3 +11,7 @@ export const phoneNumberMask = (value: string): string => {
 
     return number
 }
+
+export const simplePhoneNumberFormatter =
+    (value: string): string =>
+        '+' + value.replace(/\D*/g, '')

@@ -25,3 +25,8 @@ export const userLoaded = (
     type: actionTypes.USER_FULL_UPDATE,
     payload: user
 })
+
+export const updateUser = (user: userType) => ({
+    type: actionTypes.USER_UPDATE,
+    payload: user
+})

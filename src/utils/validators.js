@@ -4,8 +4,9 @@ export const phoneNumberValidator = (value) =>
     undefined
 
 export const passwordValidator = (value) => {
+    const minLength = 9
     if (!value) return 'Введите пароль'
-    if (value.length < 6) return 'Пароль должен быть длиннее 6 символов'
+    if (value.length < minLength) return `Пароль должен быть длиннее ${minLength - 1} символов`
 
     return undefined
 }

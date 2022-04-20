@@ -8,6 +8,8 @@ type codeInputFieldProps = {
     onChange: (value: string) => void,
     length: number,
     error: string,
+    startRemainingTime: number,
+    onCodeResendRequest: () => void,
     style?: {}
 }
 
@@ -16,13 +18,15 @@ const CodeInputField: React.FC<codeInputFieldProps> = ({
     onChange,
     length = 4,
     error = '',
+    startRemainingTime = 90,
+    onCodeResendRequest = () => {},
     style,
     ...props
 }) => {
     const sectionsRefs = useRef<React.RefObject<TextInput>[]>([])
     const [values, setValues] = useState(new Map<number, string>([]))
     const resendCodeTimer = useRef<NodeJS.Timeout>()
-    const [resendCodeTimeLeft, setResendCodeTimeLeft] = useState(90)
+    const [resendCodeTimeLeft, setResendCodeTimeLeft] = useState(startRemainingTime)
 
     useEffect(() => {
         if (resendCodeTimeLeft > 0) {
@@ -45,6 +49,10 @@ const CodeInputField: React.FC<codeInputFieldProps> = ({
         }
         setValues(vals)
     }, [length, value])
+
+    useEffect(() => {
+        setResendCodeTimeLeft(startRemainingTime)
+    }, [startRemainingTime])
 
     const onChangeText = (value: string, index: number) => {
         const vals = values
@@ -73,11 +81,6 @@ const CodeInputField: React.FC<codeInputFieldProps> = ({
     const focusOnLastNonEmpty = (value: string) => {
         sectionsRefs.current[value.length - 1]?.current?.focus()
     }
-
-    const onResendCodePress = () => {
-        setResendCodeTimeLeft(90)
-    }
-
 
     return (
         <>
@@ -116,7 +119,7 @@ const CodeInputField: React.FC<codeInputFieldProps> = ({
                         globalStyles.centeredElement,
                         styles.resendCodeText
                     ]}
-                    onPress={onResendCodePress}
+                    onPress={onCodeResendRequest}
                 >{resendCodeTimeLeft !== 0 ?
                     ('Вы можете запросить код повторно через ' + 
                     resendCodeTimeLeft + ' сек.') :

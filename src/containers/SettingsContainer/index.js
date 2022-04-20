@@ -8,7 +8,7 @@ import SettingsSection from 'components/Elements/SettingsSection/SettingsSection
 import List from 'components/Elements/List/List'
 import useSettings from './useSettings'
 import { useNavigation } from '@react-navigation/core'
-import { phoneNumberMask } from 'utils/textMasking'
+import { phoneNumberFormatter } from 'utils/formatters'
 
 const SettingsContainer = () => {
     const navigation = useNavigation()
@@ -63,7 +63,7 @@ const SettingsContainer = () => {
                         label="Телефон:"
                         value={phone}
                         onChange={setPhone}
-                        mask={phoneNumberMask}
+                        mask={phoneNumberFormatter}
                     />
                     <InputField
                         label="Почта:"

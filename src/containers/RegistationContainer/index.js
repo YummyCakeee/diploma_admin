@@ -9,7 +9,6 @@ export const AUTH_TYPE = 'auth_type'
 export const REG_TYPE = 'reg_type'
 
 const RegistationContainer = () => {
-    const [stage, setStage] = useState(0)
     const [signType, setSignType] = useState(AUTH_TYPE)
     const navigation = useNavigation()
 
@@ -20,9 +19,17 @@ const RegistationContainer = () => {
     }
 
     const onAuthSuccess = () => {
-        navigation.navigate('Feed')
+        navigation.reset({
+            index: 0, 
+            routes: [{name: 'Feed'}]
+        })
+        //navigation.navigate('Feed')
     }
     const onRegSuccess = () => {
+        navigation.reset({
+            index: 0, 
+            routes: [{name: 'Feed'}]
+        })
         navigation.navigate('Feed')
     }
 

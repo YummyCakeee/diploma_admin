@@ -26,6 +26,8 @@ const SettingsContainer = () => {
         masters,
         personalMaster,
         setPersonalMaster,
+        onSignOut,
+        onSaveInfo,
     } = useSettings()
     const [canScroll, setCanScroll] = useState(true)
     const onInnerScrollTouchStart = () => {
@@ -86,7 +88,7 @@ const SettingsContainer = () => {
                 <View>
                     <Text
                         style={globalStyles.text}
-                        onPress={()=>navigation.navigate("Registration")}
+                        onPress={onSignOut}
                     >
                         Выйти из аккаунта
                         </Text>
@@ -94,7 +96,7 @@ const SettingsContainer = () => {
                 <View style={[styles.button, globalStyles.centeredElement]}>
                     <Button
                         title="Сохранить"
-                        onPress={() => navigation.navigate("Home")}
+                        onPress={onSaveInfo}
                     />
                 </View>
             </ScrollView>

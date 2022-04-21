@@ -13,7 +13,9 @@ import FormFieldInput from "containers/Forms/FormFieldInput";
 import FormCodeFieldInput from "containers/Forms/FormCodeFieldInput";
 import axiosAPI from "utils/axios";
 import { ENDPOINT_MAIN_AUTH } from "constants/endpoints";
-import { ORGANIZATION_ID, USER_TYPE } from "constants/application";
+import { ORGANIZATION_ID } from "constants/application";
+import { useDispatch } from "react-redux";
+import { updateUser } from "store/actions/userSlice";
 
 
 const Authorization = ({
@@ -24,6 +26,8 @@ const Authorization = ({
     const [usePassword, setUsePassword] = useState(false)
     const passwordFieldHeight = useRef(new Animated.Value(0)).current
     const usePasswordTextHeight = useRef(new Animated.Value(0)).current
+    const [sendCodeRemainingTime, setSendCodeRemainingTime] = useState(90)
+    const dispatch = useDispatch()
 
     useEffect(() => {
         Animated.timing(usePasswordTextHeight,
@@ -38,36 +42,90 @@ const Authorization = ({
     const onSubmit = (values) => {
         if (stage === 0) {
             let data = {
-                type: 'request',
                 org: ORGANIZATION_ID,
                 phone: simplePhoneNumberFormatter(values.phone),
-                userType: USER_TYPE
             }
-            if (usePassword)
+            if (usePassword) {
+                data.action = 'password'
                 data.password = values.password
+
+                return axiosAPI.post(ENDPOINT_MAIN_AUTH, data)
+                    .then(res => {
+                        if (res.data?.success) {
+                            const userData = {
+                                authToken: res.data.data.auth,
+                                refreshToken: res.data.data.refresh
+                            }
+                            dispatch(updateUser(userData))
+                            onAuthSuccess()
+                        }
+                        else {
+                            Alert.alert('Ошибка', res.data.message)
+                        }
+                    })
+                    .catch(error => {
+                        Alert.alert('Ошибка', 'Не удалось отправить форму')
+                    })
+            }
+
+            data.action = 'request'
             return axiosAPI.post(ENDPOINT_MAIN_AUTH, data)
                 .then(res => {
-                    if (res.data?.ok) {
-                        if (usePassword)
-                            onAuthSuccess()
-                        else setStage(1)
-                    }
-                    else {
-                        Alert.alert('Ошибка', res.data.error_msg)
+                    if (res.data?.success) {
+                        setSendCodeRemainingTime(res.data.data.remainingTime)
+                        setStage(1)
+                    } else if (!res.data?.success) {
+                        Alert.alert('Ошибка', res.data.message)
                     }
                 })
                 .catch(error => {
-                    // if (error.response)
-                    //     console.log(error.response.data)
                     Alert.alert('Ошибка', 'Не удалось отправить форму')
                 })
         }
         if (stage === 1) {
             let data = {
-
+                action: 'confirm',
+                org: ORGANIZATION_ID,
+                phone: simplePhoneNumberFormatter(values.phone),
+                code: Number(values.code)
             }
-
+            return axiosAPI.post(ENDPOINT_MAIN_AUTH, data)
+                .then(res => {
+                    if (res.data?.success) {
+                        const userData = {
+                            authToken: res.data.data.auth,
+                            refreshToken: res.data.data.refresh
+                        }
+                        dispatch(updateUser(userData))
+                        onAuthSuccess()
+                    } else if (!res.data?.success) {
+                        Alert.alert('Ошибка', res.data.message)
+                    }
+                })
+                .catch(error => {
+                    console.log(error.message)
+                    Alert.alert('Ошибка', 'Не удалось отправить форму')
+                })
         }
+    }
+
+    const onCodeResendRequest = async (phone) => {
+        const data = {
+            action: "request",
+            org: ORGANIZATION_ID,
+            phone: simplePhoneNumberFormatter(phone),
+        }
+        await axiosAPI.post(ENDPOINT_MAIN_AUTH, data)
+            .then(res => {
+                if (res.data?.success) {
+                    setSendCodeRemainingTime(res.data.data.remainingTime)
+                } else if (!res.data?.success) {
+                    Alert.alert('Ошибка', res.data.message)
+                }
+            })
+            .catch(error => {
+                Alert.alert('Ошибка', 'Произошла ошибка при отправке.')
+            })
     }
 
     const onToggleSignTypePreCallback = () => {
@@ -147,7 +205,7 @@ const Authorization = ({
                                             validate={(value) =>
                                                 usePassword ?
                                                     passwordValidator(value) :
-                                                    undefined 
+                                                    undefined
                                             }
                                             secureTextEntry
                                         />
@@ -158,7 +216,7 @@ const Authorization = ({
                                 <>
                                     <Text
                                         style={[
-                                            globalStyles.text, 
+                                            globalStyles.text,
                                             globalStyles.centeredElement,
                                             styles.enterCodeText
                                         ]}
@@ -175,6 +233,8 @@ const Authorization = ({
                                         name="code"
                                         component={FormCodeFieldInput}
                                         validate={smsCodeValidator}
+                                        startRemainingTime={sendCodeRemainingTime}
+                                        onCodeResendRequest={() => onCodeResendRequest(values.phone)}
                                     />
                                 </>
                             )}
@@ -215,12 +275,27 @@ const Authorization = ({
                                 </Text>
                             </>
                         )}
+                        {stage === 1 && (
+                            <Text
+                                style={[
+                                    globalStyles.text,
+                                    globalStyles.centeredElement,
+                                    { marginVertical: 10 }
+                                ]}
+                                onPress={() => {
+                                    values.code = ''
+                                    setStage(0)
+                                }}
+                            >
+                                Вернуться назад
+                            </Text>
+                        )}
                         <Button
                             title={
                                 stage === 0 ?
-                                usePassword ? 
-                                'Войти' : 'Далее' :
-                                'Отправить'
+                                    usePassword ?
+                                        'Войти' : 'Далее' :
+                                    'Отправить'
                             }
                             style={globalStyles.centeredElement}
                             onPress={handleSubmit}

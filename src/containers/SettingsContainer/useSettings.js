@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigation } from "@react-navigation/core";
 
 const useSettings = () => {
     const [name, setName] = useState()
@@ -9,7 +10,7 @@ const useSettings = () => {
     const [masters, setMasters] = useState([])
     const [personalMaster, setPersonalMaster] = useState()
     const [userID, setUserID] = useState(1)
-
+    const navigation = useNavigation()
     //  Получение данных из сервера...
     useEffect(() => {
         setName("Никита")
@@ -24,6 +25,17 @@ const useSettings = () => {
         setPersonalMaster('Ксения')
     }, [userID])
 
+    const onSignOut = () => {
+        navigation.reset({
+            index: 0, 
+            routes: [{name: 'Registration'}]
+        })
+    }
+    
+    const onSaveInfo = () => {
+        navigation.navigate('Home')
+    }
+
     return {
         name,
         setName,
@@ -37,7 +49,9 @@ const useSettings = () => {
         setEmail,
         masters,
         personalMaster,
-        setPersonalMaster
+        setPersonalMaster,
+        onSignOut,
+        onSaveInfo
     }
 }
 

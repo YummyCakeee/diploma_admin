@@ -39,6 +39,7 @@ const Registration = ({
                 action: "request",
                 org: ORGANIZATION_ID,
                 phone: simplePhoneNumberFormatter(values.phone),
+                password: values.password,
                 userType: USER_TYPE
             }
             return axiosAPI.post(ENDPOINT_MAIN_REG, data)
@@ -47,7 +48,7 @@ const Registration = ({
                         setSendCodeRemainingTime(res.data.data.remainingTime)
                         setStage(1)
                     } else if (!res.data?.success) {
-                        Alert.alert('Ошибка', res.data.error_msg)
+                        Alert.alert('Ошибка', res.data.message)
                     }
                 })
                 .catch(error => {
@@ -91,9 +92,8 @@ const Registration = ({
             .then(res => {
                 if (res.data?.success){
                     setSendCodeRemainingTime(res.data.data.remainingTime)
-                    setStage(1)
                 } else if (!res.data?.success) {
-                    Alert.alert('Ошибка', res.data.error_msg)
+                    Alert.alert('Ошибка', res.data.message)
                 }
             })
             .catch(error => {

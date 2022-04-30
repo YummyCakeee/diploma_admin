@@ -5,7 +5,7 @@ import { StyleSheet, Text, View, ScrollView } from 'react-native'
 import globalStyles from 'global/styles/styles'
 import Button from 'components/Elements/Button/Button'
 import SettingsSection from 'components/Elements/SettingsSection/SettingsSection'
-import List from 'components/Elements/List/List'
+import Combobox from 'components/Elements/Combobox/Combobox'
 import useSettings from './useSettings'
 import { useNavigation } from '@react-navigation/core'
 import { phoneNumberFormatter } from 'utils/formatters'
@@ -29,18 +29,9 @@ const SettingsContainer = () => {
         onSignOut,
         onSaveInfo,
     } = useSettings()
-    const [canScroll, setCanScroll] = useState(true)
-    const onInnerScrollTouchStart = () => {
-        setCanScroll(false)
-    }
-    const onInnerScrollTouchEnd = () => {
-        setCanScroll(true)
-    }
     return (
         <PageTemplate>
             <Text style={globalStyles.page_title}>Настройки</Text>
-            <ScrollView
-                scrollEnabled={canScroll}>
                 <SettingsSection
                     title="Личные данные">
                     <InputField
@@ -76,13 +67,11 @@ const SettingsContainer = () => {
                 <SettingsSection
                     title="Перcональные предпочтения"
                 >
-                    <List
+                    <Combobox
                         label="Мастер:"
                         items={masters}
                         initialSelectedItem={personalMaster}
                         onSelect={(el) => setPersonalMaster(el)}
-                        onTouchStart={onInnerScrollTouchStart}
-                        onTouchEnd={onInnerScrollTouchEnd}
                     />
                 </SettingsSection>
                 <View>
@@ -99,7 +88,6 @@ const SettingsContainer = () => {
                         onPress={onSaveInfo}
                     />
                 </View>
-            </ScrollView>
         </PageTemplate>
     )
 }

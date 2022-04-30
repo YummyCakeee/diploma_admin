@@ -19,7 +19,6 @@ const HomeContainer = () => {
     ])
     return (
         <PageTemplate style={styles.container}>
-            <ScrollView>
                 <Text style={globalStyles.page_title}>Главная</Text>
                 <BannerSlider
                     autoSlide
@@ -43,7 +42,6 @@ const HomeContainer = () => {
                         />
                     ))}
                 />
-            </ScrollView>
         </PageTemplate>
     )
 }

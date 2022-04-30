@@ -82,6 +82,7 @@ const BannerSlider = ({items, itemsPerInterval = 3, autoSlide=false, slidingInte
                 ref={scroll}
                 horizontal
                 showsHorizontalScrollIndicator={false}
+                nestedScrollEnabled
                 style={styles.slider}
                 onScroll={onScroll}
                 onContentSizeChange={(event) => setScrollWidth(event)}

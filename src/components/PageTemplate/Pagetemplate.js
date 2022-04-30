@@ -1,19 +1,21 @@
 import React from "react"
-import { View } from "react-native"
+import { View, ScrollView } from "react-native"
 import globalStyles from "../../global/styles/styles"
 import Header from "../Header/Header"
 
-const PageTemplate = ({children, style, headerHamburgerIcon}) => {
+const PageTemplate = ({ children, style, headerHamburgerIcon }) => {
     return (
-    <View style={[
-        globalStyles.container,
-        style, 
+        <View style={[
+            globalStyles.container,
+            style,
         ]}>
-        <Header {
-            ...{hamburgerIcon: headerHamburgerIcon}
-            }/>
-        {children}
-    </View>
+            <Header {
+                ...{ hamburgerIcon: headerHamburgerIcon }
+            } />
+            <ScrollView>
+                {children}
+            </ScrollView>
+        </View>
     )
 }
 

@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useState } from 'react'
-import { StyleSheet, Text, TextInput, View, Animated, Easing } from 'react-native'
+import React from 'react'
+import { StyleSheet, Text, TextInput, View } from 'react-native'
 import AnimatedFieldError from '../AnimatedFieldError/AnimatedFieldError'
 
 type inputFieldProps = {

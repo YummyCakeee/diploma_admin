@@ -1,5 +1,5 @@
 import React from "react";
-import SigningForServicesContainer from "containers/SigningForServicesContainer/SigningForServices";
+import SigningForServicesContainer from "containers/SigningForServicesContainer";
 
 
 const SigningForServices = ({navigation}) => {

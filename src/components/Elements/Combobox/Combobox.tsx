@@ -1,32 +1,50 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
 import {
     Animated, ScrollView, StyleSheet, Text,
     View, TouchableOpacity
 } from 'react-native'
-import { TriangleIcon } from '../../Elements/Icons/Index'
+import { TriangleIcon } from '../Icons/Index'
 import { withAnchorPoint } from 'react-native-anchor-point';
 import LinearGradient from 'react-native-linear-gradient';
 
-const List = ({
-    items = [],
-    initialSelectedItem = "-",
-    onSelect = () => { },
+type comboboxProps = {
+    items?: itemType[],
+    isEmptyChoiceOnInit: boolean,
+    initialSelectedItem: itemType | undefined,
+    onSelectItem: (item: itemType) => void,
+    label: string,
+    sorted: boolean,
+    onTouchStart: () => void,
+    onTouchEnd: () => void,
+    style: {},
+}
+
+type itemType = {
+    text: string,
+    tag: any
+}
+
+const Combobox: React.FC<comboboxProps> = ({
+    items,
+    isEmptyChoiceOnInit = false,
+    initialSelectedItem = undefined,
+    onSelectItem = (item) => { },
     label = "",
-    onTouchStart = () => { },
-    onTouchEnd = () => { },
+    sorted = false,
+    style = {}
 }) => {
-    const [selectedItem, setSelectedItem] = useState()
+    const [selectedItem, setSelectedItem] = useState<itemType | null>(null)
     const [isOpen, setIsOpen] = useState(false)
-    const listOpacity = useRef(new Animated.Value(0)).current
-    const listHeight = useRef(new Animated.Value(0)).current
+    const comboboxOpacity = useRef(new Animated.Value(0)).current
+    const comboboxHeight = useRef(new Animated.Value(0)).current
     const triangleRotation = useRef(new Animated.Value(0)).current
-    const [triangleRotationFormated, setTriangleRotationFormated] = useState('0deg')
+    const [triangleRotationFormated, setTriangleRotationFormated] = useState<any>('0deg')
 
     useEffect(() => {
-        if (isOpen) showList()
-        else hideList()
+        if (isOpen) showcombobox()
+        else hidecombobox()
     }, [isOpen])
-
+    
     useEffect(() => {
         setTriangleRotationFormated(
             triangleRotation.interpolate({
@@ -36,110 +54,124 @@ const List = ({
     }, [triangleRotation])
 
     useEffect(() => {
-        setSelectedItem(
-            initialSelectedItem ? initialSelectedItem :
-                items ? items[0] : null)
-    }, [initialSelectedItem])
+        if (!isEmptyChoiceOnInit)
+            setSelectedItem(
+                initialSelectedItem ?
+                    initialSelectedItem :
+                    items ? items[0] : null)
+    }, [initialSelectedItem, items])
 
-    const showList = () => {
-        Animated.timing(listOpacity, {
+    const getSortedItems = useCallback(() => {
+        if (!sorted) return items
+        return items?.sort((a, b) => a.text.localeCompare(b.text))
+    }, [items, sorted])
+
+    const onHeadPress = () => {
+        if (items) setIsOpen(!isOpen)
+    }
+
+    const oncomboboxItemPress = (item: itemType) => {
+        if (isOpen) {
+            setSelectedItem(item)
+            onSelectItem(item)
+            setIsOpen(false)
+        }
+    }
+
+    const showcombobox = () => {
+        Animated.timing(comboboxOpacity, {
             toValue: 1,
             duration: 300,
             useNativeDriver: false
         }).start()
-        Animated.timing(listHeight, {
+        Animated.timing(comboboxHeight, {
             toValue: 200,
             duration: 300,
             useNativeDriver: false
         }).start()
         Animated.timing(triangleRotation, {
             toValue: 1,
-            duration: 500,
+            duration: 300,
             useNativeDriver: false
         }).start()
     }
 
-    const hideList = () => {
-        Animated.timing(listOpacity, {
+    const hidecombobox = () => {
+        Animated.timing(comboboxOpacity, {
             toValue: 0,
             duration: 500,
             useNativeDriver: false
         }).start()
-        Animated.timing(listHeight, {
+        Animated.timing(comboboxHeight, {
             toValue: 0,
             duration: 300,
             useNativeDriver: false
         }).start()
         Animated.timing(triangleRotation, {
             toValue: 0,
-            duration: 500,
+            duration: 300,
             useNativeDriver: false
         }).start()
     }
 
-    const onListItemPress = (el) => {
-        if (isOpen) {
-            setSelectedItem(el)
-            onSelect(el)
-            setIsOpen(false)
-        }
-    }
-
     return (
-        <View style={styles.list}>
-            <Text style={styles.listLabel}>
+        <View style={[styles.combobox, style]}>
+            {label.length > 0 && (
+                <Text style={styles.comboboxLabel}>
                 {label}
             </Text>
-            <View style={styles.listContainer}>
+            )}
+            <View style={styles.comboboxContainer}>
                 <TouchableOpacity
                     style={styles.selectedItem}
-                    onPress={() => setIsOpen(!isOpen)}
+                    onPress={onHeadPress}
                     activeOpacity={1}
                 >
-                    <Text style={styles.selectedItemText}>{selectedItem}</Text>
+                    <Text
+                        style={styles.selectedItemText}
+                        numberOfLines={1}
+                    >
+                        {selectedItem?.text}
+                    </Text>
                     <Animated.View
                         style={
                             [withAnchorPoint(
                                 { transform: [{ rotateZ: triangleRotationFormated }] },
                                 { x: 0.5, y: 0.6 },
                                 { width: 12, height: 12 }
-                            ), styles.listTriangleContainer]
+                            ), styles.comboboxTriangleContainer]
                         }>
                         <TriangleIcon
                             color="rgb(80, 80, 110)"
                             width={12}
                             height={12}
-                            style={styles.listTriangle}
                         />
                     </Animated.View>
                 </TouchableOpacity>
                 <Animated.View
                     style={[
-                        styles.listContent,
+                        styles.comboboxContent,
                         {
-                            opacity: listOpacity,
-                            maxHeight: listHeight,
-                            // transform: [
-                            //     { scaleY: listHeight },
-                            // ]
+                            opacity: comboboxOpacity,
+                            maxHeight: comboboxHeight,
                         }
                     ]}
                 >
                     <LinearGradient
-                        colors={['rgba(140, 195, 195, 0.25)', 'rgba(120, 120, 195, 0.55)']}
-                        style={styles.listContentGradient}
+                        colors={['rgba(140, 195, 195, 0.45)', 'rgba(120, 120, 195, 0.75)']}
+                        style={styles.comboboxContentGradient}
                     >
                         <ScrollView
-                            onTouchStart={onTouchStart}
-                            onTouchCancel={onTouchEnd}
+                            nestedScrollEnabled
+                            style={styles.comboboxContentScroll}
                         >
-                            {items?.sort().map((el) => (
-                                <View style={styles.listItem} key={el}>
+                            {getSortedItems()?.map((el, index) => (
+                                <View style={styles.comboboxItem} key={index}>
                                     <Text
-                                        onPress={() => onListItemPress(el)}
-                                        style={styles.listItemText}
+                                        onPress={() => oncomboboxItemPress(el)}
+                                        style={styles.comboboxItemText}
                                     >
-                                        {el}
+                                        {el.text}
                                     </Text>
                                     <LinearGradient
                                         colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.5)', 'rgba(0, 0, 0, 0)']}
@@ -159,22 +191,21 @@ const List = ({
 }
 
 const styles = StyleSheet.create({
-    list: {
+    combobox: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'flex-start',
-        width: 300,
+        justifyContent: 'space-between',
         marginHorizontal: 5,
         marginVertical: 10,
     },
-    listLabel: {
+    comboboxLabel: {
         color: '#fff',
         marginRight: 30,
         fontSize: 16,
     },
     selectedItem: {
         color: '#fff',
-        fontSize: 16,
         borderColor: '#fff',
         borderRadius: 5,
         borderWidth: 1,
@@ -187,19 +218,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     selectedItemText: {
+        fontSize: 14,
         color: "#fff",
+        width: 100,
     },
-    listTriangle: {
+    comboboxTriangle: {
     },
-    listTriangleContainer: {
+    comboboxTriangleContainer: {
         width: 12,
         height: 12,
     },
-    listContainer: {
+    comboboxContainer: {
         display: 'flex',
     },
-    listContent: {
-        height: 110,
+    comboboxContent: {
+        overflow: 'hidden',
         position: 'absolute',
         top: 26,
         width: 130,
@@ -209,14 +242,17 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'rgba(0, 0, 0, 0.4)',
     },
-    listContentGradient: {
+    comboboxContentScroll: {
+        maxHeight: 100,
+    },
+    comboboxContentGradient: {
         borderBottomLeftRadius: 5,
         borderBottomRightRadius: 5,
     },
-    listItem: {
+    comboboxItem: {
         paddingVertical: 3,
     },
-    listItemText: {
+    comboboxItemText: {
         paddingLeft: 5,
         color: '#000',
     },
@@ -227,4 +263,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default List
+export default Combobox

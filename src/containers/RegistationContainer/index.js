@@ -1,7 +1,7 @@
-import React, { useState, useRef } from "react"
+import React, { useState } from "react"
 import PageTemplate from "components/PageTemplate/Pagetemplate"
 import globalStyles from "global/styles/styles"
-import { StyleSheet, Text, View, Animated } from "react-native"
+import { StyleSheet, Text, View } from "react-native"
 import { useNavigation } from "@react-navigation/core"
 import Authorization from "containers/Forms/Authorization"
 import Registration from "containers/Forms/Registration"
@@ -77,18 +77,13 @@ const RegistationContainer = () => {
 const styles = StyleSheet.create({
     mainTitle: {
         textAlign: "center",
-        position: "absolute",
-        top: 70,
+        marginTop: 70
     },
     mainContainer: {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         flexGrow: 1,
-    },
-    contentContainer: {
-        //marginVertical: '50%',
-        overflow: "hidden",
     },
     signTypeText: {
         color: 'rgb(100, 100, 100)',

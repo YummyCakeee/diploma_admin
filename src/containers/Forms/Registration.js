@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, Animated, Easing, Alert } from "react-native";
+import { View, Text, StyleSheet, Animated, Easing, NativeModules } from "react-native";
 import globalStyles from "global/styles/styles";
 import Button from "components/Elements/Button/Button";
 import { Formik, Field } from "formik";
@@ -10,9 +10,9 @@ import { phoneNumberFormatter, simplePhoneNumberFormatter } from "utils/formatte
 import { passwordValidator, phoneNumberValidator, smsCodeValidator } from "utils/validators";
 import { ORGANIZATION_ID, USER_TYPE } from "constants/application";
 import { ENDPOINT_MAIN_REG } from "constants/endpoints";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "store/actions/userSlice";
-import { NativeModules } from "react-native";
+import Toast from 'react-native-simple-toast'
 
 const Registration = ({
     onRegSuccess = () => { },
@@ -22,7 +22,8 @@ const Registration = ({
     const passwordFieldHeight = useRef(new Animated.Value(0)).current
     const [sendCodeRemainingTime, setSendCodeRemainingTime] = useState(90)
     const dispatch = useDispatch()
-    console.log(NativeModules.PlatformConstants.Fingerprint)
+    const state = useSelector(state => state)
+    
     useEffect(() => {
         Animated.timing(passwordFieldHeight,
             {
@@ -38,6 +39,7 @@ const Registration = ({
             const data = {
                 action: "request",
                 org: ORGANIZATION_ID,
+                fingerprint: NativeModules.PlatformConstants.Fingerprint,
                 phone: simplePhoneNumberFormatter(values.phone),
                 password: values.password,
                 userType: USER_TYPE
@@ -48,17 +50,18 @@ const Registration = ({
                         setSendCodeRemainingTime(res.data.data.remainingTime)
                         setStage(1)
                     } else if (!res.data?.success) {
-                        Alert.alert('Ошибка', res.data.message)
+                        Toast.show(`Ошибка: ${res.data.message}`)
                     }
                 })
                 .catch(error => {
-                    Alert.alert('Ошибка', 'Произошла ошибка при отправке данных.')
+                    Toast.show(`Ошибка: ${error.response.data.message}`)
                 })
         }
         if (stage === 1) {
             const data = {
                 action: "confirm",
                 org: ORGANIZATION_ID,
+                fingerprint: NativeModules.PlatformConstants.Fingerprint,
                 phone: simplePhoneNumberFormatter(values.phone),
                 password: values.password,
                 code: Number(values.code),
@@ -72,19 +75,23 @@ const Registration = ({
                             refreshToken: res.data.data.refresh
                         }
                         dispatch(updateUser(userData))
+                        AsyncStorage.setItem('authToken', userData.authToken)
+                        AsyncStorage.setItem('refreshToken', userData.refreshToken)
                         onRegSuccess()
                     }
                 }).catch(error => {
-                    Alert.alert('Ошибка', 'Произошла ошибка при отправке данных.')
+                    Toast.show(`Ошибка: ${error.response.data.message}`)
                 })
         }
 
     }
 
     const onCodeResendRequest = async (phone) => {
+        setSendCodeRemainingTime(0)
         const data = {
             action: "request",
             org: ORGANIZATION_ID,
+            fingerprint: NativeModules.PlatformConstants.Fingerprint,
             phone: simplePhoneNumberFormatter(phone),
             userType: USER_TYPE
         }
@@ -93,11 +100,11 @@ const Registration = ({
                 if (res.data?.success){
                     setSendCodeRemainingTime(res.data.data.remainingTime)
                 } else if (!res.data?.success) {
-                    Alert.alert('Ошибка', res.data.message)
+                    Toast.show(res.data.message)
                 }
             })
             .catch(error => {
-                Alert.alert('Ошибка', 'Произошла ошибка при отправке.')
+                Toast.show(error.response.data.message)
             })
     }
 

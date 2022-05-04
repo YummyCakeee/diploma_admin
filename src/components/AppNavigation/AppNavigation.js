@@ -6,7 +6,6 @@ import {
   createDrawerNavigator,
   DrawerContentScrollView,
   DrawerItem,
-  DrawerItemList
 } from '@react-navigation/drawer'
 import { createStackNavigator } from '@react-navigation/stack'
 import Home from 'screens/homeScreen/Home'
@@ -19,6 +18,28 @@ import { HamburgerIcon } from '../Elements/Icons/Index'
 
 const Drawer = createDrawerNavigator()
 const Stack = createStackNavigator();
+
+const Root = () => {
+  
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false
+        }}
+      >
+        <Stack.Screen
+          name="Registration"
+          component={Registation}
+        />
+        <Stack.Screen
+          name="Feed"
+          component={AppNavigation}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  )
+}
 
 const AppNavigation = () => {
   const {
@@ -56,27 +77,6 @@ const AppNavigation = () => {
     </Drawer.Navigator>
   );
 };
-
-const Root = () => {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false
-        }}
-      >
-        <Stack.Screen
-          name="Registration"
-          component={Registation}
-        />
-        <Stack.Screen
-          name="Feed"
-          component={AppNavigation}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
-  )
-}
 
 const DrawerContent = ({
   props,

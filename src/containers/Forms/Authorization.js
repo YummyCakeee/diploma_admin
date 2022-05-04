@@ -1,8 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, Text, StyleSheet, Animated, Easing, Alert } from "react-native";
+import { 
+    View, Text, StyleSheet, 
+    Animated, Easing, NativeModules 
+} from "react-native";
+import Toast from 'react-native-simple-toast'
 import globalStyles from "global/styles/styles";
 import Button from "components/Elements/Button/Button";
-import { phoneNumberFormatter, simplePhoneNumberFormatter } from "utils/formatters";
+import { 
+    phoneNumberFormatter, 
+    simplePhoneNumberFormatter
+} from "utils/formatters";
 import {
     passwordValidator,
     phoneNumberValidator,
@@ -12,8 +19,9 @@ import { Formik, Field } from "formik";
 import FormFieldInput from "containers/Forms/FormFieldInput";
 import FormCodeFieldInput from "containers/Forms/FormCodeFieldInput";
 import axiosAPI from "utils/axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ENDPOINT_MAIN_AUTH } from "constants/endpoints";
-import { ORGANIZATION_ID } from "constants/application";
+import { ORGANIZATION_ID, USER_TYPE } from "constants/application";
 import { useDispatch } from "react-redux";
 import { updateUser } from "store/actions/userSlice";
 
@@ -44,6 +52,8 @@ const Authorization = ({
             let data = {
                 org: ORGANIZATION_ID,
                 phone: simplePhoneNumberFormatter(values.phone),
+                userType: USER_TYPE,
+                fingerprint: NativeModules.PlatformConstants.Fingerprint,
             }
             if (usePassword) {
                 data.action = 'password'
@@ -60,11 +70,11 @@ const Authorization = ({
                             onAuthSuccess()
                         }
                         else {
-                            Alert.alert('Ошибка', res.data.message)
+                            Toast.show(`Ошибка: ${res.data.message}`)
                         }
                     })
                     .catch(error => {
-                        Alert.alert('Ошибка', 'Не удалось отправить форму')
+                        Toast.show('Ошибка: Не удалось отправить форму')
                     })
             }
 
@@ -75,11 +85,12 @@ const Authorization = ({
                         setSendCodeRemainingTime(res.data.data.remainingTime)
                         setStage(1)
                     } else if (!res.data?.success) {
-                        Alert.alert('Ошибка', res.data.message)
+                        Toast.show(`Ошибка: ${res.data.message}`)
                     }
                 })
                 .catch(error => {
-                    Alert.alert('Ошибка', 'Не удалось отправить форму')
+                    console.log(error.response.data)
+                    Toast.show('Ошибка: Не удалось отправить форму')
                 })
         }
         if (stage === 1) {
@@ -87,7 +98,9 @@ const Authorization = ({
                 action: 'confirm',
                 org: ORGANIZATION_ID,
                 phone: simplePhoneNumberFormatter(values.phone),
-                code: Number(values.code)
+                code: Number(values.code),
+                userType: USER_TYPE,
+                fingerprint: NativeModules.PlatformConstants.Fingerprint,
             }
             return axiosAPI.post(ENDPOINT_MAIN_AUTH, data)
                 .then(res => {
@@ -97,14 +110,15 @@ const Authorization = ({
                             refreshToken: res.data.data.refresh
                         }
                         dispatch(updateUser(userData))
+                        AsyncStorage.setItem('authToken', userData.authToken)
+                        AsyncStorage.setItem('refreshToken', userData.refreshToken)
                         onAuthSuccess()
                     } else if (!res.data?.success) {
-                        Alert.alert('Ошибка', res.data.message)
+                        Toast.show(`Ошибка: ${res.data.message}`)
                     }
                 })
                 .catch(error => {
-                    console.log(error.message)
-                    Alert.alert('Ошибка', 'Не удалось отправить форму')
+                    Toast.show('Ошибка: Не удалось отправить форму')
                 })
         }
     }
@@ -114,17 +128,19 @@ const Authorization = ({
             action: "request",
             org: ORGANIZATION_ID,
             phone: simplePhoneNumberFormatter(phone),
+            userType: USER_TYPE,
+            fingerprint: NativeModules.PlatformConstants.Fingerprint
         }
         await axiosAPI.post(ENDPOINT_MAIN_AUTH, data)
             .then(res => {
                 if (res.data?.success) {
                     setSendCodeRemainingTime(res.data.data.remainingTime)
                 } else if (!res.data?.success) {
-                    Alert.alert('Ошибка', res.data.message)
+                    Toast.show(`Ошибка: ${res.data.message}`)
                 }
             })
             .catch(error => {
-                Alert.alert('Ошибка', 'Произошла ошибка при отправке.')
+                Toast.show('Ошибка: Произошла ошибка при отправке.')
             })
     }
 

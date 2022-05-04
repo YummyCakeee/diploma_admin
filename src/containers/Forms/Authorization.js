@@ -103,7 +103,6 @@ const Authorization = ({
                     }
                 })
                 .catch(error => {
-                    console.log(error.message)
                     Alert.alert('Ошибка', 'Не удалось отправить форму')
                 })
         }

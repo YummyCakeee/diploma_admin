@@ -24,7 +24,6 @@ const Registration = ({
     const [sendCodeRemainingTime, setSendCodeRemainingTime] = useState(90)
     const dispatch = useDispatch()
     const state = useSelector(state => state)
-    console.log(state)
     
     useEffect(() => {
         Animated.timing(passwordFieldHeight,

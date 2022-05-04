@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, Animated, Easing } from "react-native";
+import { View, Text, StyleSheet, Animated, Easing, NativeModules } from "react-native";
 import globalStyles from "global/styles/styles";
 import Button from "components/Elements/Button/Button";
 import { Formik, Field } from "formik";
@@ -12,7 +12,6 @@ import { ORGANIZATION_ID, USER_TYPE } from "constants/application";
 import { ENDPOINT_MAIN_REG } from "constants/endpoints";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "store/actions/userSlice";
-import { NativeModules } from "react-native";
 import Toast from 'react-native-simple-toast'
 
 const Registration = ({
@@ -76,6 +75,8 @@ const Registration = ({
                             refreshToken: res.data.data.refresh
                         }
                         dispatch(updateUser(userData))
+                        AsyncStorage.setItem('authToken', userData.authToken)
+                        AsyncStorage.setItem('refreshToken', userData.refreshToken)
                         onRegSuccess()
                     }
                 }).catch(error => {

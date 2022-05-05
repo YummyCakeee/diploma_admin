@@ -1,5 +1,5 @@
 import React from "react";
-import Svg, { Path, Polygon, Circle } from "react-native-svg"
+import Svg, { Path, Polygon, Circle, Rect } from "react-native-svg"
 
 export const TriangleIcon = ({ width = 15, height = 15, color = "#000" }) => {
     return (
@@ -255,5 +255,21 @@ export const LoadingIcon = ({ width = 20, height = 20, color = '#000' }) => (
 			C6.902,18.996,5.537,18.988,4.694,19.84z"/>
             <Circle cx="21.364" cy="6.218" r="0.924" />
         </Svg>
+    </>
+)
+
+export const TalkBubblesIcon = ({ width = 20, height = 20, color = '#000' }) => (
+    <>
+    <Svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 36 36"
+        height={height}
+        width={width}
+        fill={color}
+    >
+        <Path d="M8,19V11H5a3,3,0,0,0-3,3V32a1,1,0,0,0,.56.89,1,1,0,0,0,1-.1L8.71,29H22.15A2.77,2.77,0,0,0,25,26.13V25H14A6,6,0,0,1,8,19Z"/>
+        <Path d="M31,4H14a3,3,0,0,0-3,3V19a3,3,0,0,0,3,3H27.55l4.78,3.71a1,1,0,0,0,1,.11,1,1,0,0,0,.57-.9V7A3,3,0,0,0,31,4Z"/>
+        <Rect x="0" y="0" width="36" height="36" fillOpacity="0"/>
+    </Svg>
     </>
 )

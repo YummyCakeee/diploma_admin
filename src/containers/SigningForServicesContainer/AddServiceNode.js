@@ -29,7 +29,7 @@ const AddServiceNode = ({
         { text: "Мастер", tag: MODE_MASTER },
         { text: "Услуга", tag: MODE_SERVICE }
     ])
-
+    
     useEffect(() => {
         if (stage === STAGE_MODE_SELECT) {
             switch (mode) {
@@ -45,7 +45,7 @@ const AddServiceNode = ({
             switch (mode) {
                 case MODE_MASTER:
                     const masterServices = services.filter(elem => {
-                        if (selectedMaster.services.find(item => item === elem.id))
+                        if (selectedMaster?.services.find(item => item === elem.id))
                             return elem
                         return null
                     })
@@ -53,7 +53,7 @@ const AddServiceNode = ({
                     break;
                 case MODE_SERVICE:
                     const serviceMasters = masters.filter(elem => {
-                        if (selectedService.masters.find(item => item === elem.id))
+                        if (selectedService?.masters.find(item => item === elem.id))
                             return elem
                         return null
                     })

@@ -68,6 +68,7 @@ const AppNavigation = () => {
       <Drawer.Screen
         component={SigningForServices}
         name="SigningForServices"
+        options={{unmountOnBlur: true}}
       />
       <Drawer.Screen
         name="Settings"

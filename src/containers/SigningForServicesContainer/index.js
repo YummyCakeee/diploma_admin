@@ -1,79 +1,60 @@
 import React, { useState, useEffect } from "react";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import PageTemplate from "components/PageTemplate/Pagetemplate";
 import globalStyles from "global/styles/styles";
 import Button from "components/Elements/Button/Button";
-import axiosAPI from "utils/axios";
+import { axiosAPI, axiosAPI2 } from "utils/axios";
+import axios from "axios";
 import ServiceNodeList from "./ServiceNodeList";
 import AddServiceNode from "./AddServiceNode";
 import SectionSeparator from "components/Elements/SectionSeparator/SectionSeparator";
-import useSettings from "containers/SettingsContainer/useSettings";
+import { ENDPOINT_ALL_MASTERS, ENDPOINT_ALL_SERVICES } from "constants/endpoints";
+import { useSelector } from "react-redux";
+import { ReloadIcon } from "components/Elements/Icons/Index";
 
 const SigningForServicesContainer = () => {
 
     const [services, setServices] = useState([])
     const [masters, setMasters] = useState()
     const [orderServices, setOrderServices] = useState([])
-
+    const token = useSelector(state => state.user.authToken)
     useEffect(() => {
-        //  Запрос данных у сервера
-        setServices(
-            [
-                {
-                    id: 1, name: 'Бритьё ресничек', description: 'Ну, мы побреем вам подмышки с помощью новейших технологий',
-                    duration: '2:05', price: 3000, masters: [3, 5, 6], mastersFormatted: 'Никита, Алексей, Павел'
-                },
-                {
-                    id: 2, name: 'Стрижка', description: 'Стрижка вашей крутой головы',
-                    duration: '1:12', price: 4500, masters: [3, 5, 6], mastersFormatted: 'Никита, Алексей, Павел'
-                },
-                {
-                    id: 3, name: 'Бритьё бороды', description: 'Побреем бороду',
-                     duration: '2:07', price: 300, masters: [3, 5, 6], mastersFormatted: 'Никита, Алексей, Павел'
-                },
-                {
-                    id: 4, name: 'Стрижка усиков', description: 'У вас есть усы?',
-                     duration: '0:30', price: 550, masters: [3, 5, 6], mastersFormatted: 'Никита, Алексей, Павел'
-                },
-                {
-                    id: 5, name: 'Депилирование волос в носу', description: 'Да, даже такое делаем',
-                     duration: '3:05', price: 8000, masters: [3, 5, 6], mastersFormatted: 'Никита, Алексей, Павел'
-                },
-                {
-                    id: 6, name: 'Бритьё подмышек', description: 'И такое',
-                     duration: '2:00', price: 100, masters: [3, 5, 6], mastersFormatted: 'Никита, Алексей, Павел'
-                }
-            ]
-        )
-        setMasters(
-            [
-                {
-                    id: 1, name: 'Иван', services: [1, 4, 6],
-                    servicesFormatted: 'бритьё ресничек, стрижка усиков, бритьё подмышек'
-                },
-                {
-                    id: 2, name: 'Дмитрий', services: [1, 4, 6],
-                    servicesFormatted: 'бритьё ресничек, стрижка усиков, бритьё подмышек'
-                },
-                {
-                    id: 3, name: 'Никита', services: [1, 4, 6],
-                    servicesFormatted: 'бритьё ресничек, стрижка усиков, бритьё подмышек'
-                },
-                {
-                    id: 4, name: 'Анатолий', services: [1, 4, 6],
-                    servicesFormatted: 'бритьё ресничек, стрижка усиков, бритьё подмышек'
-                },
-                {
-                    id: 5, name: 'Алексей', services: [1, 4, 6],
-                    servicesFormatted: 'бритьё ресничек, стрижка усиков, бритьё подмышек'
-                },
-                {
-                    id: 6, name: 'Павел', services: [1, 4, 6],
-                    servicesFormatted: 'бритьё ресничек, стрижка усиков, бритьё подмышек'
-                },
-            ]
-        )
+        getMastersAndServices()
     }, [])
+
+    const getMastersAndServices = async () => {
+        await axios.all(
+            [
+                axiosAPI2.get(ENDPOINT_ALL_SERVICES, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }),
+                axiosAPI2.get(ENDPOINT_ALL_MASTERS, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+            ]
+        ).then(axios.spread((servicesRes, mastersRes) => {
+            let mastersData = mastersRes.data.data
+            let servicesData = servicesRes.data.data
+            mastersData.forEach(el => {
+                el.name = el.fio.firstName
+                el.servicesFormatted = servicesData.
+                filter(a=> el.services.find(b => b === a.id)).map(c => c.name).join(', ')
+            })
+            servicesData.forEach(el => {
+                el.mastersFormatted = mastersData.
+                filter(a=> el.masters.find(b => b === a.id)).map(c => c.name).join(', ')
+            })
+            setServices(servicesData)
+            setMasters(mastersData)
+        })).catch(err => {
+            console.log(err)
+        })
+    }
+
 
     const onAddService = ({
         master,
@@ -127,6 +108,7 @@ const SigningForServicesContainer = () => {
                     <Button
                         title="Подтвердить услуги"
                         size="large"
+                        disabled={orderServices.length === 0}
                         style={[
                             globalStyles.centeredElement,
                             styles.confirmOrderButton

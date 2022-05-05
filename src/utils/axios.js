@@ -26,7 +26,7 @@ export default axiosAPI
 
 
 export const createAxiosInstance2 = (req) => {
-    const url = 'https://pure-beach-58958.herokuapp.com/'
+    const url = 'https://pure-beach-58958.herokuapp.com'
     const host = url.match(/https:\/\/([\w | \- | \.]*)/)[1]
     const headers = {
         'Content-Type': 'application/json',
@@ -42,4 +42,4 @@ export const createAxiosInstance2 = (req) => {
     return instance
 }
 
-export const axiosAPI2 = createAxiosInstance()
+export const axiosAPI2 = createAxiosInstance2()

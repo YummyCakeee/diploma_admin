@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 
 const globalStyles = StyleSheet.create({
     container: {
@@ -52,6 +52,12 @@ const globalStyles = StyleSheet.create({
     centeredElement: {
         alignSelf: "center"
     },
+    thisUserMessage: {
+        backgroundColor: '#71B6C3'
+    },
+    otherUserMessage: {
+        backgroundColor: '#3b5f66'
+    }
 })
 
 export default globalStyles

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import PageTemplate from "components/PageTemplate/Pagetemplate";
+import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate";
 import globalStyles from "global/styles/styles";
 import Button from "components/Elements/Button/Button";
 import { axiosAPI, axiosAPI2 } from "utils/axios";
@@ -74,7 +74,7 @@ const SigningForServicesContainer = () => {
     }
 
     return (
-        <PageTemplate>
+        <ScreenTemplate>
             <Text style={globalStyles.page_title}>Запись на услуги</Text>
             <View
                 style={styles.container}
@@ -116,7 +116,7 @@ const SigningForServicesContainer = () => {
                     />
                 </View>
             </View>
-        </PageTemplate>
+        </ScreenTemplate>
     )
 }
 

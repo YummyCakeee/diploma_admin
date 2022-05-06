@@ -12,6 +12,7 @@ import Home from 'screens/homeScreen/Home'
 import Settings from 'screens/settingsScreen/Settings'
 import SigningForServices from 'screens/signingForServicesScreen/SigningForServices'
 import Registation from 'screens/registationScreen/Registation'
+import OnlineChat from 'screens/onlineChatScreen/OnlineChat'
 import useDrawer from './useDrawer'
 import globalStyles from '../../global/styles/styles'
 import { HamburgerIcon } from '../Elements/Icons/Index'
@@ -66,9 +67,13 @@ const AppNavigation = () => {
         component={Home}
       />
       <Drawer.Screen
-        component={SigningForServices}
         name="SigningForServices"
+        component={SigningForServices}
         options={{unmountOnBlur: true}}
+      />
+      <Drawer.Screen
+        name="OnlineChat"
+        component={OnlineChat}
       />
       <Drawer.Screen
         name="Settings"
@@ -83,7 +88,7 @@ const DrawerContent = ({
   props,
   drawerItems,
 }) => {
-  const onItemPress = ({ label, screen }) => {
+  const onItemPress = ({ screen }) => {
     props.navigation.navigate(screen)
   }
   return (

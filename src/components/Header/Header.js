@@ -1,10 +1,11 @@
-import React, { useRef } from "react"
+import React from "react"
 import {
-    View, StyleSheet, Dimensions,
-    Text, TouchableOpacity,
+    StyleSheet,
+    Text, 
+    TouchableOpacity,
     Animated
 } from "react-native"
-import { HamburgerIcon } from "../Elements/Icons/Index"
+import { HamburgerIcon } from "components/Elements/Icons/Index"
 import { useNavigation } from "@react-navigation/core"
 
 const Header = ({hamburgerIcon = true}) => {
@@ -35,7 +36,7 @@ const Header = ({hamburgerIcon = true}) => {
 const styles = StyleSheet.create({
     container: {
         height: 70,
-        width: Dimensions.get('screen').width,
+        width: '100%',
         alignSelf: "center",
         backgroundColor: 'rgb(50, 120, 150)',
         display: "flex",

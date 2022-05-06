@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import PageTemplate from 'components/PageTemplate/Pagetemplate'
+import ScreenTemplate from 'components/ScreenTemplate/ScreenTemplate'
 import InputField from 'components/Elements/InputField/InputField'
 import { StyleSheet, Text, View, ScrollView } from 'react-native'
 import globalStyles from 'global/styles/styles'
@@ -30,7 +30,7 @@ const SettingsContainer = () => {
         onSaveInfo,
     } = useSettings()
     return (
-        <PageTemplate>
+        <ScreenTemplate>
             <Text style={globalStyles.page_title}>Настройки</Text>
                 <SettingsSection
                     title="Личные данные">
@@ -88,7 +88,7 @@ const SettingsContainer = () => {
                         onPress={onSaveInfo}
                     />
                 </View>
-        </PageTemplate>
+        </ScreenTemplate>
     )
 }
 

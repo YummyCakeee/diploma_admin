@@ -67,6 +67,8 @@ const Authorization = ({
                                 refreshToken: res.data.data.refresh
                             }
                             dispatch(updateUser(userData))
+                            AsyncStorage.setItem('authToken', userData.authToken)
+                            AsyncStorage.setItem('refreshToken', userData.refreshToken)
                             onAuthSuccess()
                         }
                         else {

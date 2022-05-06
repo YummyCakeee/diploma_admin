@@ -3,13 +3,13 @@ import { StyleSheet, Text, TextInput, View } from 'react-native'
 import AnimatedFieldError from '../AnimatedFieldError/AnimatedFieldError'
 
 type inputFieldProps = {
-    value?: string,
-    onChange?: (value: string) => void,
+    value: string,
+    onChange: (value: string) => void,
     label?: string,
     keyboardType?: 'default' | 'phone-pad',
     mask?: (value: string) => string,
     error: string,
-    style: {},
+    style?: {},
 }
 
 const InputField: React.FC<inputFieldProps> =
@@ -27,7 +27,6 @@ const InputField: React.FC<inputFieldProps> =
             onChange(text)
         }
 
-        
         return (
             <View
                 style={[styles.container, style]}
@@ -39,6 +38,7 @@ const InputField: React.FC<inputFieldProps> =
                     <TextInput style={styles.inputText}
                         value={value}
                         onChangeText={onChangeText}
+                        placeholderTextColor="gray"
                         {...props}
                     />
                 </View>

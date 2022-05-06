@@ -1,5 +1,6 @@
-import React from "react";
-import Svg, { Path, Polygon, Circle } from "react-native-svg"
+import React, { useEffect, useRef } from "react";
+import { Animated, Easing } from "react-native";
+import Svg, { Path, Polygon, Circle, Rect } from "react-native-svg"
 
 export const TriangleIcon = ({ width = 15, height = 15, color = "#000" }) => {
     return (
@@ -236,24 +237,84 @@ export const ReloadIcon = ({ width = 20, height = 20, color = '#000' }) => (
     </>
 )
 
-export const LoadingIcon = ({ width = 20, height = 20, color = '#000' }) => (
+export const LoadingIcon = ({ width = 20, height = 20, color = '#000' }) => {
+
+    const ref = useRef(new Animated.Value(0)).current
+
+    useEffect(() => {
+        Animated.loop(Animated.timing(ref,
+            {
+                toValue: 1,
+                duration: 1000,
+                easing: Easing.inOut(Easing.linear),
+                useNativeDriver: false,
+            })).start()
+    }, [])
+
+    return (
+        <>
+            <Animated.View
+                style={{
+                    transform: [{
+                        rotateZ: ref.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: ['0deg', '360deg']
+                        })
+                    }],
+                    width, height
+                }}
+            >
+                <Svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 26.349 26.35"
+                    height={height}
+                    width={width}
+                    fill={color}
+                >
+                    <Circle cx="13.792" cy="3.082" r="3.082" />
+                    <Circle cx="13.792" cy="24.501" r="1.849" />
+                    <Circle cx="6.219" cy="6.218" r="2.774" />
+                    <Circle cx="21.365" cy="21.363" r="1.541" />
+                    <Circle cx="3.082" cy="13.792" r="2.465" />
+                    <Circle cx="24.501" cy="13.791" r="1.232" />
+                    <Path d="M4.694,19.84c-0.843,0.843-0.843,2.207,0,3.05c0.842,0.843,2.208,0.843,3.05,0c0.843-0.843,0.843-2.207,0-3.05
+			C6.902,18.996,5.537,18.988,4.694,19.84z"/>
+                    <Circle cx="21.364" cy="6.218" r="0.924" />
+                </Svg>
+            </Animated.View>
+        </>
+    )
+}
+
+export const TalkBubblesIcon = ({ width = 20, height = 20, color = '#000' }) => (
     <>
         <Svg
             xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 26.349 26.35"
+            viewBox="0 0 36 36"
             height={height}
             width={width}
             fill={color}
         >
-            <Circle cx="13.792" cy="3.082" r="3.082" />
-            <Circle cx="13.792" cy="24.501" r="1.849" />
-            <Circle cx="6.219" cy="6.218" r="2.774" />
-            <Circle cx="21.365" cy="21.363" r="1.541" />
-            <Circle cx="3.082" cy="13.792" r="2.465" />
-            <Circle cx="24.501" cy="13.791" r="1.232" />
-            <Path d="M4.694,19.84c-0.843,0.843-0.843,2.207,0,3.05c0.842,0.843,2.208,0.843,3.05,0c0.843-0.843,0.843-2.207,0-3.05
-			C6.902,18.996,5.537,18.988,4.694,19.84z"/>
-            <Circle cx="21.364" cy="6.218" r="0.924" />
+            <Path d="M8,19V11H5a3,3,0,0,0-3,3V32a1,1,0,0,0,.56.89,1,1,0,0,0,1-.1L8.71,29H22.15A2.77,2.77,0,0,0,25,26.13V25H14A6,6,0,0,1,8,19Z" />
+            <Path d="M31,4H14a3,3,0,0,0-3,3V19a3,3,0,0,0,3,3H27.55l4.78,3.71a1,1,0,0,0,1,.11,1,1,0,0,0,.57-.9V7A3,3,0,0,0,31,4Z" />
+            <Rect x="0" y="0" width="36" height="36" fillOpacity="0" />
+        </Svg>
+    </>
+)
+
+export const SendIcon = ({ width = 20, height = 20, color = '#000' }) => (
+    <>
+        <Svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 512 512"
+            height={height}
+            width={width}
+            fill={color}
+        >
+            <Path d="M0,234.919l174.682,102.399l102.399,174.682L512,0.001L0,234.919z M275.387,478.16l-85.176-145.304l52.097-52.097
+				l-11.068-11.068l-52.098,52.098L33.84,236.612L459.726,41.206L293.249,207.681l11.068,11.068L470.795,52.275L275.387,478.16z"/>
+
+            <Rect x="257.132" y="223.121" transform="matrix(-0.7071 -0.7071 0.7071 -0.7071 277.6292 609.0733)" width="15.652" height="47.834" />
         </Svg>
     </>
 )

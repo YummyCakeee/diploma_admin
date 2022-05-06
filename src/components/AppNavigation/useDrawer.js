@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { HomeIcon, SettingsIcon, ScissorsIcon } from "../Elements/Icons/Index";
+import { HomeIcon, SettingsIcon, ScissorsIcon, TalkBubblesIcon } from "../Elements/Icons/Index";
 
 const useDrawer = () => {
     const [drawerItems, setDrawerItems] = useState([
@@ -14,6 +14,12 @@ const useDrawer = () => {
             icon: () => ScissorsIcon({color: '#fff'}),
             screen: 'SigningForServices',
             section: 'top',
+        },
+        {
+            label: 'Онлайн чат',
+            icon: () => TalkBubblesIcon({ color: '#fff' }),
+            screen: 'OnlineChat',
+            section: 'top'
         },
         {
             label: 'Настройки',

@@ -12,6 +12,7 @@ import { ORGANIZATION_ID, USER_TYPE } from "constants/application";
 import { ENDPOINT_MAIN_REG } from "constants/endpoints";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "store/actions/userSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from 'react-native-simple-toast'
 
 const Registration = ({

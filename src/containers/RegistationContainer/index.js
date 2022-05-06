@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import PageTemplate from "components/PageTemplate/Pagetemplate"
+import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate"
 import globalStyles from "global/styles/styles"
 import { StyleSheet, Text, View } from "react-native"
 import { useNavigation } from "@react-navigation/core"
@@ -52,7 +52,7 @@ const RegistationContainer = () => {
     }
 
     return (
-        <PageTemplate {...{ headerHamburgerIcon: false }}>
+        <ScreenTemplate {...{ headerHamburgerIcon: false }}>
             <Text
                 style={[globalStyles.page_title, styles.mainTitle]}
             >
@@ -88,7 +88,7 @@ const RegistationContainer = () => {
                     }
                 </View>
             </View>
-        </PageTemplate>
+        </ScreenTemplate>
     )
 }
 

@@ -15,21 +15,21 @@ export const STAGE_DATE_TIME_SELECT = 2
 const AddServiceNode = ({ 
     masters, 
     services,
-    onAddService = () => {}
+    onAddService = () => false
 }) => {
     const [mode, setMode] = useState(MODE_MASTER)
     const [stage, setStage] = useState(STAGE_MODE_SELECT)
-    const [selectedMaster, setSelectedMaster] = useState()
-    const [selectedService, setSelectedService] = useState()
-    const [selectedDate, setSelectedDate] = useState()
-    const [selectedTime, setSelectedTime] = useState()
+    const [selectedMaster, setSelectedMaster] = useState(null)
+    const [selectedService, setSelectedService] = useState(null)
+    const [selectedDate, setSelectedDate] = useState(null)
+    const [selectedTime, setSelectedTime] = useState(null)
     const [listItems, setListItems] = useState([])
     const [listFields, setListFields] = useState([])
-    const [modeTypeSliderItems, setModeTypeSliderItems] = useState([
+    const [modeTypeSliderItems] = useState([
         { text: "Мастер", tag: MODE_MASTER },
         { text: "Услуга", tag: MODE_SERVICE }
     ])
-    
+
     useEffect(() => {
         if (stage === STAGE_MODE_SELECT) {
             switch (mode) {
@@ -104,14 +104,6 @@ const AddServiceNode = ({
         }
     }
 
-    const onDateSelected = (item) => {
-        setSelectedDate(item.tag)
-    }
-
-    const onTimeSelected = (item) => {
-        setSelectedTime(item.tag)
-    }
-
     const onNextStageButtonPress = () => {
         if (stage < STAGE_DATE_TIME_SELECT)
             setStage(stage + 1)
@@ -122,8 +114,13 @@ const AddServiceNode = ({
                 date: selectedDate,
                 time: selectedTime
             }
-            onAddService(serviceInfo)
-            setStage(STAGE_MODE_SELECT)
+            if (onAddService(serviceInfo)) {
+                setSelectedMaster(null)
+                setSelectedService(null)
+                setSelectedDate(null)
+                setSelectedTime(null)
+                setStage(STAGE_MODE_SELECT)
+            }
         }
     }
 
@@ -194,8 +191,8 @@ const AddServiceNode = ({
                     selectedMaster,
                     selectedService,
                     selectedDate,
-                    onDateSelected,
-                    onTimeSelected
+                    setSelectedDate,
+                    setSelectedTime
                 }}
                 />
             )}
@@ -211,6 +208,12 @@ const AddServiceNode = ({
                 title={stage === STAGE_DATE_TIME_SELECT ?
                     "Добавить услугу" :
                     "Далее"
+                }
+                disabled={
+                    stage === STAGE_DATE_TIME_SELECT ?
+                        selectedDate && selectedTime ? false
+                            : true :
+                        false
                 }
                 size={stage === STAGE_DATE_TIME_SELECT ? 
                     "medium" :

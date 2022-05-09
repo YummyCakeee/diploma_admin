@@ -1,52 +1,70 @@
+import GradientLoading from "components/Elements/Loadable/GradientLoading"
+import Loadable, { loadableStatus } from "components/Elements/Loadable/Loadable"
 import Slider from "components/Elements/Slider/Slider"
 import globalStyles from "global/styles/styles"
 import React, { useEffect, useState } from "react"
 import { View, Text, StyleSheet } from "react-native"
-import { dateSlashYearMontdDayFormatter } from "utils/formatters"
+import { TouchableOpacity } from "react-native-gesture-handler"
+import { dateToDayMonthYearFormatter } from "utils/formatters"
 
 const ServiceNodeDateTime = ({
     selectedMaster,
     selectedService,
     selectedDate,
-    onDateSelected,
-    onTimeSelected
+    setSelectedDate,
+    setSelectedTime
 }) => {
 
     const [dates, setDates] = useState([])
     const [times, setTimes] = useState([])
+    const [datesLoadingStatus, setDatesLoadingStatus] = useState(loadableStatus.LOADING)
+    const [timesLoadingStatus, setTimesLoadingStatus] = useState(loadableStatus.LOADING)
+
     useEffect(() => {
+        getDates()
+    }, [selectedMaster, selectedService])
+
+    useEffect(() => {
+        getTimes()
+    }, [selectedDate])
+
+    const getDates = () => {
+        setDatesLoadingStatus(loadableStatus.LOADING)
         //  Получаем от сервера доступные даты для мастера
         const data = [
-            '5.05.2022',
-            '7.05.2022',
-            '8.05.2022',
-            '10.05.2022',
-            '11.05.2022',
-            '12.05.2022',
-            '14.05.2022'
+            '2022-05-05',
+            '2022-05-07',
+            '2022-05-08',
+            '2022-05-10',
+            '2022-05-11',
+            '2022-05-12',
+            '2022-05-14'
         ]
         const daysOfWeek = [
             'Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'
         ]
         const date = data.map(elem => {
-            const dayOfWeek = daysOfWeek[(new Date(dateSlashYearMontdDayFormatter(elem))).getDay()]
+            const dayOfWeek = daysOfWeek[(new Date(elem)).getDay()]
             return {
                 tag: elem,
-                text: `${elem} (${dayOfWeek})`
+                text: `${ dateToDayMonthYearFormatter(elem)} (${dayOfWeek})`
             }
         }
         )
         setDates(date)
+        setDatesLoadingStatus(loadableStatus.SUCCESS)
         //~
-    }, [selectedMaster, selectedService])
+    }
 
-    useEffect(() => {
+    const getTimes = () => {
+        setTimesLoadingStatus(loadableStatus.LOADING)
         //  Получаем от сервера интервалы 
         const data = [
             ['9:00', '11:10'],
             ['12:00', '15:30'],
             ['16:05', '16:30'],
             ['16:50', '17:00'],
+            ['18:00', '19:35']
         ]
         const regex = /(\d*):(\d*)/
         const allowedTime = []
@@ -59,7 +77,7 @@ const ServiceNodeDateTime = ({
                 el[1].match(regex).slice(1).map(el => Number(el))
             const [serviceTimeH, serviceTimeM] =
                 selectedService.duration
-                .match(regex).slice(1).map(el => Number(el))
+                    .match(regex).slice(1).map(el => Number(el))
 
             dateStart.setHours(startTimeH, startTimeM)
             dateEnd.setHours(endTimeH, endTimeM)
@@ -81,8 +99,17 @@ const ServiceNodeDateTime = ({
 
         })
         setTimes(allowedTime)
+        setTimesLoadingStatus(loadableStatus.SUCCESS)
         //~
-    }, [selectedDate])
+    }
+
+    const onDateSelected = (item) => {
+        setSelectedDate(item.tag)
+    }
+
+    const onTimeSelected = (item) => {
+        setSelectedTime(item.tag)
+    }
 
     return (
         <View>
@@ -95,11 +122,36 @@ const ServiceNodeDateTime = ({
                 >
                     Дата:
                 </Text>
-                <Slider
-                    items={dates}
-                    onItemSelected={onDateSelected}
-                    horizontal
-                />
+                <Loadable
+                    status={datesLoadingStatus}
+                    onLoadingComponent={
+                        <GradientLoading
+                            style={styles.timeAndDateLoading}
+                        />
+                    }
+                    onFailComponent={
+                        <View>
+                            <TouchableOpacity
+                                onPress={getDates}
+                            >
+                                <Text
+                                    style={[
+                                        globalStyles.text,
+                                        globalStyles.centeredElement
+                                    ]}
+                                >
+                                    Не удалось загрузить. Нажмите, чтобы обновить
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    }
+                >
+                    <Slider
+                        items={dates}
+                        onItemSelected={onDateSelected}
+                        horizontal
+                    />
+                </Loadable>
             </View>
             <View>
                 <Text
@@ -110,15 +162,40 @@ const ServiceNodeDateTime = ({
                 >
                     Время:
                 </Text>
-                <View
-                    style={styles.timeListContainer}
+                <Loadable
+                    status={timesLoadingStatus}
+                    onLoadingComponent={
+                        <GradientLoading
+                            style={styles.timeAndDateLoading}
+                        />
+                    }
+                    onFailComponent={
+                        <View>
+                            <TouchableOpacity
+                                onPress={getTimes}
+                            >
+                                <Text
+                                    style={[
+                                        globalStyles.text,
+                                        globalStyles.centeredElement
+                                    ]}
+                                >
+                                    Не удалось загрузить. Нажмите, чтобы обновить
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    }
                 >
-                    <Slider
-                        items={times}
-                        onItemSelected={onTimeSelected}
-                        horizontal
-                    />
-                </View>
+                    <View
+                        style={styles.timeListContainer}
+                    >
+                        <Slider
+                            items={times}
+                            onItemSelected={onTimeSelected}
+                            horizontal
+                        />
+                    </View>
+                </Loadable>
             </View>
         </View>
     )
@@ -126,7 +203,13 @@ const ServiceNodeDateTime = ({
 
 const styles = StyleSheet.create({
     timeListContainer: {
-        
+
+    },
+    timeAndDateLoading: {
+        height: 20, 
+        borderRadius: 20, 
+        opacity: 0.5, 
+        marginVertical: 5
     }
 })
 

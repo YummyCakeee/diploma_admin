@@ -10,19 +10,28 @@ import AddServiceNode from "./AddServiceNode";
 import SectionSeparator from "components/Elements/SectionSeparator/SectionSeparator";
 import { ENDPOINT_ALL_MASTERS, ENDPOINT_ALL_SERVICES } from "constants/endpoints";
 import { useSelector } from "react-redux";
-import { ReloadIcon } from "components/Elements/Icons/Index";
+import { LoadingIcon, ReloadIcon } from "components/Elements/Icons/Index";
+import Loadable, { loadableStatus } from "components/Elements/Loadable/Loadable";
+import { Color } from "global/styles/constants";
+import { useNavigation } from "@react-navigation/native";
+import { toCanonicalDateFormatter } from "utils/formatters";
+import Toast from 'react-native-simple-toast'
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const SigningForServicesContainer = () => {
-
     const [services, setServices] = useState([])
-    const [masters, setMasters] = useState()
+    const [masters, setMasters] = useState([])
     const [orderServices, setOrderServices] = useState([])
+    const [loadingStatus, setLoadingStatus] = useState(loadableStatus.LOADING)
+    const navigation = useNavigation()
+
     const token = useSelector(state => state.user.authToken)
     useEffect(() => {
         getMastersAndServices()
     }, [])
 
     const getMastersAndServices = async () => {
+        setLoadingStatus(loadableStatus.LOADING)
         await axios.all(
             [
                 axiosAPI2.get(ENDPOINT_ALL_SERVICES, {
@@ -39,22 +48,24 @@ const SigningForServicesContainer = () => {
         ).then(axios.spread((servicesRes, mastersRes) => {
             let mastersData = mastersRes.data.data
             let servicesData = servicesRes.data.data
+            if (mastersData.length === 0 || servicesData.length === 0)
+                return
             mastersData.forEach(el => {
                 el.name = el.fio.firstName
                 el.servicesFormatted = servicesData.
-                filter(a=> el.services.find(b => b === a.id)).map(c => c.name).join(', ')
+                    filter(a => el.services.find(b => b === a.id)).map(c => c.name).join(', ')
             })
             servicesData.forEach(el => {
                 el.mastersFormatted = mastersData.
-                filter(a=> el.masters.find(b => b === a.id)).map(c => c.name).join(', ')
+                    filter(a => el.masters.find(b => b === a.id)).map(c => c.name).join(', ')
             })
             setServices(servicesData)
             setMasters(mastersData)
+            setLoadingStatus(loadableStatus.SUCCESS)
         })).catch(err => {
-            console.log(err)
-        })
+            setLoadingStatus(loadableStatus.FAIL)
+        }) 
     }
-
 
     const onAddService = ({
         master,
@@ -62,6 +73,51 @@ const SigningForServicesContainer = () => {
         date,
         time
     }) => {
+        let addingError = false
+        const curServiceStart = toCanonicalDateFormatter(date, time)
+        const curServiceEnd = new Date(curServiceStart)
+        const regex = /(\d*):(\d*)/
+        const [servDurationH, servDurationM] =
+            service.duration
+                .match(regex).slice(1)
+                .map(el => Number(el))
+
+        curServiceEnd.setTime(curServiceEnd.getTime() +
+            servDurationH * 60 * 60 * 1000 +
+            servDurationM * 60 * 1000)
+        
+        for (const el of orderServices) {
+            const ordServiceStart = toCanonicalDateFormatter(el.date, el.time)
+            const ordServiceEnd = new Date(ordServiceStart)
+            const [ordServDurationH, ordServDurationM] =
+                el.service.duration
+                    .match(regex).slice(1)
+                    .map(el => Number(el))
+
+            ordServiceEnd.setTime(ordServiceEnd.getTime() +
+                ordServDurationH * 60 * 60 * 1000 +
+                ordServDurationM * 60 * 1000)
+            
+            if (curServiceStart >= ordServiceStart && 
+                curServiceStart < ordServiceEnd ||
+                curServiceEnd >= ordServiceStart &&
+                curServiceEnd <= ordServiceEnd
+                ) {
+                    if (el.master.id === master.id) {
+                        Toast.show("Вы не можете записаться к одному мастеру на разные услуги в одно и то же время")
+                        addingError = true
+                        break
+                    }
+                    if (el.service.id === service.id) {
+                        Toast.show("Вы не можете записаться две одинкаовые услуги на одно времся")
+                        addingError = true
+                        break
+                    }
+            }
+        }
+
+        if (addingError) return false
+        
         setOrderServices([
             ...orderServices,
             {
@@ -71,51 +127,128 @@ const SigningForServicesContainer = () => {
                 time
             }
         ])
+
+        return true
+    }
+
+    const onGoToMainScreenButtonPress = () => {
+        navigation.navigate('Home')
     }
 
     return (
         <ScreenTemplate>
             <Text style={globalStyles.page_title}>Запись на услуги</Text>
-            <View
-                style={styles.container}
+            <Loadable
+                status={loadingStatus}
+                onLoadingComponent={
+                    <View
+                        style={styles.onLoadingContainer}
+                    >
+                        <Text
+                            style={[
+                                globalStyles.text,
+                                globalStyles.centeredElement,
+                                styles.onLoadingText
+                            ]}
+                        >
+                            Получаем информацию о мастерах и услугах
+                        </Text>
+                        <View
+                            style={globalStyles.centeredElement}
+                        >
+                            <LoadingIcon
+                                width={30}
+                                height={30}
+                                color={Color.Gray}
+                            />
+                        </View>
+                    </View>
+                }
+                onFailComponent={
+                    <View
+                        style={styles.onFailContainer}
+                    >
+                        <Text
+                            style={[
+                                globalStyles.text,
+                                globalStyles.centeredElement,
+                                styles.onFailText
+                            ]}
+                        >
+                            Что-то пошло не так
+                        </Text>
+                        <View
+                            style={[
+                                globalStyles.centeredElement,
+                                styles.onFailButtonContainer
+                            ]}
+                        >
+                            <TouchableOpacity
+                                onPress={getMastersAndServices}
+                            >
+                                <ReloadIcon 
+                                    color={Color.White}
+                                    width={30}
+                                    height={30}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <View
+                            style={[
+                                globalStyles.centeredElement,
+                                styles.onFailButtonContainer
+                            ]}
+                        >
+                            <Button
+                                title="Вернуться на главную"
+                                size="large"
+                                onPress={onGoToMainScreenButtonPress}
+                            />
+                        </View>
+                    </View>
+                }
             >
-                <Text
-                    style={[
-                        globalStyles.text,
-                        globalStyles.centeredElement,
-                        styles.choosenServicesTitle
-                    ]}
-                >
-                    Выбранные услуги: {orderServices.length}
-                </Text>
-                <ServiceNodeList
-                    {...{
-                        services: orderServices,
-                        setServices: setOrderServices
-                    }}
-                />
-                <AddServiceNode 
-                {...{
-                    masters,
-                    services,
-                        onAddService
-                    }}
-                />
                 <View
-                    style={styles.confirmOrderButtonContainer}
+                    style={styles.container}
                 >
-                    <SectionSeparator />
-                    <Button
-                        title="Подтвердить услуги"
-                        size="large"
-                        disabled={orderServices.length === 0}
+                    <Text
                         style={[
+                            globalStyles.text,
                             globalStyles.centeredElement,
-                            styles.confirmOrderButton
+                            styles.choosenServicesTitle
                         ]}
+                    >
+                        Выбранные услуги: {orderServices.length}
+                    </Text>
+                    <ServiceNodeList
+                        {...{
+                            services: orderServices,
+                            setServices: setOrderServices
+                        }}
                     />
+                    <AddServiceNode
+                        {...{
+                            masters,
+                            services,
+                            onAddService
+                        }}
+                    />
+                    <View
+                        style={styles.confirmOrderButtonContainer}
+                    >
+                        <SectionSeparator />
+                        <Button
+                            title="Подтвердить услуги"
+                            size="large"
+                            disabled={orderServices.length === 0}
+                            style={[
+                                globalStyles.centeredElement,
+                                styles.confirmOrderButton
+                            ]}
+                        />
+                    </View>
                 </View>
-            </View>
+            </Loadable>
         </ScreenTemplate>
     )
 }
@@ -132,6 +265,21 @@ const styles = StyleSheet.create({
     },
     confirmOrderButton: {
         marginTop: 10,
+    },
+    onLoadingContainer: {
+
+    },
+    onLoadingText: {
+        marginVertical: 10
+    },
+    onFailContainer: {
+
+    },
+    onFailText: {
+        marginVertical: 10
+    },
+    onFailButtonContainer: {
+        marginBottom: 20,
     }
 })
 

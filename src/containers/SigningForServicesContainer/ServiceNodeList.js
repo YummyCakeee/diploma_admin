@@ -7,6 +7,7 @@ const ServiceNodeList = ({services, setServices}) => {
 
     const listBottomOpacity = useRef(new Animated.Value(0)).current
     const listTopOpacity = useRef(new Animated.Value(0)).current
+    const scrollRef = useRef(null)
     const [nodeHeight, setNodeHeight] = useState(0)
 
     useEffect(() => {
@@ -18,6 +19,9 @@ const ServiceNodeList = ({services, setServices}) => {
                     duration: 200,
                     useNativeDriver: true
                 }).start()
+        }
+        if (scrollRef?.current) {
+            scrollRef.current.scrollToEnd()
         }
     }, [services.length])
 
@@ -47,7 +51,7 @@ const ServiceNodeList = ({services, setServices}) => {
     }
 
     const onRemoveNode = (index) => {
-        const newServices = services.filter((elem, i) => index !== i)
+        const newServices = services.filter((el, i) => index !== i)
         setServices(newServices)
     }
     return (
@@ -66,6 +70,7 @@ const ServiceNodeList = ({services, setServices}) => {
                 />
             </Animated.View>
             <ScrollView
+                ref={scrollRef}
                 nestedScrollEnabled
                 onScroll={onServicesListScroll}
                 style={styles.chosenServicesList}

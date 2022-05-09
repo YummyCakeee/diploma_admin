@@ -91,7 +91,6 @@ const Authorization = ({
                     }
                 })
                 .catch(error => {
-                    console.log(error.response.data)
                     Toast.show('Ошибка: Не удалось отправить форму')
                 })
         }

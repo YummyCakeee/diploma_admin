@@ -17,9 +17,14 @@ export const simplePhoneNumberFormatter =
     (value: string): string =>
         '+' + value.replace(/\D*/g, '')
 
-export const dateSlashYearMontdDayFormatter = 
+export const dateToDayMonthYearFormatter = 
     (value: string): string => {
-        const match = value.match(/(\d*)\.(\d*)\.(\d*)/)
+        const match = value.match(/(\d*)\-(\d*)\-(\d*)/)
         if (!match) return value
-        return `${match[3]}/${match[2]}/${match[1]}`
+        return `${match[3]}.${match[2]}.${match[1]}`
     }
+
+export const toCanonicalDateFormatter = (
+    date: string,
+    time: string
+): Date => new Date (date + 'T' + time.padStart(5, '0') + 'Z')

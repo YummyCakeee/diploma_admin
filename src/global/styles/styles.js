@@ -1,20 +1,24 @@
 import { StyleSheet, Dimensions } from "react-native";
+import { Color } from "./constants";
 
 const globalStyles = StyleSheet.create({
     container: {
-        backgroundColor: 'rgb(38, 35, 45)',
+        backgroundColor: Color.SoftDarkBlue,
         width: '100%',
         height: '100%',
-        color: 'white',
+        color: Color.White,
         fontSize: 200,
     },
     text: {
-        color: 'white',
+        color: Color.White,
         fontSize: 16,
         fontFamily: ''
     },
+    text_blocked: {
+        color: Color.Gray
+    },
     title: {
-        color: 'white',
+        color: Color.White,
         fontSize: 18,
         fontFamily: '',
         marginTop: 5,
@@ -26,7 +30,7 @@ const globalStyles = StyleSheet.create({
         height: 30,
         paddingHorizontal: 5,
         paddingVertical: 3,
-        color: 'white',
+        color: Color.White,
         borderRadius: 10,
         marginVertical: 5,
         marginHorizontal: 10,
@@ -42,7 +46,7 @@ const globalStyles = StyleSheet.create({
     page_title: {
         fontSize: 22,
         alignSelf: 'center',
-        color: '#fff',
+        color: Color.White,
         marginTop: 10,
         marginBottom: 20,
     },

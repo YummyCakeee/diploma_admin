@@ -52,12 +52,15 @@ const SigningForServicesContainer = () => {
                 return
             mastersData.forEach(el => {
                 el.name = el.fio.firstName
-                el.servicesFormatted = servicesData.
-                    filter(a => el.services.find(b => b === a.id)).map(c => c.name).join(', ')
+                if (el.services) {
+                    el.servicesFormatted = servicesData.
+                        filter(a => el.services.find(b => b === a.id)).map(c => c.name).join(', ')
+                }
+                else el.servicesFormatted = '—'
             })
             servicesData.forEach(el => {
                 el.mastersFormatted = mastersData.
-                    filter(a => el.masters.find(b => b === a.id)).map(c => c.name).join(', ')
+                    filter(a => el.masters?.find(b => b === a.id)).map(c => c.name).join(', ')
             })
             setServices(servicesData)
             setMasters(mastersData)
@@ -109,7 +112,7 @@ const SigningForServicesContainer = () => {
                         break
                     }
                     if (el.service.id === service.id) {
-                        Toast.show("Вы не можете записаться две одинкаовые услуги на одно времся")
+                        Toast.show("Вы не можете записаться две одинкаовые услуги на одно время")
                         addingError = true
                         break
                     }

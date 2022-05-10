@@ -25,6 +25,7 @@ const AddServiceNode = ({
     const [selectedTime, setSelectedTime] = useState(null)
     const [listItems, setListItems] = useState([])
     const [listFields, setListFields] = useState([])
+    const [nextStepButtonEnabled, setNextStepButtonEnabled] = useState(false)
     const [modeTypeSliderItems] = useState([
         { text: "Мастер", tag: MODE_MASTER },
         { text: "Услуга", tag: MODE_SERVICE }
@@ -35,9 +36,11 @@ const AddServiceNode = ({
             switch (mode) {
                 case MODE_MASTER:
                     setMasterListItems(masters, true)
+                    setSelectedService(null)
                     break;
                 case MODE_SERVICE:
                     setServicesListItems(services, true)
+                    setSelectedMaster(null)
                     break;
             }
         }
@@ -45,7 +48,7 @@ const AddServiceNode = ({
             switch (mode) {
                 case MODE_MASTER:
                     const masterServices = services.filter(elem => {
-                        if (selectedMaster?.services.find(item => item === elem.id))
+                        if (selectedMaster?.services?.find(item => item === elem.id))
                             return elem
                         return null
                     })
@@ -53,15 +56,37 @@ const AddServiceNode = ({
                     break;
                 case MODE_SERVICE:
                     const serviceMasters = masters.filter(elem => {
-                        if (selectedService?.masters.find(item => item === elem.id))
+                        if (selectedService?.masters?.find(item => item === elem.id))
                             return elem
                         return null
                     })
                     setMasterListItems(serviceMasters)
                     break;
             }
+            setSelectedDate(null)
+            setSelectedTime(null)
         }
     }, [mode, stage, masters, services])
+
+    useEffect(() => {
+        setNextStepButtonEnabled(false)
+        if (stage === STAGE_MODE_SELECT){
+            if (mode === MODE_MASTER) {
+                if (selectedMaster?.services?.length)
+                    setNextStepButtonEnabled(true)
+            }
+            else if (mode === MODE_SERVICE) {
+                if (selectedService?.masters?.length)
+                    setNextStepButtonEnabled(true)
+            }
+        }
+        else if (stage === STAGE_SECOND_PARAM_SELECT)
+            setNextStepButtonEnabled(true)
+        else if (stage === STAGE_DATE_TIME_SELECT) {
+            if (selectedDate && selectedTime)
+                setNextStepButtonEnabled(true)
+        }
+    }, [stage, selectedMaster, selectedService, selectedDate, selectedTime])
 
     const setMasterListItems = (items, showServices = false) => {
         setListItems(items?.map(elem => (
@@ -98,15 +123,21 @@ const AddServiceNode = ({
             }
         }
         else if (stage === STAGE_SECOND_PARAM_SELECT) {
-            mode === MODE_MASTER ?
-                setSelectedService(item.tag) :
+            if (mode === MODE_MASTER) {
+                setSelectedService(item.tag)
+            } 
+            else {
                 setSelectedMaster(item.tag)
+            }
         }
     }
 
     const onNextStageButtonPress = () => {
         if (stage < STAGE_DATE_TIME_SELECT)
+        {
+            setNextStepButtonEnabled(false)
             setStage(stage + 1)
+        }
         else {
             const serviceInfo = {
                 master: selectedMaster,
@@ -209,12 +240,7 @@ const AddServiceNode = ({
                     "Добавить услугу" :
                     "Далее"
                 }
-                disabled={
-                    stage === STAGE_DATE_TIME_SELECT ?
-                        selectedDate && selectedTime ? false
-                            : true :
-                        false
-                }
+                disabled={!nextStepButtonEnabled}
                 size={stage === STAGE_DATE_TIME_SELECT ? 
                     "medium" :
                     "small"

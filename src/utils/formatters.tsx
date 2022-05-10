@@ -26,5 +26,5 @@ export const dateToDayMonthYearFormatter =
 
 export const toCanonicalDateFormatter = (
     date: string,
-    time: string
+    time: string = '00:00',
 ): Date => new Date (date + 'T' + time.padStart(5, '0') + 'Z')

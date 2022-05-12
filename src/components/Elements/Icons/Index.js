@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from "react";
 import { Animated, Easing } from "react-native";
 import Svg, { Path, Polygon, Circle, Rect, Text, TSpan } from "react-native-svg"
 
-export const TriangleIcon = ({ width = 15, height = 15, color = "#000" }) => {
+export const TriangleIcon = ({ width = 15, height = 15, color = Color.Black }) => {
     return (
         <>
             <Svg
@@ -19,7 +19,7 @@ export const TriangleIcon = ({ width = 15, height = 15, color = "#000" }) => {
     );
 }
 
-export const HamburgerIcon = ({ width = 15, height = 15, color = "#000" }) => (
+export const HamburgerIcon = ({ width = 15, height = 15, color = Color.Black }) => (
     <>
         <Svg
             xmlns="http://www.w3.org/2000/svg"
@@ -33,7 +33,7 @@ export const HamburgerIcon = ({ width = 15, height = 15, color = "#000" }) => (
     </>
 )
 
-export const HomeIcon = ({ width = 20, height = 20, color = "#000" }) => (
+export const HomeIcon = ({ width = 20, height = 20, color = Color.Black }) => (
     <>
         <Svg
             xmlns="http://www.w3.org/2000/svg"
@@ -50,7 +50,7 @@ export const HomeIcon = ({ width = 20, height = 20, color = "#000" }) => (
 )
 
 
-export const SettingsIcon = ({ width = 20, height = 20, color = "#000" }) => (
+export const SettingsIcon = ({ width = 20, height = 20, color = Color.Black }) => (
     <>
         <Svg
             xmlns="http://www.w3.org/2000/svg"
@@ -64,7 +64,7 @@ export const SettingsIcon = ({ width = 20, height = 20, color = "#000" }) => (
     </>
 )
 
-export const ScissorsIcon = ({ width = 20, height = 20, color = "#000" }) => (
+export const ScissorsIcon = ({ width = 20, height = 20, color = Color.Black }) => (
     <>
         <Svg
             xmlns="http://www.w3.org/2000/svg"
@@ -79,7 +79,7 @@ export const ScissorsIcon = ({ width = 20, height = 20, color = "#000" }) => (
     </>
 )
 
-export const BrushIcon = ({ width = 20, height = 20, color = "#000" }) => (
+export const BrushIcon = ({ width = 20, height = 20, color = Color.Black }) => (
     <>
         <Svg
             xmlns="http://www.w3.org/2000/svg"
@@ -94,7 +94,7 @@ export const BrushIcon = ({ width = 20, height = 20, color = "#000" }) => (
 )
 
 
-export const HairIcon = ({ width = 20, height = 20, color = "#000" }) => (
+export const HairIcon = ({ width = 20, height = 20, color = Color.Black }) => (
     <>
         <Svg
             xmlns="http://www.w3.org/2000/svg"
@@ -131,7 +131,7 @@ export const HairIcon = ({ width = 20, height = 20, color = "#000" }) => (
     </>
 )
 
-export const WomanHairIcon = ({ width = 20, height = 20, color = "#000" }) => (
+export const WomanHairIcon = ({ width = 20, height = 20, color = Color.Black }) => (
     <>
         <Svg
             xmlns="http://www.w3.org/2000/svg"
@@ -148,7 +148,7 @@ export const WomanHairIcon = ({ width = 20, height = 20, color = "#000" }) => (
     </>
 )
 
-export const BeardIcon = ({ width = 20, height = 20, color = "#000" }) => (
+export const BeardIcon = ({ width = 20, height = 20, color = Color.Black }) => (
     <>
         <Svg
             xmlns="http://www.w3.org/2000/svg"
@@ -174,7 +174,7 @@ export const BeardIcon = ({ width = 20, height = 20, color = "#000" }) => (
     </>
 )
 
-export const KidsIcon = ({ width = 20, height = 20, color = "#000" }) => (
+export const KidsIcon = ({ width = 20, height = 20, color = Color.Black }) => (
     <>
         <Svg
             xmlns="http://www.w3.org/2000/svg"
@@ -378,4 +378,31 @@ export const LogoIcon = ({ width = 20, height = 20, color = '#000' }) => (
             </Text>
         </Svg>
     </>
+)
+
+export const ListIcon = ({ width = 20, height = 20, color = Color.Black }) => (
+    <Svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 458.18 458.18"
+        height={height}
+        width={width}
+        fill={color}
+    >
+        <Path d="M36.09,5.948c-18.803,0-34.052,15.248-34.052,34.051c0,18.803,15.249,34.052,34.052,34.052
+		c18.803,0,34.052-15.25,34.052-34.052C70.142,21.196,54.893,5.948,36.09,5.948z"/>
+        <Path d="M147.537,80h268.604c22.092,0,40-17.908,40-40s-17.908-40-40-40H147.537c-22.092,0-40,17.908-40,40S125.445,80,147.537,80z
+		"/>
+        <Path d="M36.09,132.008c-18.803,0-34.052,15.248-34.052,34.051s15.249,34.052,34.052,34.052c18.803,0,34.052-15.249,34.052-34.052
+		S54.893,132.008,36.09,132.008z"/>
+        <Path d="M416.142,126.06H147.537c-22.092,0-40,17.908-40,40s17.908,40,40,40h268.604c22.092,0,40-17.908,40-40
+		S438.233,126.06,416.142,126.06z"/>
+        <Path d="M36.09,258.068c-18.803,0-34.052,15.248-34.052,34.051c0,18.803,15.249,34.052,34.052,34.052
+		c18.803,0,34.052-15.249,34.052-34.052C70.142,273.316,54.893,258.068,36.09,258.068z"/>
+        <Path d="M416.142,252.119H147.537c-22.092,0-40,17.908-40,40s17.908,40,40,40h268.604c22.092,0,40-17.908,40-40
+		S438.233,252.119,416.142,252.119z"/>
+        <Path d="M36.09,384.128c-18.803,0-34.052,15.248-34.052,34.051s15.249,34.053,34.052,34.053c18.803,0,34.052-15.25,34.052-34.053
+		S54.893,384.128,36.09,384.128z"/>
+        <Path d="M416.142,378.18H147.537c-22.092,0-40,17.908-40,40s17.908,40,40,40h268.604c22.092,0,40-17.908,40-40
+		S438.233,378.18,416.142,378.18z"/>
+    </Svg>
 )

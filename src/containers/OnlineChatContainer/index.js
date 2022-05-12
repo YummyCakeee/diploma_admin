@@ -5,7 +5,6 @@ import globalStyles from "global/styles/styles"
 import MessageInputField from "components/Elements/MessageInputField/MessageInputField"
 import { ScrollView } from "react-native-gesture-handler"
 import Message from "./Message"
-import { LoadingIcon } from "components/Elements/Icons/Index"
 
 const OnlineChatContainer = () => {
     const userID = '0888-kfier-rrmfifd-32323'

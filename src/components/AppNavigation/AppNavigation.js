@@ -12,13 +12,26 @@ import Home from 'screens/homeScreen/Home'
 import Settings from 'screens/settingsScreen/Settings'
 import SigningForServices from 'screens/signingForServicesScreen/SigningForServices'
 import Registation from 'screens/registationScreen/Registation'
+import ServiceRecords from 'screens/serviceRecordsScreen/ServiceRecords'
 import OnlineChat from 'screens/onlineChatScreen/OnlineChat'
+import Initialization from 'screens/initializationScreen/Initialization'
 import useDrawer from './useDrawer'
 import globalStyles from '../../global/styles/styles'
 import { HamburgerIcon } from '../Elements/Icons/Index'
 
 const Drawer = createDrawerNavigator()
 const Stack = createStackNavigator();
+
+export const Screen = {
+  Initialization: 'Initialization',
+  Registration: 'Registration',
+  Feed: 'Feed',
+  Home: 'Home',
+  SigningForServices: 'SigningForServices',
+  ServiceRecords: 'ServiceRecords',
+  OnlineChat: 'OnlineChat',
+  Settings:  'Settings'
+}
 
 const Root = () => {
   
@@ -30,11 +43,15 @@ const Root = () => {
         }}
       >
         <Stack.Screen
-          name="Registration"
+            name={Screen.Initialization}
+            component={Initialization}
+        />
+        <Stack.Screen
+          name={Screen.Registration}
           component={Registation}
         />
         <Stack.Screen
-          name="Feed"
+          name={Screen.Feed}
           component={AppNavigation}
         />
       </Stack.Navigator>
@@ -51,8 +68,9 @@ const AppNavigation = () => {
       screenOptions={{
         headerShown: false,
         drawerStyle: globalStyles.drawerDark,
+        unmountOnBlur: true
       }}
-      initialRouteName="Home"
+      initialRouteName={Screen.Home}
       drawerContent={(props) =>
         <DrawerContent
           {...{
@@ -63,20 +81,23 @@ const AppNavigation = () => {
       }
     >
       <Drawer.Screen
-        name="Home"
+        name={Screen.Home}
         component={Home}
       />
       <Drawer.Screen
-        name="SigningForServices"
+        name={Screen.SigningForServices}
         component={SigningForServices}
-        options={{unmountOnBlur: true}}
       />
       <Drawer.Screen
-        name="OnlineChat"
+        name={Screen.ServiceRecords}
+        component={ServiceRecords}
+      />
+      <Drawer.Screen
+        name={Screen.OnlineChat}
         component={OnlineChat}
       />
       <Drawer.Screen
-        name="Settings"
+        name={Screen.Settings}
         component={Settings}
         options={horizontalAnimation}
       />
@@ -107,7 +128,7 @@ const DrawerContent = ({
       <DrawerContentScrollView {...props}>
         {drawerItems.map((el, index) => (
           <DrawerItem
-            key={el.label}
+            key={index}
             label={({ focused }) =>
               <Text style={{
                 color: focused ?

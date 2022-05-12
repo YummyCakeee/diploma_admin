@@ -5,10 +5,14 @@ import globalStyles from "global/styles/styles";
 import Button from "components/Elements/Button/Button";
 import { axiosAPI, axiosAPI2 } from "utils/axios";
 import axios from "axios";
-import ServiceNodeList from "./ServiceNodeList";
+import ServiceNodeList from "../../components/ServiceNodeList/ServiceNodeList";
 import AddServiceNode from "./AddServiceNode";
 import SectionSeparator from "components/Elements/SectionSeparator/SectionSeparator";
-import { ENDPOINT_ALL_MASTERS, ENDPOINT_ALL_SERVICES } from "constants/endpoints";
+import {
+    ENDPOINT_ALL_MASTERS,
+    ENDPOINT_ALL_SERVICES,
+    ENDPOINT_ORDERS
+} from "constants/endpoints";
 import { useSelector } from "react-redux";
 import { LoadingIcon, ReloadIcon } from "components/Elements/Icons/Index";
 import Loadable, { loadableStatus } from "components/Elements/Loadable/Loadable";
@@ -17,32 +21,29 @@ import { useNavigation } from "@react-navigation/native";
 import { toCanonicalDateFormatter } from "utils/formatters";
 import Toast from 'react-native-simple-toast'
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator";
+import { Screen } from "components/AppNavigation/AppNavigation";
 
 const SigningForServicesContainer = () => {
     const [services, setServices] = useState([])
     const [masters, setMasters] = useState([])
     const [orderServices, setOrderServices] = useState([])
     const [loadingStatus, setLoadingStatus] = useState(loadableStatus.LOADING)
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const navigation = useNavigation()
-
     const token = useSelector(state => state.user.authToken)
     useEffect(() => {
         getMastersAndServices()
     }, [])
-
     const getMastersAndServices = async () => {
         setLoadingStatus(loadableStatus.LOADING)
         await axios.all(
             [
                 axiosAPI2.get(ENDPOINT_ALL_SERVICES, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    headers: createAuthorizationHeader(token)
                 }),
                 axiosAPI2.get(ENDPOINT_ALL_MASTERS, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    headers: createAuthorizationHeader(token)
                 })
             ]
         ).then(axios.spread((servicesRes, mastersRes) => {
@@ -51,20 +52,31 @@ const SigningForServicesContainer = () => {
             if (mastersData.length === 0 || servicesData.length === 0)
                 return
             mastersData.forEach(el => {
-                el.name = el.fio.firstName
-                el.servicesFormatted = servicesData.
-                    filter(a => el.services.find(b => b === a.id)).map(c => c.name).join(', ')
+                el.name = el.fio.first_name
+                el.surname = el.fio.second_name
+                el.patronymic = el.fio.third_mame
+                delete el.fio
+                if (el.services) {
+                    el.servicesFormatted = servicesData.
+                        filter(a => el.services.find(b => b === a.id)).map(c => c.name).join(', ')
+                }
+                else el.servicesFormatted = '—'
             })
             servicesData.forEach(el => {
                 el.mastersFormatted = mastersData.
-                    filter(a => el.masters.find(b => b === a.id)).map(c => c.name).join(', ')
+                    filter(a => el.masters?.find(b => b === a.id)).map(c => c.name).join(', ')
             })
             setServices(servicesData)
             setMasters(mastersData)
             setLoadingStatus(loadableStatus.SUCCESS)
         })).catch(err => {
             setLoadingStatus(loadableStatus.FAIL)
-        }) 
+        })
+    }
+
+    const onRemoveNode = (index) => {
+        const newServices = orderServices.filter((el, i) => index !== i)
+        setOrderServices(newServices)
     }
 
     const onAddService = ({
@@ -85,7 +97,7 @@ const SigningForServicesContainer = () => {
         curServiceEnd.setTime(curServiceEnd.getTime() +
             servDurationH * 60 * 60 * 1000 +
             servDurationM * 60 * 1000)
-        
+
         for (const el of orderServices) {
             const ordServiceStart = toCanonicalDateFormatter(el.date, el.time)
             const ordServiceEnd = new Date(ordServiceStart)
@@ -97,27 +109,29 @@ const SigningForServicesContainer = () => {
             ordServiceEnd.setTime(ordServiceEnd.getTime() +
                 ordServDurationH * 60 * 60 * 1000 +
                 ordServDurationM * 60 * 1000)
-            
-            if (curServiceStart >= ordServiceStart && 
+
+            if (curServiceStart >= ordServiceStart &&
                 curServiceStart < ordServiceEnd ||
                 curServiceEnd >= ordServiceStart &&
                 curServiceEnd <= ordServiceEnd
-                ) {
-                    if (el.master.id === master.id) {
-                        Toast.show("Вы не можете записаться к одному мастеру на разные услуги в одно и то же время")
-                        addingError = true
-                        break
-                    }
-                    if (el.service.id === service.id) {
-                        Toast.show("Вы не можете записаться две одинкаовые услуги на одно времся")
-                        addingError = true
-                        break
-                    }
+            ) {
+                if (el.master.id === master.id) {
+                    Toast.show("Вы не можете записаться к одному мастеру " +
+                        "на разные услуги в одно и то же время")
+                    addingError = true
+                    break
+                }
+                if (el.service.id === service.id) {
+                    Toast.show("Вы не можете записаться две одинаковые " +
+                        "услуги на одно время")
+                    addingError = true
+                    break
+                }
             }
         }
 
         if (addingError) return false
-        
+
         setOrderServices([
             ...orderServices,
             {
@@ -131,8 +145,41 @@ const SigningForServicesContainer = () => {
         return true
     }
 
+    const onSubmitServices = async () => {
+        setIsSubmitting(true)
+        const appointments = []
+        orderServices.forEach(el => {
+            const appointment = {
+                date: toCanonicalDateFormatter(el.date, el.time),
+                master_id: el.master.id,
+                service_id: el.service.id
+            }
+            appointments.push(appointment)
+        })
+        const data = {
+            appointments
+        }
+        await axiosAPI2.post(
+            ENDPOINT_ORDERS,
+            data,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(res => {
+                if (res.data.success) {
+                    Toast.show("Запись успешно создана")
+                    setOrderServices([])
+                }
+            }).catch(err => {
+                Toast.show("Произошла ошибка при отправке запроса")
+            })
+        setIsSubmitting(false)
+    }
+
     const onGoToMainScreenButtonPress = () => {
-        navigation.navigate('Home')
+        navigation.navigate(Screen.Home)
     }
 
     return (
@@ -186,7 +233,7 @@ const SigningForServicesContainer = () => {
                             <TouchableOpacity
                                 onPress={getMastersAndServices}
                             >
-                                <ReloadIcon 
+                                <ReloadIcon
                                     color={Color.White}
                                     width={30}
                                     height={30}
@@ -223,7 +270,8 @@ const SigningForServicesContainer = () => {
                     <ServiceNodeList
                         {...{
                             services: orderServices,
-                            setServices: setOrderServices
+                            onRemoveNodePress: onRemoveNode,
+                            style: styles.chosenServicesContainer
                         }}
                     />
                     <AddServiceNode
@@ -240,7 +288,8 @@ const SigningForServicesContainer = () => {
                         <Button
                             title="Подтвердить услуги"
                             size="large"
-                            disabled={orderServices.length === 0}
+                            onPress={onSubmitServices}
+                            disabled={!orderServices.length && !isSubmitting}
                             style={[
                                 globalStyles.centeredElement,
                                 styles.confirmOrderButton
@@ -259,6 +308,9 @@ const styles = StyleSheet.create({
     },
     choosenServicesTitle: {
         marginBottom: 10,
+    },
+    chosenServicesContainer: {
+        maxHeight: 250,
     },
     confirmOrderButtonContainer: {
         marginTop: 20

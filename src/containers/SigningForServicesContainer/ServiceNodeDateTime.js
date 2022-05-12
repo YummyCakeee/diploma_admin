@@ -6,6 +6,13 @@ import React, { useEffect, useState } from "react"
 import { View, Text, StyleSheet } from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { dateToDayMonthYearFormatter } from "utils/formatters"
+import { axiosAPI2 } from "utils/axios"
+import {
+    createMastersWorkTimeEndpoint,
+    createServicesAvailableTimeEndpoint
+} from "utils/apiHelpers/endpointsGenerator"
+import { useSelector } from "react-redux"
+import Toast from 'react-native-simple-toast'
 
 const ServiceNodeDateTime = ({
     selectedMaster,
@@ -19,88 +26,101 @@ const ServiceNodeDateTime = ({
     const [times, setTimes] = useState([])
     const [datesLoadingStatus, setDatesLoadingStatus] = useState(loadableStatus.LOADING)
     const [timesLoadingStatus, setTimesLoadingStatus] = useState(loadableStatus.LOADING)
+    const token = useSelector(state => state.user.authToken)
 
     useEffect(() => {
         getDates()
     }, [selectedMaster, selectedService])
 
     useEffect(() => {
-        getTimes()
+        setSelectedTime(null)
+        if (selectedDate)
+            getTimes()
     }, [selectedDate])
 
     const getDates = () => {
+        setDates([])
+        setSelectedDate(null)
         setDatesLoadingStatus(loadableStatus.LOADING)
-        //  Получаем от сервера доступные даты для мастера
-        const data = [
-            '2022-05-05',
-            '2022-05-07',
-            '2022-05-08',
-            '2022-05-10',
-            '2022-05-11',
-            '2022-05-12',
-            '2022-05-14'
-        ]
-        const daysOfWeek = [
-            'Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'
-        ]
-        const date = data.map(elem => {
-            const dayOfWeek = daysOfWeek[(new Date(elem)).getDay()]
-            return {
-                tag: elem,
-                text: `${ dateToDayMonthYearFormatter(elem)} (${dayOfWeek})`
-            }
-        }
-        )
-        setDates(date)
-        setDatesLoadingStatus(loadableStatus.SUCCESS)
-        //~
+        axiosAPI2.get(createMastersWorkTimeEndpoint(selectedMaster.id),
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(res => {
+                const data = res.data.data
+                if (data === null) throw { response: { data: { message: 'У мастера нет свободных дат' } } }
+                const daysOfWeek = [
+                    'Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'
+                ]
+                const date = data.map(el => {
+                    el = el.startDate.replace(/T[\w | \d | - | :]*/, '')
+                    const dayOfWeek = daysOfWeek[(new Date(el)).getDay()]
+                    return {
+                        tag: el,
+                        text: `${dateToDayMonthYearFormatter(el).replace(/^0/, '')} (${dayOfWeek})`
+                    }
+                })
+                setDates(date)
+                setDatesLoadingStatus(loadableStatus.SUCCESS)
+            }).catch(err => {
+                Toast.show(err.response.data.message)
+            })
     }
 
     const getTimes = () => {
+        setTimes([])
         setTimesLoadingStatus(loadableStatus.LOADING)
-        //  Получаем от сервера интервалы 
-        const data = [
-            ['9:00', '11:10'],
-            ['12:00', '15:30'],
-            ['16:05', '16:30'],
-            ['16:50', '17:00'],
-            ['18:00', '19:35']
-        ]
-        const regex = /(\d*):(\d*)/
-        const allowedTime = []
-        const dateStart = new Date()
-        const dateEnd = new Date()
-        data.forEach(el => {
-            const [startTimeH, startTimeM] =
-                el[0].match(regex).slice(1).map(el => Number(el))
-            const [endTimeH, endTimeM] =
-                el[1].match(regex).slice(1).map(el => Number(el))
-            const [serviceTimeH, serviceTimeM] =
-                selectedService.duration
-                    .match(regex).slice(1).map(el => Number(el))
-
-            dateStart.setHours(startTimeH, startTimeM)
-            dateEnd.setHours(endTimeH, endTimeM)
-
-            const serviceEndTime = new Date()
-            serviceEndTime.setHours(startTimeH + serviceTimeH,
-                startTimeM + serviceTimeM)
-            if (serviceEndTime <= dateEnd) {
-                const serviceLatestStartTime = new Date()
-                serviceLatestStartTime.setHours(endTimeH - serviceTimeH,
-                    endTimeM - serviceTimeM)
-
-                while (dateStart <= serviceLatestStartTime) {
-                    const time = `${dateStart.getHours()}:${dateStart.getMinutes().toString().padStart(2, '0')}`
-                    allowedTime.push({ tag: time, text: time })
-                    dateStart.setMinutes(dateStart.getMinutes() + 5)
+        axiosAPI2.get(createServicesAvailableTimeEndpoint(selectedService.id),
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                params: {
+                    master_id: selectedMaster.id,
+                    start_date: selectedDate,
+                    end_date: selectedDate
                 }
-            }
+            })
+            .then(res => {
+                const data = res.data.data[0].intervals
+                const regex = /(\d*):(\d*)/
+                const allowedTime = []
+                const dateStart = new Date()
+                const dateEnd = new Date()
+                data.forEach(el => {
+                    const [startTimeH, startTimeM] =
+                        el[0].match(regex).slice(1).map(el => Number(el))
+                    const [endTimeH, endTimeM] =
+                        el[1].match(regex).slice(1).map(el => Number(el))
+                    const [serviceTimeH, serviceTimeM] =
+                        selectedService.duration
+                            .match(regex).slice(1).map(el => Number(el))
 
-        })
-        setTimes(allowedTime)
-        setTimesLoadingStatus(loadableStatus.SUCCESS)
-        //~
+                    dateStart.setHours(startTimeH, startTimeM)
+                    dateEnd.setHours(endTimeH, endTimeM)
+
+                    const serviceEndTime = new Date()
+                    serviceEndTime.setHours(startTimeH + serviceTimeH,
+                        startTimeM + serviceTimeM)
+                    if (serviceEndTime <= dateEnd) {
+                        const serviceLatestStartTime = new Date()
+                        serviceLatestStartTime.setHours(endTimeH - serviceTimeH,
+                            endTimeM - serviceTimeM)
+
+                        while (dateStart <= serviceLatestStartTime) {
+                            const time = `${dateStart.getHours().toString()}:${dateStart.getMinutes().toString().padStart(2, '0')}`
+                            allowedTime.push({ tag: time, text: time })
+                            dateStart.setMinutes(dateStart.getMinutes() + 5)
+                        }
+                    }
+                })
+                setTimes(allowedTime)
+                setTimesLoadingStatus(loadableStatus.SUCCESS)
+            }).catch(err => {
+                Toast.show(err.response.data.message)
+            })
     }
 
     const onDateSelected = (item) => {
@@ -206,9 +226,9 @@ const styles = StyleSheet.create({
 
     },
     timeAndDateLoading: {
-        height: 20, 
-        borderRadius: 20, 
-        opacity: 0.5, 
+        height: 20,
+        borderRadius: 20,
+        opacity: 0.5,
         marginVertical: 5
     }
 })

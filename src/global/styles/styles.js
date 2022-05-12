@@ -3,11 +3,12 @@ import { Color } from "./constants";
 
 const globalStyles = StyleSheet.create({
     container: {
+        position: 'relative',
         backgroundColor: Color.SoftDarkBlue,
         width: '100%',
-        height: '100%',
+        height: Dimensions.get('window').height,
         color: Color.White,
-        fontSize: 200,
+        fontSize: 20,
     },
     text: {
         color: Color.White,
@@ -19,6 +20,7 @@ const globalStyles = StyleSheet.create({
     },
     title: {
         color: Color.White,
+        textAlign: "center",
         fontSize: 18,
         fontFamily: '',
         marginTop: 5,
@@ -45,6 +47,7 @@ const globalStyles = StyleSheet.create({
     },
     page_title: {
         fontSize: 22,
+        textAlign: "center",
         alignSelf: 'center',
         color: Color.White,
         marginTop: 10,

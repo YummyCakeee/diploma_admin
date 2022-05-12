@@ -1,30 +1,37 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { HomeIcon, SettingsIcon, ScissorsIcon, TalkBubblesIcon } from "../Elements/Icons/Index";
+import { Screen } from "./AppNavigation";
 
 const useDrawer = () => {
     const [drawerItems, setDrawerItems] = useState([
         {
             label: 'Главная',
             icon: () => HomeIcon({color: '#fff'}),
-            screen: 'Home',
+            screen: Screen.Home,
             section: 'top',
         },
         {
             label: 'Записаться на услуги',
             icon: () => ScissorsIcon({color: '#fff'}),
-            screen: 'SigningForServices',
+            screen: Screen.SigningForServices,
+            section: 'top',
+        },
+        {
+            label: 'Мои записи',
+            icon: () => ScissorsIcon({color: '#fff'}),
+            screen: Screen.ServiceRecords,
             section: 'top',
         },
         {
             label: 'Онлайн чат',
             icon: () => TalkBubblesIcon({ color: '#fff' }),
-            screen: 'OnlineChat',
+            screen: Screen.OnlineChat,
             section: 'top'
         },
         {
             label: 'Настройки',
             icon: () => SettingsIcon({color: '#fff'}),
-            screen: 'Settings',
+            screen: Screen.Settings,
             section: 'bottom',
         },
     ])

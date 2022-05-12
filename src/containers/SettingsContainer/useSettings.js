@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/core";
+import { Screen } from "components/AppNavigation/AppNavigation";
 
 const useSettings = () => {
     const [name, setName] = useState()
@@ -33,7 +34,7 @@ const useSettings = () => {
     }
     
     const onSaveInfo = () => {
-        navigation.navigate('Home')
+        navigation.navigate(Screen.Home)
     }
 
     return {

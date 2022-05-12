@@ -3,6 +3,7 @@ import { View, StyleSheet, Text } from 'react-native'
 import Button from 'components/Elements/Button/Button'
 import { useNavigation } from '@react-navigation/core'
 import globalStyles from 'global/styles/styles'
+import { Screen } from 'components/AppNavigation/AppNavigation'
 
 const SignUpForServices = () => {
     const navigation = useNavigation()
@@ -13,7 +14,7 @@ const SignUpForServices = () => {
             >
                 <Button
                     title="Записаться"
-                    onPress={() => navigation.navigate("SigningForServices")}
+                    onPress={() => navigation.navigate(Screen.SigningForServices)}
                 />
             </View>
             <Text

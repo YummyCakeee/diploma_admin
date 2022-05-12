@@ -21,6 +21,7 @@ import ModalWindow from "components/Elements/ModalWindow/ModalWindow"
 import Button from "components/Elements/Button/Button"
 import { useNavigation } from "@react-navigation/native"
 import { Screen } from "components/AppNavigation/AppNavigation"
+import { createAppointmentIdEndpoint } from "utils/apiHelpers/endpointsGenerator"
 
 const ServiceRecordsContainer = () => {
 
@@ -87,7 +88,20 @@ const ServiceRecordsContainer = () => {
     }
 
     const onRemoveNodeConfirm = () => {
-        console.log('Удоляемс')
+        axiosAPI2.delete(createAppointmentIdEndpoint(orders[selectedOrderIndex].id), {
+            headers: createAuthorizationHeader(token),
+        }).then(res => {
+            if (res.data.success) {
+                setIsShowModal(false)
+                const newOrders = orders.filter((el, i) => selectedOrderIndex !== i)
+                setOrders(newOrders)
+            }
+            else {
+                Toast.show("Не удалось отменить запись")
+            }
+        }).catch(err => {
+            Toast.show("Что-то пошло не так")
+        })
     }
 
     const onGoToMainScreenButtonPress = () => {

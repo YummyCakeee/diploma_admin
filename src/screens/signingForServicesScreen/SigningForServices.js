@@ -2,7 +2,7 @@ import React from "react";
 import SigningForServicesContainer from "containers/SigningForServicesContainer";
 
 
-const SigningForServices = ({navigation}) => {
+const SigningForServices = () => {
     return (
         <SigningForServicesContainer/>
     )

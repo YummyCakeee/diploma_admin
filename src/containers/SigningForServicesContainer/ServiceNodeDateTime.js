@@ -8,8 +8,8 @@ import { TouchableOpacity } from "react-native-gesture-handler"
 import { dateToDayMonthYearFormatter } from "utils/formatters"
 import { axiosAPI2 } from "utils/axios"
 import {
-    getMastersWorkTimeEndpoint,
-    getServicesAvailableTimeEndpoint
+    createMastersWorkTimeEndpoint,
+    createServicesAvailableTimeEndpoint
 } from "utils/apiHelpers/endpointsGenerator"
 import { useSelector } from "react-redux"
 import Toast from 'react-native-simple-toast'
@@ -42,7 +42,7 @@ const ServiceNodeDateTime = ({
         setDates([])
         setSelectedDate(null)
         setDatesLoadingStatus(loadableStatus.LOADING)
-        axiosAPI2.get(getMastersWorkTimeEndpoint(selectedMaster.id),
+        axiosAPI2.get(createMastersWorkTimeEndpoint(selectedMaster.id),
             {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -72,14 +72,15 @@ const ServiceNodeDateTime = ({
     const getTimes = () => {
         setTimes([])
         setTimesLoadingStatus(loadableStatus.LOADING)
-        axiosAPI2.get(getServicesAvailableTimeEndpoint(selectedService.id),
+        axiosAPI2.get(createServicesAvailableTimeEndpoint(selectedService.id),
             {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 },
                 params: {
                     master_id: selectedMaster.id,
-                    start_date: selectedDate
+                    start_date: selectedDate,
+                    end_date: selectedDate
                 }
             })
             .then(res => {

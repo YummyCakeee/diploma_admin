@@ -1,17 +1,30 @@
-import React, { useState, useRef, useEffect } from "react";
-import { StyleSheet, View, ScrollView, Animated } from "react-native";
+import React, { useState, useRef, useEffect, createRef } from "react";
+import { StyleSheet, View, ScrollView, Animated, NativeSyntheticEvent, NativeScrollEvent, StyleProp, ViewStyle } from "react-native";
 import ServiceNode from "./ServiceNode";
 import LinearGradient from "react-native-linear-gradient";
+import { serviceNodeType } from "./types";
 
-const ServiceNodeList = ({services, setServices}) => {
+type servicesNodeListProps = {
+    services: serviceNodeType[],
+    onRemoveNodePress: (index: number) => void,
+    onNodePress: (index: number) => void,
+    style?: StyleProp<ViewStyle>,
+}
+
+const ServiceNodeList: React.FC<servicesNodeListProps> = ({
+    services,
+    onRemoveNodePress,
+    onNodePress,
+    style
+}) => {
 
     const listBottomOpacity = useRef(new Animated.Value(0)).current
     const listTopOpacity = useRef(new Animated.Value(0)).current
-    const scrollRef = useRef(null)
+    const scrollRef = useRef<ScrollView>(null)
     const [nodeHeight, setNodeHeight] = useState(0)
 
     useEffect(() => {
-        if (services.length * nodeHeight < 300) {
+        if (services?.length * nodeHeight < 300) {
             Animated.timing(
                 listBottomOpacity,
                 {
@@ -23,9 +36,9 @@ const ServiceNodeList = ({services, setServices}) => {
         if (scrollRef?.current) {
             scrollRef.current.scrollToEnd()
         }
-    }, [services.length])
+    }, [services])
 
-    const onServicesListScroll = (event) => {
+    const onServicesListScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
         const scrollHeight = event.nativeEvent.contentSize.height
         const scrollPos = event.nativeEvent.contentOffset.y
         const nodeHeight = scrollHeight / services.length
@@ -49,14 +62,12 @@ const ServiceNodeList = ({services, setServices}) => {
                 useNativeDriver: true
             }).start()
     }
-
-    const onRemoveNode = (index) => {
-        const newServices = services.filter((el, i) => index !== i)
-        setServices(newServices)
-    }
     return (
         <View
-            style={styles.chosenServicesListContainer}
+            style={[
+                styles.chosenServicesListContainer,
+                style
+            ]}
         >
             <Animated.View
                 style={{ opacity: listTopOpacity, position: "relative" }}
@@ -69,23 +80,44 @@ const ServiceNodeList = ({services, setServices}) => {
                     style={styles.listTop}
                 />
             </Animated.View>
+            <LinearGradient 
+                colors={[
+                    'rgba(150, 150, 150, 0.0)',
+                    'rgba(150, 150, 150, 1.0)',
+                    'rgba(150, 150, 150, 0.0)'
+                ]}
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 0}}
+                style={styles.listBorder}
+            />
             <ScrollView
                 ref={scrollRef}
                 nestedScrollEnabled
                 onScroll={onServicesListScroll}
                 style={styles.chosenServicesList}
             >
-                {services.map((el, index) => (
+                {services?.map((el, index) => (
                     <ServiceNode
                         key={index}
                         {...{
                             node: el,
                             index,
-                            onRemoveNode,
+                            onRemoveNodePress,
+                            onNodePress
                         }}
                     />
                 ))}
             </ScrollView>
+            <LinearGradient 
+                colors={[
+                    'rgba(150, 150, 150, 0.0)',
+                    'rgba(150, 150, 150, 1.0)',
+                    'rgba(150, 150, 150, 0.0)'
+                ]}
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 0}}
+                style={styles.listBorder}
+            />
             <Animated.View
                 style={{ opacity: listBottomOpacity, position: "relative" }}
             >
@@ -105,7 +137,6 @@ const styles = StyleSheet.create({
     chosenServicesListContainer: {
     },
     chosenServicesList: {
-        maxHeight: 250,
         paddingHorizontal: 4,
     },
     listTop: {
@@ -122,6 +153,10 @@ const styles = StyleSheet.create({
         bottom: 0,
         borderBottomLeftRadius: 5,
         borderBottomRightRadius: 5,
+    },
+    listBorder: {
+        height: 1,
+        width: '100%'
     }
 })
 

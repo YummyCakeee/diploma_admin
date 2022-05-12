@@ -1,7 +1,7 @@
 import React from 'react'
 import SettingsContainer from '../../containers/SettingsContainer/index'
 
-const Settings = ({ navigation }) => {
+const Settings = () => {
     return (
         <SettingsContainer/>
     )

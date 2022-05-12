@@ -41,6 +41,7 @@ const Root = () => {
         screenOptions={{
           headerShown: false
         }}
+        initialRouteName={Screen.Registration}
       >
         <Stack.Screen
             name={Screen.Initialization}

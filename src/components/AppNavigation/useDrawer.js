@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { HomeIcon, SettingsIcon, ScissorsIcon, TalkBubblesIcon } from "../Elements/Icons/Index";
+import { HomeIcon, SettingsIcon, ScissorsIcon, TalkBubblesIcon, ListIcon } from "../Elements/Icons/Index";
 import { Screen } from "./AppNavigation";
 
 const useDrawer = () => {
@@ -18,7 +18,7 @@ const useDrawer = () => {
         },
         {
             label: 'Мои записи',
-            icon: () => ScissorsIcon({color: '#fff'}),
+            icon: () => ListIcon({color: '#fff'}),
             screen: Screen.ServiceRecords,
             section: 'top',
         },

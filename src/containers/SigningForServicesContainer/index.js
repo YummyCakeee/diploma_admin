@@ -5,7 +5,7 @@ import globalStyles from "global/styles/styles";
 import Button from "components/Elements/Button/Button";
 import { axiosAPI, axiosAPI2 } from "utils/axios";
 import axios from "axios";
-import ServiceNodeList from "./ServiceNodeList";
+import ServiceNodeList from "../../components/ServiceNodeList/ServiceNodeList";
 import AddServiceNode from "./AddServiceNode";
 import SectionSeparator from "components/Elements/SectionSeparator/SectionSeparator";
 import {
@@ -21,32 +21,29 @@ import { useNavigation } from "@react-navigation/native";
 import { toCanonicalDateFormatter } from "utils/formatters";
 import Toast from 'react-native-simple-toast'
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator";
+import { Screen } from "components/AppNavigation/AppNavigation";
 
 const SigningForServicesContainer = () => {
     const [services, setServices] = useState([])
     const [masters, setMasters] = useState([])
     const [orderServices, setOrderServices] = useState([])
     const [loadingStatus, setLoadingStatus] = useState(loadableStatus.LOADING)
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const navigation = useNavigation()
-
     const token = useSelector(state => state.user.authToken)
     useEffect(() => {
         getMastersAndServices()
     }, [])
-
     const getMastersAndServices = async () => {
         setLoadingStatus(loadableStatus.LOADING)
         await axios.all(
             [
                 axiosAPI2.get(ENDPOINT_ALL_SERVICES, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    headers: createAuthorizationHeader(token)
                 }),
                 axiosAPI2.get(ENDPOINT_ALL_MASTERS, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    headers: createAuthorizationHeader(token)
                 })
             ]
         ).then(axios.spread((servicesRes, mastersRes) => {
@@ -55,7 +52,10 @@ const SigningForServicesContainer = () => {
             if (mastersData.length === 0 || servicesData.length === 0)
                 return
             mastersData.forEach(el => {
-                el.name = el.fio.firstName
+                el.name = el.fio.first_name
+                el.surname = el.fio.second_name
+                el.patronymic = el.fio.third_mame
+                delete el.fio
                 if (el.services) {
                     el.servicesFormatted = servicesData.
                         filter(a => el.services.find(b => b === a.id)).map(c => c.name).join(', ')
@@ -72,6 +72,11 @@ const SigningForServicesContainer = () => {
         })).catch(err => {
             setLoadingStatus(loadableStatus.FAIL)
         })
+    }
+
+    const onRemoveNode = (index) => {
+        const newServices = orderServices.filter((el, i) => index !== i)
+        setOrderServices(newServices)
     }
 
     const onAddService = ({
@@ -140,11 +145,12 @@ const SigningForServicesContainer = () => {
         return true
     }
 
-    const onSubmitServices = () => {
+    const onSubmitServices = async () => {
+        setIsSubmitting(true)
         const appointments = []
         orderServices.forEach(el => {
             const appointment = {
-                date: '2022-05-02T09:00:00Z',
+                date: toCanonicalDateFormatter(el.date, el.time),
                 master_id: el.master.id,
                 service_id: el.service.id
             }
@@ -153,7 +159,7 @@ const SigningForServicesContainer = () => {
         const data = {
             appointments
         }
-        axiosAPI2.post(
+        await axiosAPI2.post(
             ENDPOINT_ORDERS,
             data,
             {
@@ -169,10 +175,11 @@ const SigningForServicesContainer = () => {
             }).catch(err => {
                 Toast.show("Произошла ошибка при отправке запроса")
             })
+        setIsSubmitting(false)
     }
 
     const onGoToMainScreenButtonPress = () => {
-        navigation.navigate('Home')
+        navigation.navigate(Screen.Home)
     }
 
     return (
@@ -263,7 +270,8 @@ const SigningForServicesContainer = () => {
                     <ServiceNodeList
                         {...{
                             services: orderServices,
-                            setServices: setOrderServices
+                            onRemoveNodePress: onRemoveNode,
+                            style: styles.chosenServicesContainer
                         }}
                     />
                     <AddServiceNode
@@ -281,7 +289,7 @@ const SigningForServicesContainer = () => {
                             title="Подтвердить услуги"
                             size="large"
                             onPress={onSubmitServices}
-                            disabled={!orderServices.length}
+                            disabled={!orderServices.length && !isSubmitting}
                             style={[
                                 globalStyles.centeredElement,
                                 styles.confirmOrderButton
@@ -300,6 +308,9 @@ const styles = StyleSheet.create({
     },
     choosenServicesTitle: {
         marginBottom: 10,
+    },
+    chosenServicesContainer: {
+        maxHeight: 250,
     },
     confirmOrderButtonContainer: {
         marginTop: 20

@@ -15,7 +15,8 @@ const ModalWindow = ({
     isShowing,
     setIshowing = () => { },
     closeButton = true,
-    closeOnOutterClick = true
+    closeOnOutterClick = true,
+    style,
 }) => {
 
     const modalWindowSize = useRef(new Animated.Value(0)).current
@@ -54,8 +55,9 @@ const ModalWindow = ({
                             styles.modalContainer,
                             {
                                 maxHeight: modalWindowSize,
-                                maxWidth: modalWindowSize
-                            }
+                                maxWidth: modalWindowSize,
+                            },
+                            style
                         ]}
                     >
                         <View
@@ -98,6 +100,7 @@ const styles = StyleSheet.create({
     },
     modalContainer: {
         margin: 20,
+        paddingVertical: 10,
         borderRadius: 20,
         borderWidth: 1,
         borderColor: Color.Black,
@@ -110,8 +113,7 @@ const styles = StyleSheet.create({
     },
     closeButtonContainer: {
         alignItems: 'flex-end',
-        paddingRight: 10,
-        paddingTop: 10
+        marginRight: 10,
     }
 })
 

@@ -1,7 +1,11 @@
 import globalStyles from "global/styles/styles";
 import React, { useRef, useState, useEffect, createRef } from "react";
-import { StyleSheet, TextInput, View, Text } from "react-native";
+import { StyleSheet, TextInput, View, Text, NativeModules } from "react-native";
 import AnimatedFieldError from 'components/Elements/AnimatedFieldError/AnimatedFieldError'
+import axiosAPI from 'utils/axios'
+import { ORGANIZATION_ID, USER_TYPE } from 'constants/application'
+import { simplePhoneNumberFormatter } from "utils/formatters";
+import Toast from 'react-native-simple-toast'
 
 type codeInputFieldProps = {
     value: string,
@@ -9,7 +13,8 @@ type codeInputFieldProps = {
     length: number,
     error: string,
     startRemainingTime: number,
-    onCodeResendRequest: () => void,
+    phone: string,
+    endpoint: string,
     style?: {}
 }
 
@@ -19,7 +24,8 @@ const CodeInputField: React.FC<codeInputFieldProps> = ({
     length = 4,
     error = '',
     startRemainingTime = 90,
-    onCodeResendRequest = () => {},
+    phone = '',
+    endpoint = '',
     style,
     ...props
 }) => {
@@ -53,6 +59,27 @@ const CodeInputField: React.FC<codeInputFieldProps> = ({
     useEffect(() => {
         setResendCodeTimeLeft(startRemainingTime)
     }, [startRemainingTime])
+
+    const onCodeResendRequest = async () => {
+        const data = {
+            action: "request",
+            org: ORGANIZATION_ID,
+            phone: simplePhoneNumberFormatter(phone),
+            userType: USER_TYPE,
+            fingerprint: NativeModules.PlatformConstants.Fingerprint
+        }
+        await axiosAPI.post(endpoint, data)
+            .then(res => {
+                if (res.data?.success) {
+                    setResendCodeTimeLeft(res.data.data.remaining_time)
+                } else if (!res.data?.success) {
+                    Toast.show(`Ошибка: ${res.data.message}`)
+                }
+            })
+            .catch(error => {
+                Toast.show('Произошла ошибка')
+            })
+    }
 
     const onChangeText = (value: string, index: number) => {
         const vals = values
@@ -95,7 +122,6 @@ const CodeInputField: React.FC<codeInputFieldProps> = ({
                     <TextInput
                         key={index}
                         ref={el}
-                        style={styles.inputFieldSection}
                         maxLength={1}
                         value={value.charAt(index)}
                         onFocus={() => onFocus(value)}
@@ -103,6 +129,10 @@ const CodeInputField: React.FC<codeInputFieldProps> = ({
                             (value) => onChangeText(value, index)
                         }
                         keyboardType='decimal-pad'
+                        style={[
+                            styles.inputFieldSection,
+                            style]
+                        }
                     />))
                 }
             </View>
@@ -117,7 +147,8 @@ const CodeInputField: React.FC<codeInputFieldProps> = ({
                     style={[
                         globalStyles.text,
                         globalStyles.centeredElement,
-                        styles.resendCodeText
+                        styles.resendCodeText,
+                        style
                     ]}
                     onPress={onCodeResendRequest}
                 >{resendCodeTimeLeft !== 0 ?

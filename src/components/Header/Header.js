@@ -45,8 +45,9 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 24,
-        fontWeight: '700',
+        fontWeight: '400',
         color: '#fff',
+        fontFamily: "Courgette-Regular"
     },
     hamburger: {
         position: 'absolute',

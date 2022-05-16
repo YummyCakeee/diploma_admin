@@ -52,9 +52,9 @@ const SigningForServicesContainer = () => {
             if (mastersData.length === 0 || servicesData.length === 0)
                 return
             mastersData.forEach(el => {
-                el.name = el.fio.first_name
-                el.surname = el.fio.second_name
-                el.patronymic = el.fio.third_mame
+                el.name = el.first_name
+                el.surname = el.second_name
+                el.patronymic = el.third_mame
                 delete el.fio
                 if (el.services) {
                     el.servicesFormatted = servicesData.

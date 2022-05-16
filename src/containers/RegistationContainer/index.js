@@ -12,22 +12,6 @@ export const AUTH_TYPE = 'auth_type'
 export const REG_TYPE = 'reg_type'
 
 const RegistationContainer = () => {
-    useEffect(()=> {
-        const getTokens = async () => {
-
-            const authToken = await AsyncStorage.getItem('authToken')
-            const refreshToken = await AsyncStorage.getItem('refreshToken')
-            if (authToken && refreshToken) {
-                const userData = {
-                    authToken,
-                    refreshToken
-                }
-                store.dispatch(updateUser(userData))
-                onAuthSuccess()
-            }
-        }
-        getTokens()
-    }, [])
 
     const [signType, setSignType] = useState(AUTH_TYPE)
     const navigation = useNavigation()
@@ -95,7 +79,8 @@ const RegistationContainer = () => {
 const styles = StyleSheet.create({
     mainTitle: {
         textAlign: "center",
-        marginTop: 70
+        marginTop: 70,
+        position: "absolute"
     },
     mainContainer: {
         display: "flex",

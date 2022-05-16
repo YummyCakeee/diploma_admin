@@ -3,7 +3,7 @@ import userType from "store/types/user"
 import * as actionTypes from "store/constants/user"
 import produce from "immer"
 
-const initialState: userType = {
+const userInitialState: userType = {
     authToken: '',
     refreshToken: '',
     surname: '',
@@ -11,11 +11,10 @@ const initialState: userType = {
     patronymic: '',
     phone: '',
     email: '',
-    token: ''
 }
 
 const userReducer: Reducer<userType> = (
-    state: userType = initialState,
+    state: userType = userInitialState,
     action: AnyAction
 ) => {
     return produce(state, (draft) => {
@@ -24,6 +23,8 @@ const userReducer: Reducer<userType> = (
                 return { ...draft, ...action.payload }
             case actionTypes.USER_FULL_UPDATE:
                 return action.payload
+            case actionTypes.USER_CLEAR:
+                return userInitialState
             default:
                 return state
         }

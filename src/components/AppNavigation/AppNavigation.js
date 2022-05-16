@@ -41,7 +41,7 @@ const Root = () => {
         screenOptions={{
           headerShown: false
         }}
-        initialRouteName={Screen.Registration}
+        initialRouteName={Screen.Initialization}
       >
         <Stack.Screen
             name={Screen.Initialization}
@@ -69,7 +69,7 @@ const AppNavigation = () => {
       screenOptions={{
         headerShown: false,
         drawerStyle: globalStyles.drawerDark,
-        unmountOnBlur: true
+        unmountOnBlur: true,
       }}
       initialRouteName={Screen.Home}
       drawerContent={(props) =>
@@ -126,7 +126,9 @@ const DrawerContent = ({
           color={'rgb(30, 30, 30)'}
         />
       </TouchableOpacity>
-      <DrawerContentScrollView {...props}>
+      <DrawerContentScrollView 
+        {...props}
+      >
         {drawerItems.map((el, index) => (
           <DrawerItem
             key={index}
@@ -143,7 +145,7 @@ const DrawerContent = ({
             onPress={() => onItemPress(el)}
             style={styles.drawerItem}
             activeBackgroundColor={'rgba(120, 220, 250, 0.7)'}
-            inactiveBackgroundColor={'rgba(150, 150, 150, 0.3)'}
+            inactiveBackgroundColor={'rgba(150, 170, 180, 0.3)'}
             focused={props.state.index === index}
           />
         ))}
@@ -153,7 +155,12 @@ const DrawerContent = ({
 }
 
 const styles = StyleSheet.create({
+  drawer: {
+    backgroundColor: 'rgba(50, 90, 100, 0.1)',
+  },
   drawerItem: {
+    borderRadius: 15,
+    paddingHorizontal: 5,
   },
   hamburgerIcon: {
     marginTop: 23,

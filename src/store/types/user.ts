@@ -6,7 +6,6 @@ type userType = {
     patronymic: string,
     phone: string,
     email: string,
-    token: string,
 }
 
 export default userType

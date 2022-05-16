@@ -51,9 +51,9 @@ const ServiceRecordsContainer = () => {
                         ordersInfo.forEach(el => {
                             const master = {
                                 id: el.master.id,
-                                name: el.master.fio.first_name,
-                                surname: el.master.fio.second_name,
-                                patronymic: el.master.fio.third_name
+                                name: el.master.first_name,
+                                surname: el.master.second_name,
+                                patronymic: el.master.third_name
                             }
                             const service = el.service
                             const [date, time] = el.date

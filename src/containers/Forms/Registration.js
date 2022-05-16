@@ -5,15 +5,17 @@ import Button from "components/Elements/Button/Button";
 import { Formik, Field } from "formik";
 import FormFieldInput from "containers/Forms/FormFieldInput";
 import FormCodeFieldInput from "containers/Forms/FormCodeFieldInput";
-import axiosAPI from "utils/axios";
+import axiosAPI, { axiosAPI2 } from "utils/axios";
 import { phoneNumberFormatter, simplePhoneNumberFormatter } from "utils/formatters";
 import { passwordValidator, phoneNumberValidator, smsCodeValidator } from "utils/validators";
 import { ORGANIZATION_ID, USER_TYPE } from "constants/application";
-import { ENDPOINT_MAIN_REG } from "constants/endpoints";
+import { ENDPOINT_MAIN_REG, ENDPOINT_USER } from "constants/endpoints";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "store/actions/userSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from 'react-native-simple-toast'
+import { Color } from "global/styles/constants";
+import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator";
 
 const Registration = ({
     onRegSuccess = () => { },
@@ -23,7 +25,6 @@ const Registration = ({
     const passwordFieldHeight = useRef(new Animated.Value(0)).current
     const [sendCodeRemainingTime, setSendCodeRemainingTime] = useState(90)
     const dispatch = useDispatch()
-    const state = useSelector(state => state)
     
     useEffect(() => {
         Animated.timing(passwordFieldHeight,
@@ -35,7 +36,7 @@ const Registration = ({
             }).start()
     }, [])
 
-    const onSubmit = (values) => {
+    const onSubmit = async (values) => {
         if (stage === 0) {
             const data = {
                 action: "request",
@@ -45,17 +46,17 @@ const Registration = ({
                 password: values.password,
                 userType: USER_TYPE
             }
-            return axiosAPI.post(ENDPOINT_MAIN_REG, data)
+            return await axiosAPI.post(ENDPOINT_MAIN_REG, data)
                 .then(res => {
                     if (res.data?.success){
-                        setSendCodeRemainingTime(res.data.data.remainingTime)
+                        setSendCodeRemainingTime(res.data.data.remaining_time)
                         setStage(1)
                     } else if (!res.data?.success) {
                         Toast.show(`Ошибка: ${res.data.message}`)
                     }
                 })
                 .catch(error => {
-                    Toast.show(`Ошибка: ${error.response.data.message}`)
+                    Toast.show("Произошла ошибка при запросе")
                 })
         }
         if (stage === 1) {
@@ -68,46 +69,46 @@ const Registration = ({
                 code: Number(values.code),
                 userType: USER_TYPE,
             }
-            return axiosAPI.post(ENDPOINT_MAIN_REG, data).then(
-                res => {
+            return await axiosAPI.post(ENDPOINT_MAIN_REG, data).then(
+                async (res) => {
                     if (res.data?.success){
-                        const userData = {
-                            authToken: res.data.data.auth,
-                            refreshToken: res.data.data.refresh
+                        const authToken = res.data.data.auth
+                        const refreshToken = res.data.data.refresh
+                        if (authToken && refreshToken) {
+                            return await updateUserInfo(authToken, refreshToken)
                         }
-                        dispatch(updateUser(userData))
-                        AsyncStorage.setItem('authToken', userData.authToken)
-                        AsyncStorage.setItem('refreshToken', userData.refreshToken)
-                        onRegSuccess()
                     }
                 }).catch(error => {
-                    Toast.show(`Ошибка: ${error.response.data.message}`)
+                    Toast.show("Произошла ошибка при запросе")
                 })
         }
 
     }
 
-    const onCodeResendRequest = async (phone) => {
-        setSendCodeRemainingTime(0)
-        const data = {
-            action: "request",
-            org: ORGANIZATION_ID,
-            fingerprint: NativeModules.PlatformConstants.Fingerprint,
-            phone: simplePhoneNumberFormatter(phone),
-            userType: USER_TYPE
-        }
-        await axiosAPI.post(ENDPOINT_MAIN_REG, data)
-            .then(res => {
-                if (res.data?.success){
-                    setSendCodeRemainingTime(res.data.data.remainingTime)
-                } else if (!res.data?.success) {
-                    Toast.show(res.data.message)
-                }
-            })
-            .catch(error => {
-                Toast.show(error.response.data.message)
-            })
-    }
+    const updateUserInfo = async (authToken, refreshToken) =>
+    await axiosAPI2.get(ENDPOINT_USER,
+        {
+            headers: createAuthorizationHeader(authToken)
+        }).then(res => {
+            const data = res.data.data
+            const userData = {
+                authToken,
+                refreshToken,
+                name: data.first_name,
+                surname: data.second_name,
+                patronymic: data.third_name,
+                phone: data.phone,
+                email: data.email
+            }
+            console.log(userData)
+            dispatch(updateUser(userData))
+            AsyncStorage.setItem('authToken', userData.authToken)
+            AsyncStorage.setItem('refreshToken', userData.refreshToken)
+            onRegSuccess()
+        }).catch(err => {
+            Toast.show("Произошла ошибка при обновлении данных пользователя")
+            setStage(0)
+        })
 
     const onToggleSignTypePreCallback = () => {
         Animated.timing(passwordFieldHeight,
@@ -155,6 +156,7 @@ const Registration = ({
                                             label="Пароль:"
                                             component={FormFieldInput}
                                             validate={passwordValidator}
+                                            placeholder="Придумайте пароль"
                                             secureTextEntry
                                         />
                                     </Animated.View>
@@ -182,7 +184,8 @@ const Registration = ({
                                         component={FormCodeFieldInput}
                                         validate={smsCodeValidator}
                                         startRemainingTime={sendCodeRemainingTime}
-                                        onCodeResendRequest={() => onCodeResendRequest(values.phone)}
+                                        phone={values.phone}
+                                        endpoint={ENDPOINT_MAIN_REG}
                                     />
                                 </>
                             )}
@@ -245,7 +248,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     enterCodeTextPhone: {
-        color: '#1B70E0'
+        color: Color.SoftBlue
     }
 })
 

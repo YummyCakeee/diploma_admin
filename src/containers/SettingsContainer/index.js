@@ -1,93 +1,154 @@
 import React, { useState } from 'react'
 import ScreenTemplate from 'components/ScreenTemplate/ScreenTemplate'
-import InputField from 'components/Elements/InputField/InputField'
-import { StyleSheet, Text, View, ScrollView } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import globalStyles from 'global/styles/styles'
 import Button from 'components/Elements/Button/Button'
 import SettingsSection from 'components/Elements/SettingsSection/SettingsSection'
-import Combobox from 'components/Elements/Combobox/Combobox'
 import useSettings from './useSettings'
-import { useNavigation } from '@react-navigation/core'
-import { phoneNumberFormatter } from 'utils/formatters'
+import { nameFormatter, phoneNumberFormatter } from 'utils/formatters'
+import { Formik, Field } from 'formik'
+import FormFieldInput from 'containers/Forms/FormFieldInput'
+import { emailValidator, nameValidator, passwordValidator, patronymicValidator, phoneNumberValidator, surnameValidator } from 'utils/validators'
+import ModalWindow from 'components/Elements/ModalWindow/ModalWindow'
+import FormCodeFieldInput from 'containers/Forms/FormCodeFieldInput'
+import { Color } from 'global/styles/constants'
+import { ENDPOINT_USER } from 'constants/endpoints'
 
 const SettingsContainer = () => {
-    const navigation = useNavigation()
     const {
-        name,
-        setName,
-        surname,
-        setSurname,
-        patronymic,
-        setPatronymic,
-        phone,
-        setPhone,
-        email,
-        setEmail,
-        masters,
-        personalMaster,
-        setPersonalMaster,
+        initialValues,
+        sendCodeRemainingTime,
+        isShowModal,
+        setIsShowModal,
         onSignOut,
-        onSaveInfo,
+        onSubmit,
     } = useSettings()
     return (
         <ScreenTemplate>
             <Text style={globalStyles.page_title}>Настройки</Text>
-                <SettingsSection
-                    title="Личные данные">
-                    <InputField
-                        label="Фамилия:"
-                        value={surname}
-                        onChange={setSurname}
-                    />
-                    <InputField
-                        label="Имя:"
-                        value={name}
-                        onChange={setName}
-                    />
-                    <InputField
-                        label="Отчество:"
-                        value={patronymic}
-                        onChange={setPatronymic}
-                    />
-                </SettingsSection>
-                <SettingsSection
-                    title="Способы связи">
-                    <InputField
-                        label="Телефон:"
-                        value={phone}
-                        onChange={setPhone}
-                        mask={phoneNumberFormatter}
-                    />
-                    <InputField
-                        label="Почта:"
-                        value={email}
-                        onChange={setEmail}
-                    />
-                </SettingsSection>
-                <SettingsSection
-                    title="Перcональные предпочтения"
-                >
-                    <Combobox
-                        label="Мастер:"
-                        items={masters}
-                        initialSelectedItem={personalMaster}
-                        onSelect={(el) => setPersonalMaster(el)}
-                    />
-                </SettingsSection>
-                <View>
-                    <Text
-                        style={globalStyles.text}
-                        onPress={onSignOut}
-                    >
-                        Выйти из аккаунта
-                        </Text>
-                </View>
-                <View style={[styles.button, globalStyles.centeredElement]}>
-                    <Button
-                        title="Сохранить"
-                        onPress={onSaveInfo}
-                    />
-                </View>
+            <Formik
+                enableReinitialize
+                initialValues={{
+                    name: initialValues.name,
+                    surname: initialValues.surname,
+                    patronymic: initialValues.patronymic,
+                    phone: initialValues.phone,
+                    email: initialValues.email,
+                    password: initialValues.password,
+                    code: ''
+                }}
+                onSubmit={onSubmit}
+            >
+                {({ handleSubmit, values, isValid }) => (
+                    <>
+                        <ModalWindow
+                            isShowing={isShowModal}
+                            setIshowing={setIsShowModal}
+                        >
+                            <Text
+                                style={[
+                                    globalStyles.text,
+                                    globalStyles.centeredElement,
+                                    styles.enterCodeText
+                                ]}
+                            >
+                                Для обновления некоторых полей{'\n'}
+                                требуется ввести код из СМС,
+                                отправленного на номер{'\n'}
+                                <Text
+                                    style={styles.enterCodeTextPhone}
+                                >
+                                    {values.phone}
+                                </Text>
+                            </Text>
+                            <Field
+                                name="code"
+                                component={FormCodeFieldInput}
+                                startRemainingTime={sendCodeRemainingTime}
+                                endpoint={ENDPOINT_USER}
+                                style={{color: Color.Black, borderColor: Color.Black}}
+                            />
+                            <View
+                                style={globalStyles.centeredElement}
+                            >
+                            <Button 
+                                title='Отправить'
+                                onPress={handleSubmit}
+                                disabled={values.code.length !== 4}
+                            />
+                            </View>
+                        </ModalWindow>
+                        <SettingsSection
+                            title="Личные данные">
+                            <Field
+                                name="name"
+                                component={FormFieldInput}
+                                label="Имя:"
+                                validate={nameValidator}
+                                mask={nameFormatter}
+                            />
+                            <Field
+                                name="surname"
+                                component={FormFieldInput}
+                                label="Фамилия:"
+                                validate={value => surnameValidator(value, true)}
+                                mask={nameFormatter}
+                            />
+                            <Field
+                                name="patronymic"
+                                component={FormFieldInput}
+                                label="Отчество:"
+                                validate={value => patronymicValidator(value, true)}
+                                mask={nameFormatter}
+                            />
+                        </SettingsSection>
+                        <SettingsSection
+                            title="Способы связи">
+                            <Field
+                                name="phone"
+                                component={FormFieldInput}
+                                label="Телефон:"
+                                mask={phoneNumberFormatter}
+                                validate={phoneNumberValidator}
+                            />
+                            <Field
+                                name="email"
+                                component={FormFieldInput}
+                                label="Почта:"
+                                placeholder="email@mail.com"
+                                validate={value => emailValidator(value, true)}
+                            />
+                        </SettingsSection>
+                        <SettingsSection
+                            title="Изменение пароля"
+                        >
+                            <Field
+                                name="password"
+                                component={FormFieldInput}
+                                label="Пароль:"
+                                placeholder="Новый пароль"
+                                validate={value => passwordValidator(value, true)}
+                            />
+                        </SettingsSection>
+                        <View>
+                            <Text
+                                style={globalStyles.text}
+                                onPress={onSignOut}
+                            >
+                                Выйти из аккаунта
+                            </Text>
+                        </View>
+                        <View
+                            style={globalStyles.centeredElement}
+                        >
+                            <Button
+                                title="Сохранить"
+                                onPress={handleSubmit}
+                                disabled={!isValid}
+                            />
+                        </View>
+                    </>)}
+            </Formik>
         </ScreenTemplate>
     )
 }
@@ -95,6 +156,14 @@ const SettingsContainer = () => {
 const styles = StyleSheet.create({
     button: {
         marginVertical: 20,
+    },
+    enterCodeText: {
+        textAlign: 'center',
+        marginBottom: 10,
+        color: Color.Black
+    },
+    enterCodeTextPhone: {
+        color: Color.SoftBlue
     }
 
 })

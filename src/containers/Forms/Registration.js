@@ -52,7 +52,12 @@ const Registration = ({
                         setSendCodeRemainingTime(res.data.data.remaining_time)
                         setStage(1)
                     } else if (!res.data?.success) {
-                        Toast.show(`Ошибка: ${res.data.message}`)
+                        if (res.data.data.remaining_time) {
+                            Toast.show(`Код уже был отправлен на номер ${values.phone}`)
+                            setSendCodeRemainingTime(res.data.data.remaining_time)
+                            setStage(1)
+                        }
+                        else Toast.show(`Ошибка: ${res.data.data.message}`)
                     }
                 })
                 .catch(error => {
@@ -100,7 +105,6 @@ const Registration = ({
                 phone: data.phone,
                 email: data.email
             }
-            console.log(userData)
             dispatch(updateUser(userData))
             AsyncStorage.setItem('authToken', userData.authToken)
             AsyncStorage.setItem('refreshToken', userData.refreshToken)

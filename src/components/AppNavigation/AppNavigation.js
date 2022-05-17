@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler'
-import React from 'react'
-import { StyleSheet, Text, TouchableOpacity } from 'react-native'
-import { NavigationContainer } from '@react-navigation/native'
+import React, { useEffect } from 'react'
+import { StyleSheet, Text, TouchableOpacity, NativeModules } from 'react-native'
+import { NavigationContainer, useNavigation } from '@react-navigation/native'
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -18,6 +18,14 @@ import Initialization from 'screens/initializationScreen/Initialization'
 import useDrawer from './useDrawer'
 import globalStyles from '../../global/styles/styles'
 import { HamburgerIcon } from '../Elements/Icons/Index'
+import { useSelector } from 'react-redux'
+import { TOKEN_LIFE_TIME } from 'constants/application'
+import { store } from 'store'
+import { updateUser } from 'store/actions/userSlice'
+import axiosAPI from 'utils/axios'
+import { ENDPOINT_TOKENS_UPDATE } from 'constants/endpoints'
+import { ORGANIZATION_ID } from 'constants/application'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const Drawer = createDrawerNavigator()
 const Stack = createStackNavigator();
@@ -30,37 +38,82 @@ export const Screen = {
   SigningForServices: 'SigningForServices',
   ServiceRecords: 'ServiceRecords',
   OnlineChat: 'OnlineChat',
-  Settings:  'Settings'
+  Settings: 'Settings'
 }
 
-const Root = () => {
-  
+const AppNavigation = () => {
+
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false
-        }}
-        initialRouteName={Screen.Initialization}
-      >
-        <Stack.Screen
-            name={Screen.Initialization}
-            component={Initialization}
-        />
-        <Stack.Screen
-          name={Screen.Registration}
-          component={Registation}
-        />
-        <Stack.Screen
-          name={Screen.Feed}
-          component={AppNavigation}
-        />
-      </Stack.Navigator>
+      <NavigationMainContainer />
     </NavigationContainer>
   )
 }
 
-const AppNavigation = () => {
+const NavigationMainContainer = () => {
+
+  const authToken = useSelector(state => state.user.authToken)
+  const refreshToken = useSelector(state => state.user.refreshToken)
+  const navigation = useNavigation()
+
+  useEffect(() => {
+    const updateTimeout = setTimeout(async () => {
+      if (authToken && refreshToken) {
+        const data = {
+          refreshToken,
+          org: ORGANIZATION_ID,
+          fingerprint: NativeModules.PlatformConstants.Fingerprint
+        }
+        await axiosAPI.post(ENDPOINT_TOKENS_UPDATE, data)
+          .then(async (res) => {
+            if (res.data.success) {
+              console.log(res.data.data)
+              const newAuthToken = res.data.data.auth
+              const newRefreshToken = res.data.data.refresh
+              await AsyncStorage.setItem('authToken', newAuthToken)
+              await AsyncStorage.setItem('refreshToken', newRefreshToken)
+              const userData = {
+                authToken: newAuthToken,
+                refreshToken: newRefreshToken,
+              }
+              store.dispatch(updateUser(userData))
+            }
+            else navigation.navigate(Screen.Registration)
+          }).catch(err => {
+            navigation.navigate(Screen.Registration)
+          })
+      }
+    }, TOKEN_LIFE_TIME);
+
+    return () => clearTimeout(updateTimeout)
+  }, [authToken])
+
+
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        unmountOnBlur: true
+      }}
+      initialRouteName={Screen.Initialization}
+    >
+      <Stack.Screen
+        name={Screen.Initialization}
+        component={Initialization}
+      />
+      <Stack.Screen
+        name={Screen.Registration}
+        component={Registation}
+      />
+      <Stack.Screen
+        name={Screen.Feed}
+        component={FeedNavigation}
+      />
+    </Stack.Navigator>
+  )
+}
+
+const FeedNavigation = () => {
   const {
     drawerItems,
   } = useDrawer()
@@ -126,7 +179,7 @@ const DrawerContent = ({
           color={'rgb(30, 30, 30)'}
         />
       </TouchableOpacity>
-      <DrawerContentScrollView 
+      <DrawerContentScrollView
         {...props}
       >
         {drawerItems.map((el, index) => (
@@ -189,4 +242,4 @@ const horizontalAnimation = {
   },
 };
 
-export default Root;
+export default AppNavigation;

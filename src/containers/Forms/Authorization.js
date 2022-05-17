@@ -18,12 +18,15 @@ import {
 import { Formik, Field } from "formik";
 import FormFieldInput from "containers/Forms/FormFieldInput";
 import FormCodeFieldInput from "containers/Forms/FormCodeFieldInput";
-import axiosAPI from "utils/axios";
+import axiosAPI, { axiosAPI2 } from "utils/axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ENDPOINT_MAIN_AUTH } from "constants/endpoints";
+import { ENDPOINT_MAIN_AUTH, ENDPOINT_USER } from "constants/endpoints";
 import { ORGANIZATION_ID, USER_TYPE } from "constants/application";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "store/actions/userSlice";
+import { Color } from "global/styles/constants";
+import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator";
+import { userSelector } from "store/selectors/userSlice";
 
 
 const Authorization = ({
@@ -47,7 +50,7 @@ const Authorization = ({
             }).start()
     }, [])
 
-    const onSubmit = (values) => {
+    const onSubmit = async (values) => {
         if (stage === 0) {
             let data = {
                 org: ORGANIZATION_ID,
@@ -59,20 +62,17 @@ const Authorization = ({
                 data.action = 'password'
                 data.password = values.password
 
-                return axiosAPI.post(ENDPOINT_MAIN_AUTH, data)
-                    .then(res => {
+                return await axiosAPI.post(ENDPOINT_MAIN_AUTH, data)
+                    .then(async (res) => {
                         if (res.data?.success) {
-                            const userData = {
-                                authToken: res.data.data.auth,
-                                refreshToken: res.data.data.refresh
+                            const authToken = res.data.data.auth
+                            const refreshToken = res.data.data.refresh
+                            if (authToken && refreshToken) {
+                                return await updateUserInfo(authToken, refreshToken)
                             }
-                            dispatch(updateUser(userData))
-                            AsyncStorage.setItem('authToken', userData.authToken)
-                            AsyncStorage.setItem('refreshToken', userData.refreshToken)
-                            onAuthSuccess()
                         }
                         else {
-                            Toast.show(`Ошибка: ${res.data.message}`)
+                            Toast.show(`Ошибка: ${res.data.data.message}`)
                         }
                     })
                     .catch(error => {
@@ -81,13 +81,20 @@ const Authorization = ({
             }
 
             data.action = 'request'
-            return axiosAPI.post(ENDPOINT_MAIN_AUTH, data)
+            return await axiosAPI.post(ENDPOINT_MAIN_AUTH, data)
                 .then(res => {
                     if (res.data?.success) {
-                        setSendCodeRemainingTime(res.data.data.remainingTime)
+                        setSendCodeRemainingTime(res.data.data.remaining_time)
                         setStage(1)
                     } else if (!res.data?.success) {
-                        Toast.show(`Ошибка: ${res.data.message}`)
+                        if (res.data.data.remaining_time) {
+                            Toast.show(`Код уже был отправлен на номер ${values.phone}`)
+                            setSendCodeRemainingTime(res.data.data.remaining_time)
+                            setStage(1)
+                        }
+                        else {
+                            Toast.show(`Ошибка: ${res.data.data.message}`)
+                        }
                     }
                 })
                 .catch(error => {
@@ -103,47 +110,47 @@ const Authorization = ({
                 userType: USER_TYPE,
                 fingerprint: NativeModules.PlatformConstants.Fingerprint,
             }
-            return axiosAPI.post(ENDPOINT_MAIN_AUTH, data)
-                .then(res => {
+            return await axiosAPI.post(ENDPOINT_MAIN_AUTH, data)
+                .then(async (res) => {
                     if (res.data?.success) {
-                        const userData = {
-                            authToken: res.data.data.auth,
-                            refreshToken: res.data.data.refresh
+                        const authToken = res.data.data.auth
+                        const refreshToken = res.data.data.refresh
+                        if (authToken && refreshToken) {
+                            return await updateUserInfo(authToken, refreshToken)
                         }
-                        dispatch(updateUser(userData))
-                        AsyncStorage.setItem('authToken', userData.authToken)
-                        AsyncStorage.setItem('refreshToken', userData.refreshToken)
-                        onAuthSuccess()
                     } else if (!res.data?.success) {
                         Toast.show(`Ошибка: ${res.data.message}`)
                     }
                 })
                 .catch(error => {
-                    Toast.show('Ошибка: Не удалось отправить форму')
+                    Toast.show('Ошибка: Не удалось отправить форму')                    
                 })
         }
     }
 
-    const onCodeResendRequest = async (phone) => {
-        const data = {
-            action: "request",
-            org: ORGANIZATION_ID,
-            phone: simplePhoneNumberFormatter(phone),
-            userType: USER_TYPE,
-            fingerprint: NativeModules.PlatformConstants.Fingerprint
-        }
-        await axiosAPI.post(ENDPOINT_MAIN_AUTH, data)
-            .then(res => {
-                if (res.data?.success) {
-                    setSendCodeRemainingTime(res.data.data.remainingTime)
-                } else if (!res.data?.success) {
-                    Toast.show(`Ошибка: ${res.data.message}`)
+    const updateUserInfo = async (authToken, refreshToken) =>
+        await axiosAPI2.get(ENDPOINT_USER,
+            {
+                headers: createAuthorizationHeader(authToken)
+            }).then(res => {
+                const data = res.data.data
+                const userData = {
+                    authToken,
+                    refreshToken,
+                    name: data.first_name,
+                    surname: data.second_name,
+                    patronymic: data.third_name,
+                    phone: data.phone,
+                    email: data.email
                 }
+                dispatch(updateUser(userData))
+                AsyncStorage.setItem('authToken', userData.authToken)
+                AsyncStorage.setItem('refreshToken', userData.refreshToken)
+                onAuthSuccess()
+            }).catch(err => {
+                Toast.show("Произошла ошибка при обновлении данных пользователя")
+                setStage(0)
             })
-            .catch(error => {
-                Toast.show('Ошибка: Произошла ошибка при отправке.')
-            })
-    }
 
     const onToggleSignTypePreCallback = () => {
         Animated.timing(passwordFieldHeight,
@@ -251,7 +258,8 @@ const Authorization = ({
                                         component={FormCodeFieldInput}
                                         validate={smsCodeValidator}
                                         startRemainingTime={sendCodeRemainingTime}
-                                        onCodeResendRequest={() => onCodeResendRequest(values.phone)}
+                                        phone={values.phone}
+                                        endpoint={ENDPOINT_MAIN_AUTH}
                                     />
                                 </>
                             )}
@@ -341,7 +349,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     enterCodeTextPhone: {
-        color: '#1B70E0'
+        color: Color.SoftBlue
     }
 })
 

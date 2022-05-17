@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet } from "react-native";
 import { Color } from "./constants";
 
 const globalStyles = StyleSheet.create({
@@ -6,7 +6,7 @@ const globalStyles = StyleSheet.create({
         position: 'relative',
         backgroundColor: Color.SoftDarkBlue,
         width: '100%',
-        height: Dimensions.get('window').height,
+        flex: 1,
         color: Color.White,
         fontSize: 20,
     },
@@ -54,7 +54,7 @@ const globalStyles = StyleSheet.create({
         marginBottom: 20,
     },
     drawerDark: {
-        backgroundColor: "rgba(50, 50, 60, 0.95)"
+        backgroundColor: "rgba(30, 45, 55, 0.95)"
     },
     centeredElement: {
         alignSelf: "center"

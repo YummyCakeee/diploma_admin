@@ -22,10 +22,6 @@ const InputField: React.FC<inputFieldProps> =
         style,
         ...props
     }) => {
-        const onChangeText = (text: string) => {
-            text = mask(text)
-            onChange(text)
-        }
 
         return (
             <View
@@ -37,7 +33,7 @@ const InputField: React.FC<inputFieldProps> =
                     </Text>
                     <TextInput style={styles.inputText}
                         value={value}
-                        onChangeText={onChangeText}
+                        onChangeText={value => onChange(mask(value))}
                         placeholderTextColor="gray"
                         {...props}
                     />

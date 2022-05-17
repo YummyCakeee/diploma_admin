@@ -30,3 +30,7 @@ export const updateUser = (user: userType) => ({
     type: actionTypes.USER_UPDATE,
     payload: user
 })
+
+export const clearUser = () => ({
+    type: actionTypes.USER_CLEAR
+})

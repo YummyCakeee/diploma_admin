@@ -6,27 +6,29 @@ import { Color } from "global/styles/constants"
 
 const ScreenTemplate = ({ children, style, headerHamburgerIcon, scrollable = true }) => {
     return (
-        <SafeAreaView style={[
-            globalStyles.container,
-            style,
-        ]}>
+        <>
             <StatusBar
-                 backgroundColor={Color.Black}
-                 barStyle='light-content'
+                backgroundColor={Color.Black}
+                barStyle='light-content'
             />
-            <Header {
-                ...{ hamburgerIcon: headerHamburgerIcon }
-            } />
-            <ScrollView
-                scrollEnabled={scrollable}
-            >
-                <View
-                    style={styles.childrenContainer}
+            <SafeAreaView style={[
+                globalStyles.container,
+                style,
+            ]}>
+                <Header {
+                    ...{ hamburgerIcon: headerHamburgerIcon }
+                } />
+                <ScrollView
+                    scrollEnabled={scrollable}
                 >
-                {children}
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+                    <View
+                        style={styles.childrenContainer}
+                    >
+                        {children}
+                    </View>
+                </ScrollView>
+            </SafeAreaView>
+        </>
     )
 }
 

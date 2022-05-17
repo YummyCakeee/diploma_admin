@@ -89,7 +89,6 @@ const useSettings = () => {
                         }
                     }
                 }).catch(err => {
-                    console.log(err)
                     Toast.show("Произошла ошибка при обновлении данных")
                 })
         }

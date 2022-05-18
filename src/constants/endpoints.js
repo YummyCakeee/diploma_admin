@@ -7,3 +7,5 @@ export const ENDPOINT_ALL_MASTERS = '/api/users/masters'
 export const ENDPOINT_ORDERS = '/api/orders'
 export const ENDPOINT_APPOINTMENTS = '/api/appointments'
 export const ENDPOINT_TOKENS_UPDATE = '/api/users/auth/refresh'
+
+export const ENDPOINT_CHAT = '/api/chat'

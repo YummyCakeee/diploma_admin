@@ -48,6 +48,7 @@ const useSettings = () => {
             ['third_name', 'patronymic'],
             ['phone', 'phone'],
             ['email', 'email'],
+            ['password', 'password']
         ])
         if (!isShowModal) {
             const data = {}
@@ -106,6 +107,8 @@ const useSettings = () => {
                         res.data.data.fields?.forEach(el => {
                             updatedValues[fieldsMap.get(el)] = values[fieldsMap.get(el)]
                         })
+                        delete updatedValues.password
+                        values.password = ''
                         dispatch(updateUser(updatedValues))
                         Toast.show("Данные обновлены")
                         setIsShowModal(false)

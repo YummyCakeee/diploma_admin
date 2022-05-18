@@ -1,4 +1,5 @@
 type userType = {
+    id: string,
     authToken: string,
     refreshToken: string,
     surname: string,

@@ -67,7 +67,6 @@ const NavigationMainContainer = () => {
         await axiosAPI.post(ENDPOINT_TOKENS_UPDATE, data)
           .then(async (res) => {
             if (res.data.success) {
-              console.log(res.data.data)
               const newAuthToken = res.data.data.auth
               const newRefreshToken = res.data.data.refresh
               await AsyncStorage.setItem('authToken', newAuthToken)

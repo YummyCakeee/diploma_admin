@@ -9,7 +9,7 @@ export const dateTimeSplitter = (value: Date): { date: string, time: string } =>
         }
     }
     return  {
-        date: 'ff',
-        time: 'ff'
+        date: '',
+        time: ''
     }
 }

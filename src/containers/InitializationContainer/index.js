@@ -40,6 +40,7 @@ const InitializationContainer = () => {
                                 const userData = {
                                     authToken,
                                     refreshToken,
+                                    id: data.id,
                                     name: data.first_name,
                                     surname: data.second_name,
                                     patronymic: data.third_name,

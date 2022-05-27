@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react"
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 import { CrossIcon } from "components/Elements/Icons/Index"
 import { serviceNodeType } from "./types"
-import { dateToDayMonthYearFormatter } from "utils/formatters"
+import { dateSwapYearAndMonthFormatter } from "utils/formatters"
 import { Color } from "global/styles/constants"
 
 type serviceNodeProps = {
@@ -123,7 +123,7 @@ const ServiceNode: React.FC<serviceNodeProps> = ({
                         <Text
                             style={globalStyles.text}
                         >
-                            Дата: {dateToDayMonthYearFormatter(node.date)}
+                            Дата: {dateSwapYearAndMonthFormatter(node.date)}
                         </Text>
                         <Text
                             style={globalStyles.text}

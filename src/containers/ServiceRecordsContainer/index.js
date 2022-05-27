@@ -12,7 +12,7 @@ import { ENDPOINT_APPOINTMENTS } from "constants/endpoints"
 import Toast from 'react-native-simple-toast'
 import { useSelector } from "react-redux"
 import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
-import { dateToDayMonthYearFormatter } from "utils/formatters"
+import { dateSwapYearAndMonthFormatter } from "utils/formatters"
 import Loadable, { loadableStatus } from "components/Elements/Loadable/Loadable"
 import { LoadingIcon, ReloadIcon } from "components/Elements/Icons/Index"
 import { Color } from "global/styles/constants"
@@ -21,7 +21,7 @@ import ModalWindow from "components/Elements/ModalWindow/ModalWindow"
 import Button from "components/Elements/Button/Button"
 import { useNavigation } from "@react-navigation/native"
 import { Screen } from "components/AppNavigation/AppNavigation"
-import { createAppointmentIdEndpoint } from "utils/apiHelpers/endpointsGenerator"
+import { createAppointmentIdEndpoint } from "utils/apiHelpers/endpointGenerators"
 
 const ServiceRecordsContainer = () => {
 
@@ -64,7 +64,7 @@ const ServiceRecordsContainer = () => {
                                 orderId: el.order_id,
                                 master,
                                 service,
-                                date: dateToDayMonthYearFormatter(date),
+                                date: dateSwapYearAndMonthFormatter(date),
                                 time
                             })
                         })

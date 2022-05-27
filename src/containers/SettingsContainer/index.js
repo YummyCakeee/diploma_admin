@@ -127,6 +127,7 @@ const SettingsContainer = () => {
                                 component={FormFieldInput}
                                 label="Пароль:"
                                 placeholder="Новый пароль"
+                                secureTextEntry
                                 validate={value => passwordValidator(value, true)}
                             />
                         </SettingsSection>

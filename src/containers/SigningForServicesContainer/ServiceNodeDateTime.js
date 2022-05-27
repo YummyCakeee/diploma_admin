@@ -5,12 +5,12 @@ import globalStyles from "global/styles/styles"
 import React, { useEffect, useState } from "react"
 import { View, Text, StyleSheet } from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler"
-import { dateToDayMonthYearFormatter } from "utils/formatters"
+import { dateSwapYearAndMonthFormatter } from "utils/formatters"
 import { axiosAPI2 } from "utils/axios"
 import {
     createMastersWorkTimeEndpoint,
     createServicesAvailableTimeEndpoint
-} from "utils/apiHelpers/endpointsGenerator"
+} from "utils/apiHelpers/endpointGenerators"
 import { useSelector } from "react-redux"
 import Toast from 'react-native-simple-toast'
 
@@ -59,7 +59,7 @@ const ServiceNodeDateTime = ({
                     const dayOfWeek = daysOfWeek[(new Date(el)).getDay()]
                     return {
                         tag: el,
-                        text: `${dateToDayMonthYearFormatter(el).replace(/^0/, '')} (${dayOfWeek})`
+                        text: `${dateSwapYearAndMonthFormatter(el).replace(/^0/, '')} (${dayOfWeek})`
                     }
                 })
                 setDates(date)

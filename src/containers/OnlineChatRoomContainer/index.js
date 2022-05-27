@@ -21,7 +21,7 @@ import ContextMenu from "components/Elements/ContextMenu/ContextMenu"
 import { useSelector } from "react-redux"
 import { userSelector } from "store/selectors/userSlice"
 import * as messageActions from './chatActions'
-import { dateTimeSeparator } from "utils/separators"
+import { dateTimeSplitter } from "utils/splitters"
 import { dateSwapYearAndMonthFormatter } from "utils/formatters"
 import { useNavigation } from "@react-navigation/native"
 import { Screen } from "components/AppNavigation/AppNavigation"
@@ -292,7 +292,7 @@ const OnlineChatRoomContainer = ({
     }
 
     const addMessageToList = (messageList, message) => {
-        const localeDate = dateSwapYearAndMonthFormatter(dateTimeSeparator(message.date).date)
+        const localeDate = dateSwapYearAndMonthFormatter(dateTimeSplitter(message.date).date)
         const dateListIndex = messageList.
             findIndex(a => a.date === localeDate)
         if (dateListIndex === -1)

@@ -66,7 +66,15 @@ const OnlineChatRoomContainer = ({
         if (route?.params.roomId !== '') {
             setChatRoomId(route.params.roomId)
             setChatName(route.params.chatName)
-            setChatUserList(route.params.chatUserList)
+            const chatUsers = new Map()
+            route.params.chatUserList.forEach(el => {
+                chatUsers.set(el.id, {
+                    id: el.id,
+                    name: el.first_name,
+                    surname: el.second_name,
+                })
+            })
+            setChatUserList(chatUsers)
         }
         else {
             navigation.navigate(Screen.OnlineChatRoomList)

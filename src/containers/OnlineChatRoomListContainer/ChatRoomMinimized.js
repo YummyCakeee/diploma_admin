@@ -16,12 +16,12 @@ import { axiosAPI2 } from "utils/axios"
 const ChatRoomMinimized = ({id = '', userId = ''}) => {
 
     const [chatName, setChatName] = useState(null)
-    const [chatUserList, setChatUserList] = useState(new Map())
+    const [chatUserList, setChatUserList] = useState([])
     const navigation = useNavigation()
     const userInfo = useSelector(userSelector)
 
     const onRoomPress = () => {
-        if (chatName && chatUserList.size)
+        if (chatName && chatUserList.length)
             navigation.navigate(Screen.OnlineChatRoom, { roomId: id, chatName, chatUserList })
     }
 
@@ -30,7 +30,7 @@ const ChatRoomMinimized = ({id = '', userId = ''}) => {
     }, [])
 
     const getChatInfo = async () => {
-            const chatUsers = new Map()
+            const chatUsers = []
             await axiosAPI2.get(ENDPOINT_ADMINS,
                 {
                     headers: createAuthorizationHeader(userInfo.authToken)
@@ -46,13 +46,7 @@ const ChatRoomMinimized = ({id = '', userId = ''}) => {
                         )).join(', ')
                         setChatName(adminNames)
                     }
-                    data.data.forEach(el => {
-                        chatUsers.set(el.id, {
-                            id: el.id,
-                            name: el.first_name,
-                            surname: el.second_name,
-                        })
-                    })
+                    chatUsers.push(...data.data)
                 }
             })
             .catch(err => {
@@ -72,11 +66,7 @@ const ChatRoomMinimized = ({id = '', userId = ''}) => {
                                 'Пользователь'
                         setChatName(userName)
                     }
-                        chatUsers.set(data.data.id, {
-                            id: data.data.id,
-                            name: data.data.first_name,
-                            surname: data.data.second_name,
-                        })
+                    chatUsers.push(data.data)
                     setChatUserList(chatUsers)
                 }
             })

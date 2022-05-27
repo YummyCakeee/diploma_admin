@@ -9,6 +9,7 @@ import {
     Text,
     Animated,
     Easing,
+    StyleProp,
  } from "react-native"
 
 type contextMenuProps = {
@@ -23,7 +24,8 @@ type contextMenuProps = {
 type menuItemType = {
     icon?: React.FC,
     text: string,
-    onPress: () => void
+    onPress: () => void,
+    style: StyleProp<any>
 }
 
 type menuPositionType = {
@@ -90,7 +92,10 @@ const ContextMenu: React.FC<contextMenuProps> = ({
                         {items.map((el, index) => (
                             <View
                                 key={index}
-                                style={styles.menuItem}
+                                style={[
+                                    styles.menuItem,
+                                    el.style
+                                ]}
                             >
                                 <View
                                     style={styles.menuItemIcon}
@@ -98,7 +103,10 @@ const ContextMenu: React.FC<contextMenuProps> = ({
                                     {el.icon}
                                 </View>
                                 <Text
-                                    style={globalStyles.text}
+                                    style={[
+                                        globalStyles.text,
+                                        el.style    
+                                    ]}
                                     onPress={el.onPress || null}
                                 >
                                     {el.text}

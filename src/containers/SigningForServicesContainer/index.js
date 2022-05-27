@@ -9,8 +9,8 @@ import ServiceNodeList from "../../components/ServiceNodeList/ServiceNodeList";
 import AddServiceNode from "./AddServiceNode";
 import SectionSeparator from "components/Elements/SectionSeparator/SectionSeparator";
 import {
-    ENDPOINT_ALL_MASTERS,
-    ENDPOINT_ALL_SERVICES,
+    ENDPOINT_MASTERS,
+    ENDPOINT_SERVICES,
     ENDPOINT_ORDERS
 } from "constants/endpoints";
 import { useSelector } from "react-redux";
@@ -39,10 +39,10 @@ const SigningForServicesContainer = () => {
         setLoadingStatus(loadableStatus.LOADING)
         await axios.all(
             [
-                axiosAPI2.get(ENDPOINT_ALL_SERVICES, {
+                axiosAPI2.get(ENDPOINT_SERVICES, {
                     headers: createAuthorizationHeader(token)
                 }),
-                axiosAPI2.get(ENDPOINT_ALL_MASTERS, {
+                axiosAPI2.get(ENDPOINT_MASTERS, {
                     headers: createAuthorizationHeader(token)
                 })
             ]

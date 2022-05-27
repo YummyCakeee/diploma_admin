@@ -25,7 +25,7 @@ const useDrawer = () => {
         {
             label: 'Онлайн чат',
             icon: () => TalkBubblesIcon({ color: '#fff' }),
-            screen: Screen.OnlineChat,
+            screen: Screen.OnlineChatRoomList,
             section: 'top'
         },
         {

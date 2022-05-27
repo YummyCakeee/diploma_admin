@@ -1,30 +1,38 @@
 import { Color } from "global/styles/constants"
 import globalStyles from "global/styles/styles"
 import React, { useState, useRef, useEffect } from "react"
-import { StyleSheet, View, Text, Dimensions, TouchableOpacity, StyleProp } from "react-native"
+import { StyleSheet, View, Text, TouchableOpacity, StyleProp } from "react-native"
 import LinearGradient from "react-native-linear-gradient"
-import ContextMenu from "components/Elements/ContextMenu/ContextMenu"
+import { ExclamationMarkIcon, SendIcon } from "components/Elements/Icons/Index"
 
 type messageProps = {
+    userName: string,
     text: string,
     date: Date,
-    read: boolean,
+    status: messageStatus,
     fromThisUser: boolean,
     thisUserOnLeft: boolean,
     thisUserMessageStyle: {},
     otherUserMessageStyle: {},
+    showUserName: boolean,
     onPress: (measure: {}) => void
     style?: StyleProp<View>
 }
 
+export enum messageStatus {
+    SENDING, ERROR, UNREAD, READ
+}
+
 const Message: React.FC<messageProps> = ({
+    userName = '',
     text = '',
     date = new Date(),
-    read = false,
+    status = messageStatus.UNREAD,
     fromThisUser = false,
     thisUserOnLeft = false,
     thisUserMessageStyle,
     otherUserMessageStyle,
+    showUserName = true,
     onPress = () => { },
     style
 }) => {
@@ -36,7 +44,7 @@ const Message: React.FC<messageProps> = ({
     }, [date])
 
     const onMessagePress = () => {
-        ref.current?.measure((x, y, w, h, pX, pY) => onPress({x, y, w, h, pX, pY}))
+        ref.current?.measure((x, y, w, h, pX, pY) => onPress({ x, y, w, h, pX, pY }))
     }
 
     return (
@@ -55,26 +63,72 @@ const Message: React.FC<messageProps> = ({
                 style,
             ]}
         >
-            {fromThisUser && !read && (
-                <View style={styles.messageUnreadStatus}></View>
+            <View
+                style={[
+                    styles.messageStatus,
+                    fromThisUser ?
+                        (thisUserOnLeft ?
+                            styles.messageStatusRight :
+                            styles.messageStatusLeft) :
+                        (thisUserOnLeft ?
+                            styles.messageStatusLeft :
+                            styles.messageStatusRight)
+                ]}
+            >
+                {status === messageStatus.UNREAD ?
+                    <View style={styles.messageUnreadStatus}></View> :
+                    status === messageStatus.ERROR ?
+                        <ExclamationMarkIcon
+                            color={Color.SoftRed}
+                            width={10}
+                            height={10}
+                        /> :
+                        status === messageStatus.SENDING ?
+                            <SendIcon
+                                color={Color.White}
+                                width={10}
+                                height={10}
+                            /> :
+                            null
+                }
+            </View>
+            {showUserName && (
+                <View
+                    style={styles.messageUserName}
+                >
+                    <Text
+                        style={[
+                            globalStyles.text,
+                            fromThisUser ? 
+                            globalStyles.thisUserMessageName :
+                            globalStyles.otherUserMessageName
+                        ]}
+                    >
+                        {userName ? userName : 'Пользователь'}
+                    </Text>
+                </View>
             )}
             <View
-                style={styles.messageTextContainer}
+                style={styles.horizontalSection}
             >
-                <Text
-                    style={styles.messageText}
+                <View
+                    style={styles.messageTextContainer}
                 >
-                    {text}
-                </Text>
-            </View>
-            <View
-                style={styles.messageDateContainer}
-            >
-                <Text
-                    style={styles.messageDate}
+                    <Text
+                        style={styles.messageText}
+                    >
+                        {text}
+                    </Text>
+                </View>
+                <View
+                    style={styles.messageDateContainer}
                 >
-                    {messageTime}
-                </Text>
+                    <Text
+                        style={styles.messageDate}
+                    >
+                        {messageTime}
+                    </Text>
+                </View>
             </View>
         </TouchableOpacity>
     )
@@ -117,39 +171,52 @@ export const MessagesDateSplitter: React.FC<{ date: Date }> = ({ date }) => {
 
 const styles = StyleSheet.create({
     container: {
-        minHeight: 40,
         marginVertical: 7,
         marginHorizontal: 10,
         borderRadius: 10,
         padding: 5,
         backgroundColor: '#71B6C3',
+        minWidth: '30%',
+        maxWidth: '65%'
+    },
+    messageUserName: {
+        paddingHorizontal: 3,
+    },
+    horizontalSection: {
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'center',
-        alignContent: 'flex-end',
+        justifyContent: 'space-between',
     },
     messageTextContainer: {
         paddingHorizontal: 3,
-        minWidth: '30%',
-        maxWidth: '70%',
+        flexShrink: 1,
     },
     messageText: {
         color: '#fff',
         fontSize: 16,
+
     },
     messageDateContainer: {
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
+        bottom: -3,
     },
     messageDate: {
         color: 'rgb(230, 230, 230)',
         fontSize: 12,
     },
-    messageUnreadStatus: {
+    messageStatus: {
         position: "absolute",
-        left: -20,
         bottom: 15,
+    },
+    messageStatusLeft: {
+        left: -20,
+    },
+    messageStatusRight: {
+        right: -20,
+    },
+    messageUnreadStatus: {
         backgroundColor: Color.OceanBlue,
         width: 10,
         height: 10,

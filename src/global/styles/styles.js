@@ -62,9 +62,15 @@ const globalStyles = StyleSheet.create({
     thisUserMessage: {
         backgroundColor: '#71B6C3'
     },
+    thisUserMessageName: {
+        color: 'rgb(130, 70, 140)'
+    },
     otherUserMessage: {
         backgroundColor: '#3b5f66'
-    }
+    },
+    otherUserMessageName: {
+        color: 'rgb(170, 110, 180)'
+    },
 })
 
 export default globalStyles

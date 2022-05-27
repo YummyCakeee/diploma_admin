@@ -5,7 +5,6 @@ import {
     TouchableOpacity,
     View,
     Animated,
-    Easing
 } from "react-native"
 import { Color } from "global/styles/constants"
 import { CrossIcon } from "../Icons/Index"

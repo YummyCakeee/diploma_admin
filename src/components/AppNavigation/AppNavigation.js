@@ -13,7 +13,7 @@ import Settings from 'screens/settingsScreen/Settings'
 import SigningForServices from 'screens/signingForServicesScreen/SigningForServices'
 import Registation from 'screens/registationScreen/Registation'
 import ServiceRecords from 'screens/serviceRecordsScreen/ServiceRecords'
-import OnlineChat from 'screens/onlineChatScreen/OnlineChat'
+import OnlineChatRoomList from 'screens/onlineChatRoomListScreen/OnlineChatRoomList'
 import Initialization from 'screens/initializationScreen/Initialization'
 import useDrawer from './useDrawer'
 import globalStyles from '../../global/styles/styles'
@@ -26,6 +26,7 @@ import axiosAPI from 'utils/axios'
 import { ENDPOINT_TOKENS_UPDATE } from 'constants/endpoints'
 import { ORGANIZATION_ID } from 'constants/application'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import OnlineChatRoom from 'screens/onlineChatRoomScreen/OnlineChatRoom'
 
 const Drawer = createDrawerNavigator()
 const Stack = createStackNavigator();
@@ -37,7 +38,8 @@ export const Screen = {
   Home: 'Home',
   SigningForServices: 'SigningForServices',
   ServiceRecords: 'ServiceRecords',
-  OnlineChat: 'OnlineChat',
+  OnlineChatRoomList: 'OnlineChatRoomList',
+  OnlineChatRoom: 'OnlineChatRoom',
   Settings: 'Settings'
 }
 
@@ -67,7 +69,6 @@ const NavigationMainContainer = () => {
         await axiosAPI.post(ENDPOINT_TOKENS_UPDATE, data)
           .then(async (res) => {
             if (res.data.success) {
-              console.log(res.data.data)
               const newAuthToken = res.data.data.auth
               const newRefreshToken = res.data.data.refresh
               await AsyncStorage.setItem('authToken', newAuthToken)
@@ -147,8 +148,12 @@ const FeedNavigation = () => {
         component={ServiceRecords}
       />
       <Drawer.Screen
-        name={Screen.OnlineChat}
-        component={OnlineChat}
+        name={Screen.OnlineChatRoomList}
+        component={OnlineChatRoomList}
+      />
+      <Drawer.Screen
+        name={Screen.OnlineChatRoom}
+        component={OnlineChatRoom}
       />
       <Drawer.Screen
         name={Screen.Settings}

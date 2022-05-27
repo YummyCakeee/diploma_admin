@@ -7,6 +7,7 @@ import {
 } from "react-native"
 import { HamburgerIcon } from "components/Elements/Icons/Index"
 import { useNavigation } from "@react-navigation/core"
+import { Color } from "global/styles/constants"
 
 const Header = ({hamburgerIcon = true}) => {
     const navigation = useNavigation()
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
         height: 70,
         width: '100%',
         alignSelf: "center",
-        backgroundColor: 'rgb(50, 120, 150)',
+        backgroundColor: Color.OceanBlue,
         display: "flex",
         alignItems: "center",
         justifyContent: "center"

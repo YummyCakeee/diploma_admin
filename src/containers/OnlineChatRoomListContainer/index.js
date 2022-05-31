@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, NativeModules } from "react-native"
 import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate"
 import { ENDPOINT_CHATS } from "constants/endpoints"
 import { axiosAPI2 } from "utils/axios"
@@ -42,9 +42,6 @@ const OnlineChatRoomListContainer = () => {
         await axiosAPI2.get(ENDPOINT_CHATS, {
             headers: createAuthorizationHeader(userInfo.authToken),
             cancelToken: cancelToken.token,
-            params: {
-                user_id: userInfo.id
-            }
         }).then(res => {
             const data = res.data
             if (data.success)
@@ -71,7 +68,7 @@ const OnlineChatRoomListContainer = () => {
             >
                 <Loadable
                     status={loadingStatus}
-                    onLoadingComponent={
+                    onLoadingComponent={ () =>
                         <View
                             style={styles.messagesLoadingContainer}
                         >
@@ -91,7 +88,7 @@ const OnlineChatRoomListContainer = () => {
                             />
                         </View>
                     }
-                    onFailComponent={
+                    onFailComponent={ () =>
                         <View
                             style={styles.messagesLoadingContainer}
                         >

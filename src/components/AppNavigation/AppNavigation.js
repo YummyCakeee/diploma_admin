@@ -27,6 +27,7 @@ import { ENDPOINT_TOKENS_UPDATE } from 'constants/endpoints'
 import { ORGANIZATION_ID } from 'constants/application'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import OnlineChatRoom from 'screens/onlineChatRoomScreen/OnlineChatRoom'
+import Administration from 'screens/administrationScreen/Administration'
 
 const Drawer = createDrawerNavigator()
 const Stack = createStackNavigator();
@@ -38,8 +39,10 @@ export const Screen = {
   Home: 'Home',
   SigningForServices: 'SigningForServices',
   ServiceRecords: 'ServiceRecords',
+  OnlineChat: 'OnlineChat',
   OnlineChatRoomList: 'OnlineChatRoomList',
   OnlineChatRoom: 'OnlineChatRoom',
+  Administration: 'Administration',
   Settings: 'Settings'
 }
 
@@ -148,12 +151,12 @@ const FeedNavigation = () => {
         component={ServiceRecords}
       />
       <Drawer.Screen
-        name={Screen.OnlineChatRoomList}
-        component={OnlineChatRoomList}
+        name={Screen.OnlineChat}
+        component={OnlineChatNavigation}
       />
-      <Drawer.Screen
-        name={Screen.OnlineChatRoom}
-        component={OnlineChatRoom}
+      <Drawer.Screen 
+        name={Screen.Administration}
+        component={Administration}
       />
       <Drawer.Screen
         name={Screen.Settings}
@@ -162,7 +165,7 @@ const FeedNavigation = () => {
       />
     </Drawer.Navigator>
   );
-};
+}
 
 const DrawerContent = ({
   props,
@@ -209,6 +212,27 @@ const DrawerContent = ({
         ))}
       </DrawerContentScrollView>
     </>
+  )
+}
+
+const OnlineChatNavigation = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        unmountOnBlur: true
+      }}
+      initialRouteName={Screen.OnlineChatRoomList}
+    >
+      <Stack.Screen
+        name={Screen.OnlineChatRoomList}
+        component={OnlineChatRoomList}
+      />
+      <Stack.Screen
+        name={Screen.OnlineChatRoom}
+        component={OnlineChatRoom}
+      />
+    </Stack.Navigator>
   )
 }
 

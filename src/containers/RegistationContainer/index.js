@@ -38,7 +38,7 @@ const RegistationContainer = () => {
     return (
         <ScreenTemplate {...{ headerHamburgerIcon: false }}>
             <Text
-                style={[globalStyles.page_title, styles.mainTitle]}
+                style={[globalStyles.pageTitle, styles.mainTitle]}
             >
                 Войдите{' '}
                 или{'\n'}

@@ -41,8 +41,8 @@ const Combobox: React.FC<comboboxProps> = ({
     const [triangleRotationFormated, setTriangleRotationFormated] = useState<any>('0deg')
 
     useEffect(() => {
-        if (isOpen) showcombobox()
-        else hidecombobox()
+        if (isOpen) showCombobox()
+        else hideCombobox()
     }, [isOpen])
     
     useEffect(() => {
@@ -70,7 +70,7 @@ const Combobox: React.FC<comboboxProps> = ({
         if (items) setIsOpen(!isOpen)
     }
 
-    const oncomboboxItemPress = (item: itemType) => {
+    const onComboboxItemPress = (item: itemType) => {
         if (isOpen) {
             setSelectedItem(item)
             onSelectItem(item)
@@ -78,7 +78,7 @@ const Combobox: React.FC<comboboxProps> = ({
         }
     }
 
-    const showcombobox = () => {
+    const showCombobox = () => {
         Animated.timing(comboboxOpacity, {
             toValue: 1,
             duration: 300,
@@ -96,7 +96,7 @@ const Combobox: React.FC<comboboxProps> = ({
         }).start()
     }
 
-    const hidecombobox = () => {
+    const hideCombobox = () => {
         Animated.timing(comboboxOpacity, {
             toValue: 0,
             duration: 500,
@@ -168,7 +168,7 @@ const Combobox: React.FC<comboboxProps> = ({
                             {getSortedItems()?.map((el, index) => (
                                 <View style={styles.comboboxItem} key={index}>
                                     <Text
-                                        onPress={() => oncomboboxItemPress(el)}
+                                        onPress={() => onComboboxItemPress(el)}
                                         style={styles.comboboxItemText}
                                     >
                                         {el.text}

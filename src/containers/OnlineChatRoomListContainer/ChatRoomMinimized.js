@@ -19,7 +19,6 @@ const ChatRoomMinimized = ({id = '', userId = ''}) => {
     const [chatUserList, setChatUserList] = useState([])
     const navigation = useNavigation()
     const userInfo = useSelector(userSelector)
-
     const onRoomPress = () => {
         if (chatName && chatUserList.length)
             navigation.navigate(Screen.OnlineChatRoom, { roomId: id, chatName, chatUserList })

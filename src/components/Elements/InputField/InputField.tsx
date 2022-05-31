@@ -1,3 +1,4 @@
+import { Color } from 'global/styles/constants'
 import React from 'react'
 import { StyleSheet, Text, TextInput, View } from 'react-native'
 import AnimatedFieldError from '../AnimatedFieldError/AnimatedFieldError'
@@ -34,7 +35,7 @@ const InputField: React.FC<inputFieldProps> =
                     <TextInput style={styles.inputText}
                         value={value}
                         onChangeText={value => onChange(mask(value))}
-                        placeholderTextColor="gray"
+                        placeholderTextColor={Color.Gray}
                         {...props}
                     />
                 </View>

@@ -19,12 +19,13 @@ const Loadable: React.FC<loadableProps> = ({
     onLoadingComponent,
     onFailComponent
 }) => {
-
+    const LoadingComponent = onLoadingComponent || (() => <></>)
+    const FailComponent = onFailComponent || (() => <></>)
     return (
         <>
             {status === loadableStatus.SUCCESS && children}
-            {status === loadableStatus.LOADING && onLoadingComponent}
-            {status === loadableStatus.FAIL && onFailComponent}
+            {status === loadableStatus.LOADING && <LoadingComponent/>}
+            {status === loadableStatus.FAIL && <FailComponent/>}
         </>
     )
 }

@@ -255,7 +255,8 @@ const OnlineChatRoomContainer = ({
             }
             addMessageToList(copiedMessages, message)
         })
-        setMessages(copiedMessages.sort((a, b) => a.date > b.date))
+        sortMessageList(copiedMessages)
+        setMessages(copiedMessages)
     }
 
     const onServerLoadAllMessages = (data) => {

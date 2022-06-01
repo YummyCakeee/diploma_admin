@@ -120,9 +120,8 @@ const OnlineChatRoomContainer = ({
     const connectSocket = () => {
         socket.current = new WebSocket('wss://pure-beach-58958.herokuapp.com' +
             createChatRoomEndpoint(chatRoomId) + 
-            `?user_id=${userInfo.id}` +
-            `&fingerprint=${NativeModules.PlatformConstants.Fingerprint}`,
-            null, {headers: [createAuthorizationHeader(userInfo.authToken)]})
+            `?fingerprint=${NativeModules.PlatformConstants.Fingerprint}`,
+            null, {headers: createAuthorizationHeader(userInfo.authToken)})
         socket.current.onopen = () => {
             if (messages.length === 0) {
                 getMessages()
@@ -206,7 +205,7 @@ const OnlineChatRoomContainer = ({
                 const copiedMessages = getMessageListCopy(messages)
                 addMessageToList(copiedMessages, sendingMessage)
                 setMessages(copiedMessages)
-                messagesListRef.current.scrollToEnd()
+                messagesListRef.current?.scrollToEnd()
                 setCurrentMessage('')
                 const unreadMessages = []
                 messages.forEach(el => {
@@ -426,7 +425,7 @@ const OnlineChatRoomContainer = ({
     
     const onMessageListContentSizeChange = (w, h) => {
         if (h > 0 && !oldMessagesAreLoaded && messagesListRef.current) {
-            messagesListRef.current.scrollToEnd()
+            messagesListRef.current?.scrollToEnd()
             setOldMessagesAreLoaded(true)
         }
     }

@@ -146,7 +146,7 @@ const ServiceRecordsContainer = () => {
             </ModalWindow>
             <View>
                 <Text
-                    style={globalStyles.page_title}
+                    style={globalStyles.pageTitle}
                 >
                     Ваши записи
                 </Text>

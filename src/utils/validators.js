@@ -1,7 +1,7 @@
-export const phoneNumberValidator = (value) => 
+export const phoneNumberValidator = (value) =>
     !/^(8|\+7)[ ]\(?\d{3}\)?[ ]?\d{3}[\-]?\d{2}[\-]\d{2}$/.test(value) ?
-    'Введите корректный номер телефона' :
-    undefined
+        'Введите корректный номер телефона' :
+        undefined
 
 export const passwordValidator = (value, allowEmpty = false) => {
     if (allowEmpty && !value) return undefined
@@ -18,11 +18,11 @@ export const emailValidator = (value, allowEmpty = false) => {
     return undefined
 }
 
-export const smsCodeValidator = (value) => 
-    (!value || value.length !== 4) ? 
-    'Введите код из смс' : 
-    undefined
-    
+export const smsCodeValidator = (value) =>
+    (!value || value.length !== 4) ?
+        'Введите код из смс' :
+        undefined
+
 export const nameValidator = (value, allowEmpty = false) => {
     if (allowEmpty && !value) return undefined
     if (!value) return 'Укажите имя'
@@ -48,4 +48,24 @@ export const patronymicValidator = (value, allowEmpty = false) => {
     const minLength = 2
     if (value.trim().length < minLength) return `Отчество должно быть длиннее ${minLength - 1} символа`
     return undefined
+}
+
+export const fieldNonEmptyValidator = (value) =>
+    !value ? 'Поле обязательно к заполнению' : undefined
+
+export const timeValidator = (value, allowEmpty = false, maxHours = 99, maxMinutes = 99) => {
+    if (!value && allowEmpty) return undefined
+    if (!value) return 'Укажите время'
+    const match = value.match(/(\d{2}):(\d{2})/)
+    if (!match) return 'Укажите время польностью'
+    if (Number(match[1]) > maxHours) return `Количество часов должно быть не больше ${maxHours}`
+    if (Number(match[2]) > maxMinutes) return `Количество минут должно быть не больше ${maxMinutes}`
+    return undefined
+}
+
+export const priceValidator = (value, allowEmpty = false) => {
+    if (!value && allowEmpty) return undefined
+    if (!value) return 'Укажите стоимость'
+    const match = value.match(/(\d+)(\.)?(\d*)/)
+    if (!match || (match[2] && !match[3])) return 'Укажите корректную стоимость'
 }

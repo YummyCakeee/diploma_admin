@@ -6,6 +6,7 @@ type buttonProps = {
     title: string,
     onPress?: () => {},
     size?: 'small' | 'medium' | 'large',
+    primary: boolean,
     style?: {},
     disabled?: boolean,
 }
@@ -14,7 +15,8 @@ const Button: React.FC<buttonProps> = ({
     title,
     onPress = () => { },
     size = 'medium',
-    disabled = false,
+    disabled,
+    primary,
     style
 }) => {
 
@@ -32,9 +34,11 @@ const Button: React.FC<buttonProps> = ({
         >
             <Text
                 style={[
+                    primary ? 
+                    globalStyles.buttonPrimary :
                     globalStyles.button,
-                    disabled ? globalStyles.button_blocked :
-                    isPressed ? globalStyles.button_pressed : null
+                    disabled ? globalStyles.buttonBlocked :
+                    isPressed ? globalStyles.buttonPressed : null
                 ]}
             >{title}</Text>
         </TouchableOpacity>

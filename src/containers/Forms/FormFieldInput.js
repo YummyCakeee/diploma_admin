@@ -9,7 +9,11 @@ const FormFieldInput = (props) => {
             onChange,
             value
         },
-        form: { errors, touched, setFieldTouched },
+        form: { 
+            errors, 
+            touched, 
+            setFieldTouched
+        },
         ...inputProps
     } = props
     const hasError = errors[name] && touched[name]

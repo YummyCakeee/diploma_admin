@@ -445,3 +445,45 @@ export const ExclamationMarkIcon = ({width = 20, height = 20, color = Color.Blac
 		c0.01,0,0.02,0.001,0.029,0.001c0.009,0,0.019-0.001,0.029-0.001C26.689,5.29,28.109,8.727,27.988,10.578z"/>
     </Svg>
 )
+
+export const AdminIcon = ({ width = 20, height = 20, color = Color.Black }) => (
+    <Svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        height={height}
+        width={width}
+        fill={color}
+    >
+        <Path fill="none" d="M0 0h24v24H0z" />
+        <Path d="M12 14v8H4a8 8 0 0 1 8-8zm0-1c-3.315 0-6-2.685-6-6s2.685-6 6-6 6 2.685 6 6-2.685 6-6 6zm9 
+        4h1v5h-8v-5h1v-1a3 3 0 0 1 6 0v1zm-2 0v-1a1 1 0 0 0-2 0v1h2z" />
+    </Svg>
+)
+
+export const CheckIcon = ({ width = 20, height = 20, color = Color.Black }) => (
+    <Svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 405.272 405.272"
+        height={height}
+        width={width}
+        fill={color}
+    >
+        <Path d="M393.401,124.425L179.603,338.208c-15.832,15.835-41.514,15.835-57.361,0L11.878,227.836
+		c-15.838-15.835-15.838-41.52,0-57.358c15.841-15.841,41.521-15.841,57.355-0.006l81.698,81.699L336.037,67.064
+		c15.841-15.841,41.523-15.829,57.358,0C409.23,82.902,409.23,108.578,393.401,124.425z"/>
+    </Svg>
+)
+
+export const ArrowIcon = ({ width = 20, height = 20, color = Color.Black }) => (
+    <Svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 49.656 49.656"
+        height={height}
+        width={width}
+        fill={color}
+    >
+        <Polygon style="fill:#00AD97;" points="48.242,35.122 45.414,37.95 24.828,17.364 4.242,37.95 1.414,35.122 24.828,11.707 	" />
+        <Path style="fill:#00AD97;" d="M45.414,39.363L24.828,18.778L4.242,39.363L0,35.121l24.828-24.828l24.828,24.828L45.414,39.363z
+		 M24.828,15.95l20.586,20.585l1.414-1.414l-22-22l-22,22l1.414,1.414L24.828,15.95z"/>
+    </Svg>
+)

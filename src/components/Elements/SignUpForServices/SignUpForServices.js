@@ -13,6 +13,7 @@ const SignUpForServices = () => {
                 style={styles.button}
             >
                 <Button
+                    primary
                     title="Записаться"
                     onPress={() => navigation.navigate(Screen.SigningForServices)}
                 />

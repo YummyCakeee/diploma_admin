@@ -25,7 +25,7 @@ const SettingsContainer = () => {
     } = useSettings()
     return (
         <ScreenTemplate>
-            <Text style={globalStyles.page_title}>Настройки</Text>
+            <Text style={globalStyles.pageTitle}>Настройки</Text>
             <Formik
                 enableReinitialize
                 initialValues={{

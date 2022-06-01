@@ -184,7 +184,7 @@ const SigningForServicesContainer = () => {
 
     return (
         <ScreenTemplate>
-            <Text style={globalStyles.page_title}>Запись на услуги</Text>
+            <Text style={globalStyles.pageTitle}>Запись на услуги</Text>
             <Loadable
                 status={loadingStatus}
                 onLoadingComponent={

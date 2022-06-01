@@ -17,7 +17,7 @@ export const simplePhoneNumberFormatter =
     (value: string): string =>
         '+' + value.replace(/\D*/g, '')
 
-export const dateSwapYearAndMonthFormatter = 
+export const dateSwapYearAndMonthFormatter =
     (value: string, separator: string = '.'): string => {
         const match = value.match(/(\d*)[\-|/|\.](\d*)[\-|/|\.](\d*)/)
         if (!match) return value
@@ -27,10 +27,42 @@ export const dateSwapYearAndMonthFormatter =
 export const toCanonicalDateFormatter = (
     date: string,
     time: string = '00:00',
-): Date => new Date (date + 'T' + time.padStart(5, '0') + 'Z')
+): Date => new Date(date + 'T' + time.padStart(5, '0') + 'Z')
 
 export const nameFormatter = (value: string): string =>
     value ?
         (value.charAt(0).toUpperCase() +
             value.slice(1).toLowerCase()).trim() :
         value
+
+export const timeFormatter =
+    (value: string): string => {
+        const cleanedValue = value.replace(/\D*|:/g, '').substring(0, 4)
+        const match = cleanedValue.match(/^(\d{2})(\d{1,2})$/)
+        if (!match) return cleanedValue
+        const timeValue = [
+            match[1],
+            match[2] ? 
+            ':' + match[2] :
+            ''
+        ].join('')
+
+        return timeValue
+    }
+
+export const priceFormatter = 
+    (value: string): string => {
+        const cleanedValue = value.replace(/^\.[^\d\.]*/, '')
+        const match = cleanedValue.match(/(\d+)(\.)?(\d*)/)
+        if (!match) return cleanedValue
+        const price = [
+            match[1],
+            match[2] ? 
+            match[2] :
+            '',
+            match[3] ?
+            match[3] :
+            ''
+        ].join('')
+        return price
+    }

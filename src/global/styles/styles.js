@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { Color } from "./constants";
+import { getColorWithOpacity } from "./utils";
 
 const globalStyles = StyleSheet.create({
     container: {
@@ -26,9 +27,11 @@ const globalStyles = StyleSheet.create({
         marginTop: 5,
         marginBottom: 10,
     },
-    button: {
+    buttonPrimary: {
         textAlign: "center",
         backgroundColor: '#0e7b8c',
+        borderWidth: 1,
+        borderColor: getColorWithOpacity(Color.White, 0.4),
         height: 30,
         paddingHorizontal: 5,
         paddingVertical: 3,
@@ -37,15 +40,28 @@ const globalStyles = StyleSheet.create({
         marginVertical: 5,
         marginHorizontal: 10,
     },
-    button_pressed: {
+    button: {
+        textAlign: "center",
+        borderColor: getColorWithOpacity('#0e7b8c', 0.4),
+        backgroundColor: '#094c577e',
+        borderWidth: 1,
+        height: 30,
+        paddingHorizontal: 5,
+        paddingVertical: 3,
+        color: Color.White,
+        borderRadius: 10,
+        marginVertical: 5,
+        marginHorizontal: 10,
+    },
+    buttonPressed: {
         backgroundColor: '#c7f8ff',
         color: '#0e7b8c',
     },
-    button_blocked: {
+    buttonBlocked: {
         backgroundColor: '#62888c',
         color: '#b4b4b4',
     },
-    page_title: {
+    pageTitle: {
         fontSize: 22,
         textAlign: "center",
         alignSelf: 'center',

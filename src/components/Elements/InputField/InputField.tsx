@@ -1,3 +1,4 @@
+import { Color } from 'global/styles/constants'
 import React from 'react'
 import { StyleSheet, Text, TextInput, View } from 'react-native'
 import AnimatedFieldError from '../AnimatedFieldError/AnimatedFieldError'
@@ -6,7 +7,7 @@ type inputFieldProps = {
     value: string,
     onChange: (value: string) => void,
     label?: string,
-    keyboardType?: 'default' | 'phone-pad',
+    keyboardType?: 'default' | 'phone-pad' | 'decimal-pad',
     mask?: (value: string) => string,
     error: string,
     style?: {},
@@ -31,10 +32,11 @@ const InputField: React.FC<inputFieldProps> =
                     <Text style={styles.inputLabel}>
                         {label}
                     </Text>
-                    <TextInput style={styles.inputText}
+                    <TextInput 
                         value={value}
                         onChangeText={value => onChange(mask(value))}
-                        placeholderTextColor="gray"
+                        placeholderTextColor={Color.Gray}
+                        style={styles.inputText}
                         {...props}
                     />
                 </View>
@@ -58,7 +60,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'flex-end',
         justifyContent: 'space-between',
-        width: 300,
     },
     inputLabel: {
         color: '#fff',

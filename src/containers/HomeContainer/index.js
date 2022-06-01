@@ -19,7 +19,7 @@ const HomeContainer = () => {
     ])
     return (
         <ScreenTemplate>
-                <Text style={globalStyles.page_title}>Главная</Text>
+                <Text style={globalStyles.pageTitle}>Главная</Text>
                 <BannerSlider
                     autoSlide
                     items={images.map(el => (

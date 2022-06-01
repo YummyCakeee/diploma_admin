@@ -1,16 +1,21 @@
 import globalStyles from "global/styles/styles";
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, LayoutChangeEvent } from 'react-native'
+import { View, StyleSheet, TouchableOpacity, ScrollView, LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native'
 
 type sliderProps = {
-    items?: itemType[],
+    itemComponent: React.FC<itemComponentType>,
+    splitterComponent?: React.FC,
+    data: itemType[],
     onItemSelected: (item: itemType) => void,
+    initialSelectedItemPredicate?: (item: itemType) => boolean,
     horizontal: boolean,
+    style?: StyleProp<ViewStyle>
 }
 
-type itemType = {
-    text: string,
-    tag: any,
+type itemComponentType = {
+    item: itemType,
+    isSelected: boolean,
+    index: number,
 }
 
 type scrollSizeType = {
@@ -18,36 +23,49 @@ type scrollSizeType = {
     height: number
 }
 
+type itemType = { [index: string]: any }
+
 const Slider: React.FC<sliderProps> = ({
-    items,
-    onItemSelected = (item) => { },
-    horizontal = false
+    itemComponent,
+    splitterComponent,
+    data,
+    onItemSelected = () => { },
+    initialSelectedItemPredicate,
+    horizontal = false,
+    style
 }) => {
     const [selectedItemIndex, setSelectedItemIndex] = useState<number>(0)
     const scrollRef = useRef<ScrollView>(null)
-    const [scrollFullSize, setScrollFullSize] = useState<scrollSizeType>({width: 0, height: 0})
-    const [scrollScreenSize, setScrollScreenSize] = useState<scrollSizeType>({width: 0, height: 0})
+    const [scrollFullSize, setScrollFullSize] = useState<scrollSizeType>({ width: 0, height: 0 })
+    const [scrollScreenSize, setScrollScreenSize] = useState<scrollSizeType>({ width: 0, height: 0 })
     useEffect(() => {
-        onItemPress(0)
-    }, [items])
+        if (data?.length) {
+            if (initialSelectedItemPredicate) {
+                const index = data.findIndex(initialSelectedItemPredicate)
+                if (index !== -1)
+                    onItemPress(index)
+            }
+            else onItemPress(0)
+        }
+    }, [data, initialSelectedItemPredicate])
+    
 
     const onItemPress = (index: number) => {
         setSelectedItemIndex(index)
-        if (items?.length) {
-            onItemSelected(items[index])
-            if (scrollRef?.current) {
-                const scrollSideSize = horizontal ?
-                    scrollFullSize.width :
-                    scrollFullSize.height
-                const itemSize = scrollSideSize / items.length
-                horizontal ?
-                    scrollRef.current.scrollTo(
-                        { x: itemSize * index + itemSize / 2 - scrollScreenSize.width / 2 }
-                    ) :
-                    scrollRef.current.scrollTo(
-                        { y: itemSize * index + itemSize / 2 - scrollScreenSize.height / 2}
-                    )
-            }
+
+        onItemSelected(data[index])
+        if (scrollRef?.current) {
+            const scrollSideSize = horizontal ?
+                scrollFullSize.width :
+                scrollFullSize.height
+            const itemSize = scrollSideSize / data.length
+            horizontal ?
+                scrollRef.current.scrollTo(
+                    { x: itemSize * index + itemSize / 2 - scrollScreenSize.width / 2 }
+                ) :
+                scrollRef.current.scrollTo(
+                    { y: itemSize * index + itemSize / 2 - scrollScreenSize.height / 2 }
+                )
         }
     }
 
@@ -56,9 +74,12 @@ const Slider: React.FC<sliderProps> = ({
     }
 
     const onScrollLayout = (event: LayoutChangeEvent) => {
-        const  {width, height} = event.nativeEvent.layout 
-        setScrollScreenSize({width, height})
+        const { width, height } = event.nativeEvent.layout
+        setScrollScreenSize({ width, height })
     }
+
+    const ItemComponent = itemComponent
+    const SplitterComponent = splitterComponent || (() => <></>)
 
     return (
         <View
@@ -66,7 +87,8 @@ const Slider: React.FC<sliderProps> = ({
                 styles.container,
                 horizontal ?
                     styles.containerHorizontal :
-                    styles.containerVertical
+                    styles.containerVertical,
+                style
             ]}
         >
             <View
@@ -77,34 +99,34 @@ const Slider: React.FC<sliderProps> = ({
                     horizontal={horizontal}
                     nestedScrollEnabled
                     showsHorizontalScrollIndicator={false}
+                    showsVerticalScrollIndicator={false}
                     onContentSizeChange={onScrollContentSizeChange}
                     onLayout={onScrollLayout}
                 >
-                    {items?.map((elem, index) => (
+                    {data?.map((elem, index) => (
                         <View
-                            style={[
-                                styles.sliderItem,
-                                horizontal ?
-                                    styles.sliderItemHorizontal :
-                                    styles.sliderItemVertical
-                            ]}
                             key={index}
                         >
-                            <TouchableOpacity
-                                activeOpacity={1}
-                                onPress={() => onItemPress(index)}
+                            <View
+                                style={[
+                                    styles.sliderItem,
+                                    horizontal ?
+                                        styles.sliderItemHorizontal :
+                                        styles.sliderItemVertical
+                                ]}
                             >
-                                <Text
-                                    style={[
-                                        globalStyles.text,
-                                        index === selectedItemIndex ?
-                                            styles.sliderItemSelectedText :
-                                            styles.sliderItemText
-                                    ]}
+                                <TouchableOpacity
+                                    activeOpacity={1}
+                                    onPress={() => onItemPress(index)}
                                 >
-                                    {elem.text}
-                                </Text>
-                            </TouchableOpacity>
+                                    <ItemComponent
+                                        isSelected={index === selectedItemIndex}
+                                        item={elem}
+                                        index={index}
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                            {splitterComponent && <SplitterComponent />}
                         </View>
                     ))}
                 </ScrollView>
@@ -125,6 +147,7 @@ const styles = StyleSheet.create({
     },
     containerVertical: {
         flexDirection: "column",
+        alignItems: 'flex-start',
     },
     sliderContainer: {
     },
@@ -136,12 +159,6 @@ const styles = StyleSheet.create({
     sliderItemVertical: {
         marginVertical: 5,
     },
-    sliderItemText: {
-        color: 'gray',
-    },
-    sliderItemSelectedText: {
-        color: 'white',
-    }
 })
 
 

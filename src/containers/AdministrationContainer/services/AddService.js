@@ -1,6 +1,6 @@
 import Button from "components/Elements/Button/Button"
 import { Formik } from "formik"
-import React, { useEffect, useState } from "react"
+import React from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { Field } from "formik"
 import SectionSeparator from "components/Elements/SectionSeparator/SectionSeparator"
@@ -10,25 +10,46 @@ import globalStyles from "global/styles/styles"
 import { Color } from "global/styles/constants"
 import { getColorWithOpacity } from "global/styles/utils"
 import EditServiceMainData from "./EditServiceMainData"
+import { axiosAPI2 } from "utils/axios"
+import { ENDPOINT_SERVICES } from "constants/endpoints"
+import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
+import { useSelector } from "react-redux"
+import { userSelector } from "store/selectors/userSlice"
+import Toast from 'react-native-simple-toast'
 
 const AddService = ({
+    services,
     setServices,
-    masters
+    masters,
+    workplaces
 }) => {
 
-    const [mastersCopy, setMastersCopy] = useState([])
-    useEffect(() => {
-        setMastersCopy(masters.map(el => {
-            return {
-                ...el,
-                services: [...el.services],
-                selected: false
-            }
-        }))
-    }, [masters])
-
-    const onSubmit = (values) => {
-
+    const userInfo = useSelector(userSelector)
+    const onSubmit = async (values) => {
+        const data = {
+            name: values.name,
+            description: values.description,
+            duration: values.duration,
+            price: values.price,
+            workplace_id: workplaces[0].id,
+            masters: values.masters.map((el, index) => 
+                el === 'true' ? masters[index].id : null
+            ).filter(val => val)
+        }
+        return axiosAPI2.post(ENDPOINT_SERVICES, data, {
+            headers: createAuthorizationHeader(userInfo.authToken)
+        })
+        .then(res => {
+            Toast.show("Услуга была успешно добавлена")
+            values.name = ''
+            values.description = '',
+            values.duration = ''
+            values.price = ''
+            setServices([...services, res.data.data])
+        })
+        .catch(err => {
+            Toast.show("Произошла ошибка при добавлении услуги")
+        })
     }
 
     return (
@@ -36,11 +57,16 @@ const AddService = ({
             <Formik
                 onSubmit={onSubmit}
                 initialValues={{
-                    masters: mastersCopy.map(el => el.selected ? 'true' : 'false')
+                    name: '',
+                    description: '',
+                    duration: '',
+                    price: '',
+                    masters: masters.map(el => 'false')
                 }}
                 enableReinitialize
+                validateOnMount
             >
-                {({ handleSubmit }) => (
+                {({ handleSubmit, isSubmitting, isValid }) => (
                     <>
                         <Text
                             style={globalStyles.title}
@@ -54,7 +80,7 @@ const AddService = ({
                             Мастера для услуги
                         </Text>
                         <Slider
-                            data={mastersCopy}
+                            data={masters}
                             itemComponent={({ item, isSelected, index }) => (
                                 <View
                                     style={styles.sliderItem}
@@ -83,8 +109,10 @@ const AddService = ({
                             style={styles.saveButtonContainer}
                         >
                             <Button
+                                primary
                                 title="Сохранить"
                                 onPress={handleSubmit}
+                                disabled={isSubmitting || !isValid}
                             />
                         </View>
                     </>

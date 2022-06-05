@@ -62,7 +62,7 @@ const EditMasterWorkTime = ({ masters, selectedMaster, workTime, setWorkTime }) 
                 const data = res.data
                 if (data.success) {
                     const splitTimeRegex = /(\w*):(\w*)/
-                    setWorkTime(data.data.map(el => {
+                    setWorkTime(data.data?.map(el => {
                         const { date, time: start } = dateTimeSplitter(new Date(el.startDate))
                         const end = dateTimeSplitter(new Date(el.endDate)).time
                         const [startH, startM] = start.match(splitTimeRegex).slice(1)

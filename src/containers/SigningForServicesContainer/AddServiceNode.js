@@ -5,6 +5,7 @@ import Slider from "components/Elements/Slider/Slider"
 import RichList from "components/Elements/RichList/RichList"
 import Button from "components/Elements/Button/Button"
 import ServiceNodeDateTime from "./ServiceNodeDateTime"
+import { Color } from "global/styles/constants"
 
 export const MODE_MASTER = 0
 export const MODE_SERVICE = 1
@@ -184,9 +185,21 @@ const AddServiceNode = ({
             >
                 {stage === STAGE_MODE_SELECT && (
                     <Slider
-                        items={modeTypeSliderItems}
+                        data={modeTypeSliderItems}
                         onItemSelected={(item) => setMode(item.tag)}
                         horizontal
+                        itemComponent={({isSelected, item}) => (
+                            <Text
+                                style={[
+                                    globalStyles.text,
+                                    isSelected ?
+                                    styles.modeItemSelectedText :
+                                    styles.modeItemText
+                                ]}
+                            >
+                                {item.text}
+                                </Text>
+                        )}
                     />
                 )}
                 {stage >= STAGE_SECOND_PARAM_SELECT && (
@@ -236,6 +249,7 @@ const AddServiceNode = ({
                 </Text>
             )}
             <Button
+                primary
                 title={stage === STAGE_DATE_TIME_SELECT ?
                     "Добавить услугу" :
                     "Далее"
@@ -259,6 +273,12 @@ const styles = StyleSheet.create({
     horizontalSection: {
         paddingHorizontal: 20,
         paddingTop: 20,
+    },
+    modeItemText: {
+        color: Color.Gray
+    },
+    modeItemSelectedText: {
+        color: Color.White
     },
 })
 

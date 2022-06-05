@@ -44,6 +44,7 @@ const MastersControl = ({
             >
                 <AddMaster 
                     {...{
+                        masters,
                         setMasters,
                         services
                     }}

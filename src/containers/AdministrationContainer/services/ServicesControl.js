@@ -11,7 +11,8 @@ const MODE_ADD_SERVICE = 2
 const ServicesControl = ({
     masters,
     services,
-    setServices
+    setServices,
+    workplaces
 }) => {
 
     const [selectedMode, setSelectedMode] = useState(MODE_NONE)
@@ -32,7 +33,8 @@ const ServicesControl = ({
                 <EditService 
                     {...{
                         services,
-                        masters
+                        masters,
+                        workplaces
                     }}
                 />
                 </DropDownSection>
@@ -44,7 +46,9 @@ const ServicesControl = ({
                 <AddService 
                     {...{
                         masters,
-                        setServices
+                        services,
+                        setServices,
+                        workplaces
                     }}
                 />
             </DropDownSection>

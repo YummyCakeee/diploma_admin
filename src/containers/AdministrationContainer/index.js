@@ -2,7 +2,7 @@ import Slider from "components/Elements/Slider/Slider"
 import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate"
 import globalStyles from "global/styles/styles"
 import React, { useState, useEffect } from "react"
-import { StyleSheet, Text, View } from "react-native"
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native"
 import MastersControl from "./masters/MastersControl"
 import axios from "axios"
 import { axiosAPI2 } from "utils/axios"
@@ -11,7 +11,7 @@ import { LoadingIcon, ReloadIcon } from "components/Elements/Icons/Index"
 import { Color } from "global/styles/constants"
 import { useSelector } from "react-redux"
 import { userSelector } from "store/selectors/userSlice"
-import { ENDPOINT_MASTERS, ENDPOINT_SERVICES } from "constants/endpoints"
+import { ENDPOINT_MASTERS, ENDPOINT_SERVICES, ENDPOINT_WORKPLACES } from "constants/endpoints"
 import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
 import ServicesControl from "./services/ServicesControl"
 
@@ -23,6 +23,7 @@ const AdministrationContainer = () => {
 
     const [masters, setMasters] = useState([])
     const [services, setServices] = useState([])
+    const [workplaces, setWorkplaces] = useState([])
     const [modeSliderItems] = useState([
         { text: "Мастера", mode: MODE_MASTERS },
         { text: "Услуги", mode: MODE_SERVICES },
@@ -38,7 +39,6 @@ const AdministrationContainer = () => {
         getMastersAndServices()
     }, [])
 
-
     const getMastersAndServices = async () => {
         setMastersAndServicesLoadingStatus(loadableStatus.LOADING)
         await axios.all(
@@ -48,29 +48,30 @@ const AdministrationContainer = () => {
                 }),
                 axiosAPI2.get(ENDPOINT_MASTERS, {
                     headers: createAuthorizationHeader(userInfo.authToken)
+                }),
+                axiosAPI2.get(ENDPOINT_WORKPLACES, {
+                    headers: createAuthorizationHeader(userInfo.authToken)
                 })
             ]
-        ).then(axios.spread((servicesRes, mastersRes) => {
-            let mastersData = mastersRes.data.data
-            let servicesData = servicesRes.data.data
-            if (mastersData.length === 0 || servicesData.length === 0)
+        ).then(axios.spread((servicesRes, mastersRes, workplacesRes) => {
+            const mastersData = mastersRes.data
+            const servicesData = servicesRes.data
+            const workplacesData = workplacesRes.data
+            if (!mastersData.success || 
+                !servicesData.success || 
+                !workplacesData.success)
                 return
-            mastersData.forEach(el => {
+            mastersData.data.forEach(el => {
                 el.name = el.first_name
                 el.surname = el.second_name
-                el.patronymic = el.third_mame
-                if (el.services) {
-                    el.servicesFormatted = servicesData.
-                        filter(a => el.services.find(b => b === a.id)).map(c => c.name).join(', ')
-                }
-                else el.servicesFormatted = '—'
+                el.patronymic = el.third_mame || ''
+                delete el.first_name
+                delete el.second_name
+                delete el.third_mame
             })
-            servicesData.forEach(el => {
-                el.mastersFormatted = mastersData.
-                    filter(a => el.masters?.find(b => b === a.id)).map(c => c.name).join(', ')
-            })
-            setServices(servicesData)
-            setMasters(mastersData)
+            setServices(servicesData.data)
+            setMasters(mastersData.data)
+            setWorkplaces(workplacesData.data)
             setMastersAndServicesLoadingStatus(loadableStatus.SUCCESS)
         })).catch(err => {
             setMastersAndServicesLoadingStatus(loadableStatus.FAIL)
@@ -133,7 +134,8 @@ const AdministrationContainer = () => {
                                 {...{
                                     masters,
                                     services,
-                                    setServices
+                                    setServices,
+                                    workplaces
                                 }}
                             />
                         </Loadable>

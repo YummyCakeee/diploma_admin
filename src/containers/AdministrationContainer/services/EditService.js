@@ -11,19 +11,30 @@ import { Formik, Field } from "formik"
 import { getColorWithOpacity } from "global/styles/utils"
 import EditServiceMainData from "./EditServiceMainData"
 import { priceFormatter, timeFormatter } from "utils/formatters"
+import { axiosAPI2 } from "utils/axios"
+import { createServiceEndpoint } from "utils/apiHelpers/endpointGenerators"
+import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
+import { useSelector } from "react-redux"
+import { userSelector } from "store/selectors/userSlice"
+import Toast from 'react-native-simple-toast'
 
-const EditService = ({services, masters}) => {
+const EditService = ({
+    services,
+    masters,
+    workplaces
+}) => {
 
     const [mastersCopy, setMastersCopy] = useState([])
     const [selectedMaster, setSelectedMaster] = useState(0)
     const [selectedService, setSelectedService] = useState(0)
+    const userInfo = useSelector(userSelector)
 
     useEffect(() => {
         setMastersCopy(masters.map(el => {
             return {
                 ...el,
-                services: [...el.services],
-                selected: services[selectedService]?.masters.some(master => master === el.id)
+                services: el.services ? [...el.services] : [],
+                selected: services[selectedService]?.masters?.some(master => master === el.id)
             }
         }))
     }, [services, masters, selectedService])
@@ -36,7 +47,28 @@ const EditService = ({services, masters}) => {
         setSelectedService(services.findIndex(el => el.id === service.id))
     }
 
-    const onSubmit = (values) => {
+    const onSubmit = async (values) => {
+        const data = {
+            name: values.name,
+            description: values.description,
+            duration: values.duration,
+            price: values.price,
+            workplace_id: workplaces[0].id,
+            masters: values.masters.map((el, index) => 
+                el === 'true' ? masters[index].id : null
+            ).filter(val => val)
+        }
+        return axiosAPI2.put(createServiceEndpoint(services[selectedService].id), data, 
+        {
+            headers: createAuthorizationHeader(userInfo.authToken)
+        })
+        .then(res => {
+            console.log(res.data)
+        })
+        .catch(err => {
+            Toast.show("Ошибка: Не удалось обновить данные об услуге")
+            console.log(err.response.data)
+        })
     }
 
     return (
@@ -49,6 +81,7 @@ const EditService = ({services, masters}) => {
                 price: priceFormatter(services[selectedService].price),
                 masters: mastersCopy.map(el => el.selected ? 'true' : 'false')
             }}
+            validateOnMount
             onSubmit={onSubmit}
         >
             {({ handleSubmit, isValid, isSubmitting }) => (
@@ -152,8 +185,8 @@ const EditService = ({services, masters}) => {
                     <Button
                         title="Сохранить изменения"
                         size="large"
-                        disabled={!isValid || isSubmitting}
                         primary
+                        disabled={isSubmitting || !isValid}
                         onPress={handleSubmit}
                         style={[
                             globalStyles.centeredElement

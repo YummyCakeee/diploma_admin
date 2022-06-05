@@ -144,12 +144,12 @@ const ServiceNodeDateTime = ({
                 </Text>
                 <Loadable
                     status={datesLoadingStatus}
-                    onLoadingComponent={
+                    onLoadingComponent={() => (
                         <GradientLoading
                             style={styles.timeAndDateLoading}
                         />
-                    }
-                    onFailComponent={
+                    )}
+                    onFailComponent={() => (
                         <View>
                             <TouchableOpacity
                                 onPress={getDates}
@@ -164,13 +164,23 @@ const ServiceNodeDateTime = ({
                                 </Text>
                             </TouchableOpacity>
                         </View>
-                    }
+                    )}
                 >
+                    {dates ?
                     <Slider
                         items={dates}
                         onItemSelected={onDateSelected}
                         horizontal
-                    />
+                    /> :
+                    <Text
+                    style={[
+                        globalStyles.text,
+                        globalStyles.centeredElement
+                    ]}
+                >
+                    У мастера нет свободных дат
+                </Text>
+}
                 </Loadable>
             </View>
             <View>
@@ -184,12 +194,12 @@ const ServiceNodeDateTime = ({
                 </Text>
                 <Loadable
                     status={timesLoadingStatus}
-                    onLoadingComponent={
+                    onLoadingComponent={() => (
                         <GradientLoading
                             style={styles.timeAndDateLoading}
                         />
-                    }
-                    onFailComponent={
+                    )}
+                    onFailComponent={() => (
                         <View>
                             <TouchableOpacity
                                 onPress={getTimes}
@@ -204,16 +214,26 @@ const ServiceNodeDateTime = ({
                                 </Text>
                             </TouchableOpacity>
                         </View>
-                    }
+                    )}
                 >
                     <View
                         style={styles.timeListContainer}
                     >
-                        <Slider
-                            items={times}
-                            onItemSelected={onTimeSelected}
-                            horizontal
-                        />
+                        {times ?
+                            <Slider
+                                items={times}
+                                onItemSelected={onTimeSelected}
+                                horizontal
+                            /> :
+                            <Text
+                                style={[
+                                    globalStyles.text,
+                                    globalStyles.centeredElement
+                                ]}
+                            >
+                                На эту дату нет свободного времени
+                            </Text>
+                        }
                     </View>
                 </Loadable>
             </View>

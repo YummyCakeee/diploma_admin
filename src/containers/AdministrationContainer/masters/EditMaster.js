@@ -24,8 +24,8 @@ const EditMaster = ({masters, services}) => {
         setServicesCopy(services.map(el => {
             return {
                 ...el,
-                masters: [...el.masters],
-                selected: masters[selectedMaster]?.services.some(service => service === el.id)
+                masters: el.masters ? [...el.masters] : [],
+                selected: masters[selectedMaster]?.services?.some(service => service === el.id)
             }
         }))
     }, [services, masters, selectedMaster])

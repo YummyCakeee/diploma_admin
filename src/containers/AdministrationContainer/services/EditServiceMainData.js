@@ -23,6 +23,7 @@ const EditServiceMainData = () => {
                     name="description"
                     component={FormFieldInput}
                     label="Описание:"
+                    multiline
                 />
                 <Field
                     name="duration"

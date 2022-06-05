@@ -1,6 +1,6 @@
 import Button from "components/Elements/Button/Button"
 import { Formik } from "formik"
-import React, { useEffect, useState } from "react"
+import React from "react"
 import { StyleSheet, View, Text } from "react-native"
 import EditMasterPersonalData from "./EditMasterPersonalData"
 import { Field } from "formik"
@@ -10,25 +10,65 @@ import FormCheckbox from "containers/Forms/FormCheckbox"
 import globalStyles from "global/styles/styles"
 import { Color } from "global/styles/constants"
 import { getColorWithOpacity } from "global/styles/utils"
+import { axiosAPI2 } from "utils/axios"
+import { ENDPOINT_MASTERS } from "constants/endpoints"
+import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
+import { useSelector } from "react-redux"
+import { userSelector } from "store/selectors/userSlice"
+import Toast from 'react-native-simple-toast'
+import { simplePhoneNumberFormatter } from "utils/formatters"
 
 const AddMaster = ({
+    masters,
     setMasters,
     services
 }) => {
 
-    const [servicesCopy, setServicesCopy] = useState([])
-    useEffect(() => {
-        setServicesCopy(services.map(el => {
-            return {
-                ...el,
-                masters: [...el.masters],
-                selected: false
-            }
-        }))
-    }, [services])
+    const userInfo = useSelector(userSelector)
 
-    const onSubmit = (values) => {
-
+    const onSubmit = async (values) => {
+        const data = {
+            first_name: values.name,
+            second_name: values.surname,
+            third_name: values.patronymic,
+            phone: simplePhoneNumberFormatter(values.phone),
+            email: values.email,
+            password: values.password,
+            services: values.services.map((el, index) =>
+                el === 'true' ? services[index].id : null
+            ).filter(val => val)
+        }
+        return axiosAPI2.post(ENDPOINT_MASTERS, data,
+            {
+                headers: createAuthorizationHeader(userInfo.authToken)
+            })
+            .then(res => {
+                const resData = res.data
+                if (resData.success) {
+                    values.name = ''
+                    values.surname = ''
+                    values.patronymic = ''
+                    values.phone = ''
+                    values.email = ''
+                    values.password = ''
+                    const newMaster = {
+                        id: resData.data.id,
+                        name: resData.data.first_name,
+                        surname: resData.data.second_name,
+                        patronymic: resData.data.third_name,
+                        phone: resData.data.phone,
+                        email: resData.data.email,
+                        services: resData.data.services,
+                    }
+                    setMasters([...masters, newMaster])
+                    Toast.show("Мастер был успешно добавлен")
+                }
+                else Toast.show(`Ошибка: ${resData.data.message}`)
+            })
+            .catch(err => {
+                Toast.show("Ошибка: Не удалось добавить мастера")
+                console.log(err)
+            })
     }
 
     return (
@@ -42,11 +82,11 @@ const AddMaster = ({
                     phone: '+7',
                     email: '',
                     password: '',
-                    services: servicesCopy.map(el => el.selected ? 'true' : 'false')
+                    services: services.map(el => 'false')
                 }}
                 enableReinitialize
             >
-                {({ handleSubmit }) => (
+                {({ handleSubmit, isSubmitting, isValid }) => (
                     <>
                         <Text
                             style={globalStyles.title}
@@ -62,7 +102,7 @@ const AddMaster = ({
                             Услуги мастера
                         </Text>
                         <Slider
-                            data={servicesCopy}
+                            data={services}
                             itemComponent={({ item, isSelected, index }) => (
                                 <View
                                     style={styles.sliderItem}
@@ -92,6 +132,8 @@ const AddMaster = ({
                         >
                             <Button
                                 title="Сохранить"
+                                primary
+                                disabled={isSubmitting || !isValid}
                                 onPress={handleSubmit}
                             />
                         </View>

@@ -7,9 +7,11 @@ import {
     ENDPOINT_ADMINS,
 } from "constants/endpoints"
 
+export const createServiceEndpoint = (serviceId) =>
+    `${ENDPOINT_SERVICES}/${serviceId}`
 
 export const createServicesAvailableTimeEndpoint = (serviceId) =>
-    `${ENDPOINT_SERVICES}/${serviceId}/available_time`
+    `${createServiceEndpoint(serviceId)}/available_time`
 
 export const createAppointmentIdEndpoint = (appointmentId) =>
     `${ENDPOINT_APPOINTMENTS}/${appointmentId}`

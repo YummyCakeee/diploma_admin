@@ -132,11 +132,13 @@ const ServiceRecordsContainer = () => {
                         style={styles.modalButtonContainer}
                     >
                         <Button
+                            primary
                             title="Да"
                             size="small"
                             onPress={onRemoveNodeConfirm}
                         />
                         <Button
+                            primary
                             title="Нет"
                             size="small"
                             onPress={() => setIsShowModal(false)}
@@ -153,7 +155,7 @@ const ServiceRecordsContainer = () => {
             </View>
             <Loadable
                 status={ordersLoadingStatus}
-                onLoadingComponent={
+                onLoadingComponent={() => (
                     <View
                         style={styles.onLoadingContainer}
                     >
@@ -176,8 +178,8 @@ const ServiceRecordsContainer = () => {
                             />
                         </View>
                     </View>
-                }
-                onFailComponent={
+    )}
+                onFailComponent={() => (
                     <View
                         style={styles.onFailContainer}
                     >
@@ -219,7 +221,7 @@ const ServiceRecordsContainer = () => {
                             />
                         </View>
                     </View>
-                }
+    )}
             >
                 {orders.length > 0 ? (
                     <>
@@ -339,6 +341,7 @@ const ServiceRecordsContainer = () => {
                             ]}
                         >
                             <Button
+                                    primary
                                 title="Записаться"
                                 onPress={onSignForServiceButtonPress}
                             />
@@ -350,6 +353,7 @@ const ServiceRecordsContainer = () => {
                             ]}
                         >
                             <Button
+                                primary
                                 title="Вернуться на главную"
                                 size="large"
                                 onPress={onGoToMainScreenButtonPress}

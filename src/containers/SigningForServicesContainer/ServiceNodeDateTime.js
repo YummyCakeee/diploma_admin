@@ -13,6 +13,7 @@ import {
 } from "utils/apiHelpers/endpointGenerators"
 import { useSelector } from "react-redux"
 import Toast from 'react-native-simple-toast'
+import { Color } from "global/styles/constants"
 
 const ServiceNodeDateTime = ({
     selectedMaster,
@@ -166,21 +167,33 @@ const ServiceNodeDateTime = ({
                         </View>
                     )}
                 >
-                    {dates ?
-                    <Slider
-                        items={dates}
-                        onItemSelected={onDateSelected}
-                        horizontal
-                    /> :
-                    <Text
-                    style={[
-                        globalStyles.text,
-                        globalStyles.centeredElement
-                    ]}
-                >
-                    У мастера нет свободных дат
-                </Text>
-}
+                    {dates.length ?
+                        <Slider
+                            data={dates}
+                            onItemSelected={onDateSelected}
+                            horizontal
+                            itemComponent={({ isSelected, item }) => (
+                                <Text
+                                    style={[
+                                        globalStyles.text,
+                                        isSelected ?
+                                            styles.sliderElementSelectedText :
+                                            styles.sliderElementText
+                                    ]}
+                                >
+                                    {item.text}
+                                </Text>
+                            )}
+                        /> :
+                        <Text
+                            style={[
+                                globalStyles.text,
+                                globalStyles.centeredElement
+                            ]}
+                        >
+                            У мастера нет свободных дат
+                        </Text>
+                    }
                 </Loadable>
             </View>
             <View>
@@ -219,11 +232,23 @@ const ServiceNodeDateTime = ({
                     <View
                         style={styles.timeListContainer}
                     >
-                        {times ?
+                        {times.length ?
                             <Slider
-                                items={times}
+                                data={times}
                                 onItemSelected={onTimeSelected}
                                 horizontal
+                                itemComponent={({ isSelected, item }) => (
+                                    <Text
+                                        style={[
+                                            globalStyles.text,
+                                            isSelected ?
+                                                styles.sliderElementSelectedText :
+                                                styles.sliderElementText
+                                        ]}
+                                    >
+                                        {item.text}
+                                    </Text>
+                                )}
                             /> :
                             <Text
                                 style={[
@@ -250,7 +275,13 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         opacity: 0.5,
         marginVertical: 5
-    }
+    },
+    sliderElementText: {
+        color: Color.Gray,
+    },
+    sliderElementSelectedText: {
+        color: Color.White,
+    },
 })
 
 export default ServiceNodeDateTime

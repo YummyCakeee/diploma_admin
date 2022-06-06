@@ -236,6 +236,7 @@ const AddServiceNode = ({
                 </Text>
             )}
             <Button
+                primary
                 title={stage === STAGE_DATE_TIME_SELECT ?
                     "Добавить услугу" :
                     "Далее"

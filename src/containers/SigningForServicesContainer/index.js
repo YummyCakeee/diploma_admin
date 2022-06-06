@@ -187,7 +187,7 @@ const SigningForServicesContainer = () => {
             <Text style={globalStyles.pageTitle}>Запись на услуги</Text>
             <Loadable
                 status={loadingStatus}
-                onLoadingComponent={
+                onLoadingComponent={() => (
                     <View
                         style={styles.onLoadingContainer}
                     >
@@ -210,8 +210,8 @@ const SigningForServicesContainer = () => {
                             />
                         </View>
                     </View>
-                }
-                onFailComponent={
+    )}
+                onFailComponent={() => (
                     <View
                         style={styles.onFailContainer}
                     >
@@ -247,13 +247,14 @@ const SigningForServicesContainer = () => {
                             ]}
                         >
                             <Button
+                                primary
                                 title="Вернуться на главную"
                                 size="large"
                                 onPress={onGoToMainScreenButtonPress}
                             />
                         </View>
                     </View>
-                }
+    )}
             >
                 <View
                     style={styles.container}
@@ -286,6 +287,7 @@ const SigningForServicesContainer = () => {
                     >
                         <SectionSeparator />
                         <Button
+                            primary
                             title="Подтвердить услуги"
                             size="large"
                             onPress={onSubmitServices}

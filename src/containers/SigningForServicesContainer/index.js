@@ -210,7 +210,7 @@ const SigningForServicesContainer = () => {
                             />
                         </View>
                     </View>
-    )}
+                )}
                 onFailComponent={() => (
                     <View
                         style={styles.onFailContainer}
@@ -254,7 +254,7 @@ const SigningForServicesContainer = () => {
                             />
                         </View>
                     </View>
-    )}
+                )}
             >
                 <View
                     style={styles.container}

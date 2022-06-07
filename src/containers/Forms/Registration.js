@@ -223,6 +223,7 @@ const Registration = ({
                             </Text>
                         )}
                         <Button
+                            primary
                             title={
                                 stage === 0 ? 
                                 'Далее' :

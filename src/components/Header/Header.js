@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext } from "react"
 import {
     StyleSheet,
     Text, 
@@ -8,14 +8,23 @@ import {
 import { HamburgerIcon } from "components/Elements/Icons/Index"
 import { useNavigation } from "@react-navigation/core"
 import { Color } from "global/styles/constants"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
 
 const Header = ({hamburgerIcon = true}) => {
+
+    const globalStyles = useContext(GlobalStylesContext)
     const navigation = useNavigation()
     const onHamburgerPress = () => {
         navigation.openDrawer()
     }
+    
     return (
-        <Animated.View style={styles.container}>
+        <Animated.View 
+            style={[
+                styles.container,
+                globalStyles.header?.container
+            ]}
+        >
             {hamburgerIcon ?
             <TouchableOpacity
                 style={styles.hamburger}

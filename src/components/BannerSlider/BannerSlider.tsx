@@ -20,7 +20,7 @@ const BannerSlider: React.FC<bannerSliderProps> = ({
 
     const [extendedItems, setExtendedItems] = useState<React.FC[]>([...items])
     const scrollPositionX = useRef<number>(itemsPerInterval * 100)
-    const itemWidth = useRef<number>(100)
+    const [itemWidth, setItemWidth] = useState<number>(100)
     const scroll = useRef<ScrollView>(null)
 
     useEffect(() => {
@@ -46,13 +46,14 @@ const BannerSlider: React.FC<bannerSliderProps> = ({
     const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
         const scrollPos = e.nativeEvent.contentOffset.x
         const scrollContentWidth = e.nativeEvent.contentSize.width
-        itemWidth.current = scrollContentWidth / extendedItems.length
+        const itemWidth = scrollContentWidth / extendedItems.length
+        setItemWidth(itemWidth)
         const itemsPosThreshold = 
-            (extendedItems.length - itemsPerInterval - 1) * itemWidth.current
+            (extendedItems.length - itemsPerInterval - 1) * itemWidth
 
         if (Math.floor(scrollPos) > Math.floor(itemsPosThreshold)) {
             const offset = Math.floor(scrollPos - itemsPosThreshold)
-            const newPosition = itemWidth.current * (itemsPerInterval + 1) + offset 
+            const newPosition = itemWidth * (itemsPerInterval + 1) + offset 
             scroll.current?.scrollTo({
                 x: newPosition,
                 animated: false
@@ -60,7 +61,7 @@ const BannerSlider: React.FC<bannerSliderProps> = ({
         }
         else if (Math.floor(scrollPos) < Math.floor(scrollContentWidth - itemsPosThreshold)) {
             const offset = Math.floor(scrollPos - (scrollContentWidth - itemsPosThreshold))
-            const newPosition = scrollContentWidth - itemWidth.current * (itemsPerInterval + 1) + offset
+            const newPosition = scrollContentWidth - itemWidth * (itemsPerInterval + 1) + offset
             scroll.current?.scrollTo({
                 x: newPosition,
                 animated: false
@@ -70,11 +71,11 @@ const BannerSlider: React.FC<bannerSliderProps> = ({
     }
     
     const scrollToRight = ()  => {
-        const newPosition = scrollPositionX.current + itemWidth.current
-        const containedItems = newPosition / itemWidth.current
+        const newPosition = scrollPositionX.current + itemWidth
+        const containedItems = newPosition / itemWidth
 
         scroll.current?.scrollTo({
-            x: Math.round(containedItems) * itemWidth.current,
+            x: Math.round(containedItems) * itemWidth,
             animated: true
         })
     }
@@ -85,12 +86,11 @@ const BannerSlider: React.FC<bannerSliderProps> = ({
         >
             <ScrollView
                 ref={scroll}
-                snapToInterval={itemWidth.current}
+                snapToInterval={itemWidth}
                 snapToAlignment='center'
                 horizontal
                 decelerationRate={0}
                 showsHorizontalScrollIndicator={false}
-                nestedScrollEnabled
                 style={styles.slider}
                 onScroll={onScroll}
             >

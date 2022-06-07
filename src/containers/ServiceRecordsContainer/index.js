@@ -95,9 +95,11 @@ const ServiceRecordsContainer = () => {
                 setIsShowModal(false)
                 const newOrders = orders.filter((el, i) => selectedOrderIndex !== i)
                 setOrders(newOrders)
+                setSelectedOrderIndex(null)
+                Toast.show("Вы отменили запись")
             }
             else {
-                Toast.show("Не удалось отменить запись")
+                Toast.show("Не удалось отменить запись:" + res.data.message)
             }
         }).catch(err => {
             Toast.show("Что-то пошло не так")
@@ -178,7 +180,7 @@ const ServiceRecordsContainer = () => {
                             />
                         </View>
                     </View>
-    )}
+                )}
                 onFailComponent={() => (
                     <View
                         style={styles.onFailContainer}
@@ -215,13 +217,14 @@ const ServiceRecordsContainer = () => {
                             ]}
                         >
                             <Button
+                                primary
                                 title="Вернуться на главную"
                                 size="large"
                                 onPress={onGoToMainScreenButtonPress}
                             />
                         </View>
                     </View>
-    )}
+                )}
             >
                 {orders.length > 0 ? (
                     <>
@@ -281,7 +284,7 @@ const ServiceRecordsContainer = () => {
                                                 styles.serviceInfoText
                                             ]}
                                         >
-                                            {orders[selectedOrderIndex].service.description}
+                                            {orders[selectedOrderIndex]?.service.description}
                                         </Text>
                                     </View>
 
@@ -303,9 +306,9 @@ const ServiceRecordsContainer = () => {
                                             ]}
                                         >
                                             {[
-                                                orders[selectedOrderIndex].master.surname,
-                                                orders[selectedOrderIndex].master.name,
-                                                orders[selectedOrderIndex].master.patronymic
+                                                orders[selectedOrderIndex]?.master.surname,
+                                                orders[selectedOrderIndex]?.master.name,
+                                                orders[selectedOrderIndex]?.master.patronymic
                                             ].join(' ')}
                                         </Text>
                                     </View>
@@ -341,7 +344,7 @@ const ServiceRecordsContainer = () => {
                             ]}
                         >
                             <Button
-                                    primary
+                                primary
                                 title="Записаться"
                                 onPress={onSignForServiceButtonPress}
                             />
@@ -353,7 +356,6 @@ const ServiceRecordsContainer = () => {
                             ]}
                         >
                             <Button
-                                primary
                                 title="Вернуться на главную"
                                 size="large"
                                 onPress={onGoToMainScreenButtonPress}

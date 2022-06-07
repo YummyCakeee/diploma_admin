@@ -51,11 +51,10 @@ const ServiceNodeDateTime = ({
             })
             .then(res => {
                 const data = res.data.data
-                if (data === null) throw { response: { data: { message: 'У мастера нет свободных дат' } } }
                 const daysOfWeek = [
                     'Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'
                 ]
-                const date = data.map(el => {
+                const date = data?.map(el => {
                     el = el.startDate.replace(/T[\w | \d | - | :]*/, '')
                     const dayOfWeek = daysOfWeek[(new Date(el)).getDay()]
                     return {
@@ -66,7 +65,7 @@ const ServiceNodeDateTime = ({
                 setDates(date)
                 setDatesLoadingStatus(loadableStatus.SUCCESS)
             }).catch(err => {
-                Toast.show(err.response.data.message)
+                Toast.show('Произошла ошибка')
             })
     }
 
@@ -196,72 +195,74 @@ const ServiceNodeDateTime = ({
                     }
                 </Loadable>
             </View>
-            <View>
-                <Text
-                    style={[
-                        globalStyles.text,
-                        globalStyles.centeredElement
-                    ]}
-                >
-                    Время:
-                </Text>
-                <Loadable
-                    status={timesLoadingStatus}
-                    onLoadingComponent={() => (
-                        <GradientLoading
-                            style={styles.timeAndDateLoading}
-                        />
-                    )}
-                    onFailComponent={() => (
-                        <View>
-                            <TouchableOpacity
-                                onPress={getTimes}
-                            >
+            {dates.length > 0 && (
+                <View>
+                    <Text
+                        style={[
+                            globalStyles.text,
+                            globalStyles.centeredElement
+                        ]}
+                    >
+                        Время:
+                    </Text>
+                    <Loadable
+                        status={timesLoadingStatus}
+                        onLoadingComponent={() => (
+                            <GradientLoading
+                                style={styles.timeAndDateLoading}
+                            />
+                        )}
+                        onFailComponent={() => (
+                            <View>
+                                <TouchableOpacity
+                                    onPress={getTimes}
+                                >
+                                    <Text
+                                        style={[
+                                            globalStyles.text,
+                                            globalStyles.centeredElement
+                                        ]}
+                                    >
+                                        Не удалось загрузить. Нажмите, чтобы обновить
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    >
+                        <View
+                            style={styles.timeListContainer}
+                        >
+                            {times.length ?
+                                <Slider
+                                    data={times}
+                                    onItemSelected={onTimeSelected}
+                                    horizontal
+                                    itemComponent={({ isSelected, item }) => (
+                                        <Text
+                                            style={[
+                                                globalStyles.text,
+                                                isSelected ?
+                                                    styles.sliderElementSelectedText :
+                                                    styles.sliderElementText
+                                            ]}
+                                        >
+                                            {item.text}
+                                        </Text>
+                                    )}
+                                /> :
                                 <Text
                                     style={[
                                         globalStyles.text,
                                         globalStyles.centeredElement
                                     ]}
                                 >
-                                    Не удалось загрузить. Нажмите, чтобы обновить
+                                    На эту дату нет свободного времени
                                 </Text>
-                            </TouchableOpacity>
+                            }
                         </View>
-                    )}
-                >
-                    <View
-                        style={styles.timeListContainer}
-                    >
-                        {times.length ?
-                            <Slider
-                                data={times}
-                                onItemSelected={onTimeSelected}
-                                horizontal
-                                itemComponent={({ isSelected, item }) => (
-                                    <Text
-                                        style={[
-                                            globalStyles.text,
-                                            isSelected ?
-                                                styles.sliderElementSelectedText :
-                                                styles.sliderElementText
-                                        ]}
-                                    >
-                                        {item.text}
-                                    </Text>
-                                )}
-                            /> :
-                            <Text
-                                style={[
-                                    globalStyles.text,
-                                    globalStyles.centeredElement
-                                ]}
-                            >
-                                На эту дату нет свободного времени
-                            </Text>
-                        }
-                    </View>
-                </Loadable>
-            </View>
+                    </Loadable>
+                </View>
+            )}
         </View>
     )
 }

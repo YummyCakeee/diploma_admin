@@ -317,6 +317,7 @@ const Authorization = ({
                             </Text>
                         )}
                         <Button
+                            primary
                             title={
                                 stage === 0 ?
                                     usePassword ?

@@ -90,9 +90,12 @@ const AddServiceNode = ({
 
     const setMasterListItems = (items, showServices = false) => {
         setListItems(items?.map(elem => (
-            { text: elem.name, tag: elem }
+            { text: `${elem.name} ${elem.surname}`, tag: elem }
         )))
-        const fields = [{ name: 'name', title: 'Имя' }]
+        const fields = [
+            { name: 'name', title: 'Имя' },
+            { name: 'surname', title: 'Фамилия' }
+        ]
         if (showServices)
             fields.push({ name: 'servicesFormatted', title: 'Услуги' })
         setListFields(fields)
@@ -194,7 +197,7 @@ const AddServiceNode = ({
                         style={globalStyles.text}
                     >
                         {mode === MODE_MASTER ?
-                            `Мастер: ${selectedMaster.name}` :
+                            `Мастер: ${selectedMaster.name} ${selectedMaster.surname}` :
                             `Услуга: ${selectedService.name}`}
                     </Text>
                 )}
@@ -204,7 +207,7 @@ const AddServiceNode = ({
                     >
                         {mode === MODE_MASTER ?
                             `Услуга: ${selectedService.name}` :
-                            `Мастер: ${selectedMaster.name}`}
+                            `Мастер: ${selectedMaster.name} ${selectedMaster.surname}`}
                     </Text>
                 )}
 

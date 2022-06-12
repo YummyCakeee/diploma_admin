@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { StyleSheet, View, Text, TextInput } from "react-native"
+import { StyleSheet, View } from "react-native"
 import { hexToHSL, hslToHex } from "global/styles/utils"
 import ColorSlider from "../ColorSlider/ColorSlider"
 import { Color } from "global/styles/constants"

@@ -1,6 +1,6 @@
 import { Color } from 'global/styles/constants'
 import React from 'react'
-import { StyleSheet, Text, TextInput, View } from 'react-native'
+import { StyleProp, StyleSheet, Text, TextInput, View, ViewStyle } from 'react-native'
 import AnimatedFieldError from '../AnimatedFieldError/AnimatedFieldError'
 
 type inputFieldProps = {
@@ -10,7 +10,8 @@ type inputFieldProps = {
     keyboardType?: 'default' | 'phone-pad' | 'decimal-pad',
     mask?: (value: string) => string,
     error: string,
-    style?: {},
+    containerStyle?: StyleProp<ViewStyle>
+    style?: StyleProp<ViewStyle>
 }
 
 const InputField: React.FC<inputFieldProps> =
@@ -20,23 +21,29 @@ const InputField: React.FC<inputFieldProps> =
         label = "",
         mask = (value) => value,
         error = '',
+        containerStyle,
         style,
         ...props
     }) => {
 
         return (
             <View
-                style={[styles.container, style]}
+                style={[styles.container, containerStyle]}
             >
                 <View style={styles.inputField}>
-                    <Text style={styles.inputLabel}>
-                        {label}
-                    </Text>
-                    <TextInput 
+                    {label.length > 0 && 
+                        <Text style={styles.inputLabel}>
+                            {label}
+                        </Text>
+                    }
+                    <TextInput
                         value={value}
                         onChangeText={value => onChange(mask(value))}
                         placeholderTextColor={Color.Gray}
-                        style={styles.inputText}
+                        style={[
+                            styles.inputText,
+                            style
+                        ]}
                         {...props}
                     />
                 </View>
@@ -52,7 +59,6 @@ const InputField: React.FC<inputFieldProps> =
 
 const styles = StyleSheet.create({
     container: {
-        position: 'relative',
         marginHorizontal: 5,
     },
     inputField: {
@@ -72,7 +78,8 @@ const styles = StyleSheet.create({
         color: '#fff',
         width: 200,
         fontSize: 16,
-        paddingBottom: 0,
+        paddingVertical: 0,
+        flexShrink: 2,
     },
 })
 

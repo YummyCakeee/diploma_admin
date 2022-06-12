@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { View, TouchableOpacity, Text } from "react-native";
-import globalStyles from "../../../global/styles/styles";
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper";
+import React, { useContext, useState } from "react";
+import { TouchableOpacity, Text } from "react-native";
 
 type buttonProps = {
     title: string,
@@ -24,6 +24,8 @@ const Button: React.FC<buttonProps> = ({
     const width =
         size === 'small' ? 100 :
             size === 'medium' ? 150 : 200
+
+    const globalStyles = useContext(GlobalStylesContext)
     return (
         <TouchableOpacity
             activeOpacity={1}

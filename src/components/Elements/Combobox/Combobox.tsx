@@ -6,34 +6,36 @@ import {
 import { TriangleIcon } from '../Icons/Index'
 import { withAnchorPoint } from 'react-native-anchor-point';
 import LinearGradient from 'react-native-linear-gradient';
+import ItemSlider, { sliderItemType, sliderItemComponentType } from '../ItemSlider/ItemSlider';
 
 type comboboxProps = {
-    items?: itemType[],
+    data: sliderItemType[],
+    headerComponent: React.FC<headerComponentType>
+    itemComponent: React.FC<sliderItemComponentType>,
+    splitterComponent?: React.FC,
     isEmptyChoiceOnInit: boolean,
-    initialSelectedItem: itemType | undefined,
-    onSelectItem: (item: itemType) => void,
+    initialSelectedItemIndex: number,
+    onItemSelected?: (item: sliderItemType) => void,
     label: string,
-    sorted: boolean,
-    onTouchStart: () => void,
-    onTouchEnd: () => void,
     style: {},
 }
 
-type itemType = {
-    text: string,
-    tag: any
+type headerComponentType = {
+    item: sliderItemType | null
 }
 
 const Combobox: React.FC<comboboxProps> = ({
-    items,
+    data,
+    itemComponent,
+    splitterComponent,
+    headerComponent,
     isEmptyChoiceOnInit = false,
-    initialSelectedItem = undefined,
-    onSelectItem = (item) => { },
+    initialSelectedItemIndex = 0,
+    onItemSelected = () => {},
     label = "",
-    sorted = false,
     style = {}
 }) => {
-    const [selectedItem, setSelectedItem] = useState<itemType | null>(null)
+    const [selectedItem, setSelectedItem] = useState<sliderItemType | null>(null)
     const [isOpen, setIsOpen] = useState(false)
     const comboboxOpacity = useRef(new Animated.Value(0)).current
     const comboboxHeight = useRef(new Animated.Value(0)).current
@@ -44,6 +46,10 @@ const Combobox: React.FC<comboboxProps> = ({
         if (isOpen) showCombobox()
         else hideCombobox()
     }, [isOpen])
+
+    useEffect(() => {
+
+    }, [isEmptyChoiceOnInit, initialSelectedItemIndex])
     
     useEffect(() => {
         setTriangleRotationFormated(
@@ -53,29 +59,14 @@ const Combobox: React.FC<comboboxProps> = ({
             }))
     }, [triangleRotation])
 
-    useEffect(() => {
-        if (!isEmptyChoiceOnInit)
-            setSelectedItem(
-                initialSelectedItem ?
-                    initialSelectedItem :
-                    items ? items[0] : null)
-    }, [initialSelectedItem, items])
-
-    const getSortedItems = useCallback(() => {
-        if (!sorted) return items
-        return items?.sort((a, b) => a.text.localeCompare(b.text))
-    }, [items, sorted])
-
     const onHeadPress = () => {
-        if (items) setIsOpen(!isOpen)
+        if (data?.length) setIsOpen(!isOpen)
     }
 
-    const onComboboxItemPress = (item: itemType) => {
-        if (isOpen) {
-            setSelectedItem(item)
-            onSelectItem(item)
-            setIsOpen(false)
-        }
+    const onComboboxItemSelected = (item: sliderItemType) => {
+        setSelectedItem(item)
+        onItemSelected(item)
+        setIsOpen(false)
     }
 
     const showCombobox = () => {
@@ -114,6 +105,8 @@ const Combobox: React.FC<comboboxProps> = ({
         }).start()
     }
 
+    const HeaderComponent = headerComponent
+
     return (
         <View style={[styles.combobox, style]}>
             {label.length > 0 && (
@@ -123,23 +116,20 @@ const Combobox: React.FC<comboboxProps> = ({
             )}
             <View style={styles.comboboxContainer}>
                 <TouchableOpacity
-                    style={styles.selectedItem}
+                    style={styles.selectedItemContainer}
                     onPress={onHeadPress}
                     activeOpacity={1}
                 >
-                    <Text
-                        style={styles.selectedItemText}
-                        numberOfLines={1}
-                    >
-                        {selectedItem?.text}
-                    </Text>
                     <Animated.View
                         style={
-                            [withAnchorPoint(
-                                { transform: [{ rotateZ: triangleRotationFormated }] },
-                                { x: 0.5, y: 0.6 },
-                                { width: 12, height: 12 }
-                            ), styles.comboboxTriangleContainer]
+                            [
+                                withAnchorPoint(
+                                    { transform: [{ rotateZ: triangleRotationFormated }] },
+                                    { x: 0.5, y: 0.6 },
+                                    { width: 12, height: 12 }
+                                ),
+                                styles.comboboxTriangleContainer
+                            ]
                         }>
                         <TriangleIcon
                             color="rgb(80, 80, 110)"
@@ -147,6 +137,9 @@ const Combobox: React.FC<comboboxProps> = ({
                             height={12}
                         />
                     </Animated.View>
+                    <HeaderComponent
+                        item={selectedItem}
+                    />
                 </TouchableOpacity>
                 <Animated.View
                     style={[
@@ -161,28 +154,14 @@ const Combobox: React.FC<comboboxProps> = ({
                         colors={['rgba(140, 195, 195, 0.45)', 'rgba(120, 120, 195, 0.75)']}
                         style={styles.comboboxContentGradient}
                     >
-                        <ScrollView
-                            nestedScrollEnabled
-                            style={styles.comboboxContentScroll}
-                        >
-                            {getSortedItems()?.map((el, index) => (
-                                <View style={styles.comboboxItem} key={index}>
-                                    <Text
-                                        onPress={() => onComboboxItemPress(el)}
-                                        style={styles.comboboxItemText}
-                                    >
-                                        {el.text}
-                                    </Text>
-                                    <LinearGradient
-                                        colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.5)', 'rgba(0, 0, 0, 0)']}
-                                        style={styles.itemsSplitter}
-                                        start={{ x: 0, y: 0.5 }}
-                                        end={{ x: 1, y: 0.5 }}
-                                    />
-                                </View>
-                            )
-                            )}
-                        </ScrollView>
+                        <ItemSlider 
+                            {...{
+                                data,
+                                itemComponent,
+                                splitterComponent,
+                                onItemSelected: onComboboxItemSelected
+                            }}
+                        />
                     </LinearGradient>
                 </Animated.View>
             </View>
@@ -204,7 +183,7 @@ const styles = StyleSheet.create({
         marginRight: 30,
         fontSize: 16,
     },
-    selectedItem: {
+    selectedItemContainer: {
         color: '#fff',
         borderColor: '#fff',
         borderRadius: 5,
@@ -214,19 +193,12 @@ const styles = StyleSheet.create({
         width: 130,
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-    },
-    selectedItemText: {
-        fontSize: 14,
-        color: "#fff",
-        width: 100,
-    },
-    comboboxTriangle: {
     },
     comboboxTriangleContainer: {
         width: 12,
         height: 12,
+        marginRight: 10,
     },
     comboboxContainer: {
         display: 'flex',

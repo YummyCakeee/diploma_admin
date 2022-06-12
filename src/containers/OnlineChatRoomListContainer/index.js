@@ -17,7 +17,7 @@ import { TouchableOpacity } from "react-native-gesture-handler"
 const OnlineChatRoomListContainer = () => {
     const userInfo = useSelector(userSelector)
     const [chatRooms, setChatRooms] = useState([])
-    const cancelToken = axios.CancelToken.source()
+    const controller = new AbortController()
     const [loadingStatus, setLoadingStatus] = useState(loadableStatus.LOADING)
 
     useEffect(() => {
@@ -30,7 +30,7 @@ const OnlineChatRoomListContainer = () => {
             }, 5000);
 
         return () => {
-            cancelToken.cancel()
+            controller.abort()
             clearInterval(updateChatsInterval)
         }
     }, [])
@@ -41,7 +41,7 @@ const OnlineChatRoomListContainer = () => {
         }
         await axiosAPI2.get(ENDPOINT_CHATS, {
             headers: createAuthorizationHeader(userInfo.authToken),
-            cancelToken: cancelToken.token,
+            signal: controller.signal
         }).then(res => {
             const data = res.data
             if (data.success)
@@ -53,9 +53,7 @@ const OnlineChatRoomListContainer = () => {
                 ))
             setLoadingStatus(loadableStatus.SUCCESS)
         }).catch(err => {
-            if (!axios.isCancel(err)) {
                 setLoadingStatus(loadableStatus.FAIL)
-            }
         })
     }
 

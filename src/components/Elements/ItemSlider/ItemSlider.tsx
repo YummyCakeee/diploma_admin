@@ -3,17 +3,18 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, StyleSheet, TouchableOpacity, ScrollView, LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native'
 
 type sliderProps = {
-    itemComponent: React.FC<itemComponentType>,
+    itemComponent: React.FC<sliderItemComponentType>,
     splitterComponent?: React.FC,
-    data: itemType[],
-    onItemSelected: (item: itemType) => void,
-    initialSelectedItemPredicate?: (item: itemType) => boolean,
-    horizontal: boolean,
+    bottomComponent?: React.FC,
+    data: sliderItemType[],
+    onItemSelected?: (item: sliderItemType) => void,
+    initialSelectedItemPredicate?: (item: sliderItemType) => boolean,
+    horizontal?: boolean,
     style?: StyleProp<ViewStyle>
 }
 
-type itemComponentType = {
-    item: itemType,
+export type sliderItemComponentType = {
+    item: sliderItemType,
     isSelected: boolean,
     index: number,
 }
@@ -23,11 +24,12 @@ type scrollSizeType = {
     height: number
 }
 
-type itemType = { [index: string]: any }
+export type sliderItemType = { [index: string]: any }
 
-const Slider: React.FC<sliderProps> = ({
+const ItemSlider: React.FC<sliderProps> = ({
     itemComponent,
     splitterComponent,
+    bottomComponent,
     data,
     onItemSelected = () => { },
     initialSelectedItemPredicate,
@@ -52,7 +54,6 @@ const Slider: React.FC<sliderProps> = ({
 
     const onItemPress = (index: number) => {
         setSelectedItemIndex(index)
-
         onItemSelected(data[index])
         if (scrollRef?.current) {
             const scrollSideSize = horizontal ?
@@ -80,6 +81,7 @@ const Slider: React.FC<sliderProps> = ({
 
     const ItemComponent = itemComponent
     const SplitterComponent = splitterComponent || (() => <></>)
+    const BottomComponent = bottomComponent || (() => <></>)
 
     return (
         <View
@@ -129,6 +131,7 @@ const Slider: React.FC<sliderProps> = ({
                             {splitterComponent && <SplitterComponent />}
                         </View>
                     ))}
+                    {bottomComponent && <BottomComponent />}
                 </ScrollView>
             </View>
         </View>
@@ -162,4 +165,4 @@ const styles = StyleSheet.create({
 })
 
 
-export default Slider
+export default ItemSlider

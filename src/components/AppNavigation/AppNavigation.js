@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler'
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { StyleSheet, Text, TouchableOpacity, NativeModules } from 'react-native'
 import { NavigationContainer, useNavigation } from '@react-navigation/native'
 import {
@@ -16,7 +16,6 @@ import ServiceRecords from 'screens/serviceRecordsScreen/ServiceRecords'
 import OnlineChatRoomList from 'screens/onlineChatRoomListScreen/OnlineChatRoomList'
 import Initialization from 'screens/initializationScreen/Initialization'
 import useDrawer from './useDrawer'
-import globalStyles from '../../global/styles/styles'
 import { HamburgerIcon } from '../Elements/Icons/Index'
 import { useSelector } from 'react-redux'
 import { TOKEN_LIFE_TIME } from 'constants/application'
@@ -28,6 +27,8 @@ import { ORGANIZATION_ID } from 'constants/application'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import OnlineChatRoom from 'screens/onlineChatRoomScreen/OnlineChatRoom'
 import Administration from 'screens/administrationScreen/Administration'
+import ServiceRecordsAdmin from 'screens/serviceRecordsScreenAdmin/ServiceRecordsAdmin'
+import { GlobalStylesContext } from 'global/styles/GlobalStylesWrapper'
 
 const Drawer = createDrawerNavigator()
 const Stack = createStackNavigator();
@@ -39,6 +40,7 @@ export const Screen = {
   Home: 'Home',
   SigningForServices: 'SigningForServices',
   ServiceRecords: 'ServiceRecords',
+  ServiceRecordsAdmin: 'ServiceRecordsAdmin',
   OnlineChat: 'OnlineChat',
   OnlineChatRoomList: 'OnlineChatRoomList',
   OnlineChatRoom: 'OnlineChatRoom',
@@ -121,11 +123,12 @@ const FeedNavigation = () => {
   const {
     drawerItems,
   } = useDrawer()
+  const globalStyles = useContext(GlobalStylesContext)
   return (
     <Drawer.Navigator
       screenOptions={{
         headerShown: false,
-        drawerStyle: globalStyles.drawerDark,
+        drawerStyle: globalStyles.drawer,
         unmountOnBlur: true,
       }}
       initialRouteName={Screen.Home}
@@ -151,6 +154,10 @@ const FeedNavigation = () => {
         component={ServiceRecords}
       />
       <Drawer.Screen
+        name={Screen.ServiceRecordsAdmin}
+        component={ServiceRecordsAdmin}
+      />
+      <Drawer.Screen
         name={Screen.OnlineChat}
         component={OnlineChatNavigation}
       />
@@ -171,20 +178,21 @@ const DrawerContent = ({
   props,
   drawerItems,
 }) => {
+  const globalStyles = useContext(GlobalStylesContext)
   const onItemPress = ({ screen }) => {
     props.navigation.navigate(screen)
   }
   return (
     <>
       <TouchableOpacity
-        style={styles.hamburgerIcon}
+        style={globalStyles.hamburgerIcon}
         activeOpacity={0.4}
         onPress={() => props.navigation.closeDrawer()}
       >
         <HamburgerIcon
           width={25}
           height={25}
-          color={'rgb(30, 30, 30)'}
+          color={globalStyles.headerMenuButton?.backgroundColor}
         />
       </TouchableOpacity>
       <DrawerContentScrollView
@@ -196,17 +204,17 @@ const DrawerContent = ({
             label={({ focused }) =>
               <Text style={{
                 color: focused ?
-                  'rgb(250, 250, 250)' :
-                  'rgb(200, 200, 200)'
+                  globalStyles.drawerItemSelected.color :
+                  globalStyles.drawerItem.color
               }}>
                 {el.label}
               </Text>
             }
             icon={el.icon}
             onPress={() => onItemPress(el)}
-            style={styles.drawerItem}
-            activeBackgroundColor={'rgba(120, 220, 250, 0.7)'}
-            inactiveBackgroundColor={'rgba(150, 170, 180, 0.3)'}
+            style={globalStyles.drawerItemContainer}
+            activeBackgroundColor={globalStyles.drawerItemSelected.backgroundColor}
+            inactiveBackgroundColor={globalStyles.drawerItem.backgroundColor}
             focused={props.state.index === index}
           />
         ))}
@@ -235,21 +243,6 @@ const OnlineChatNavigation = () => {
     </Stack.Navigator>
   )
 }
-
-const styles = StyleSheet.create({
-  drawer: {
-    backgroundColor: 'rgba(50, 90, 100, 0.1)',
-  },
-  drawerItem: {
-    borderRadius: 15,
-    paddingHorizontal: 5,
-  },
-  hamburgerIcon: {
-    marginTop: 23,
-    marginLeft: 20,
-    marginBottom: 15,
-  },
-})
 
 
 const horizontalAnimation = {

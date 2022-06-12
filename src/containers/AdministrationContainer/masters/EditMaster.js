@@ -3,7 +3,7 @@ import { Text, View, StyleSheet } from 'react-native'
 import Button from "components/Elements/Button/Button"
 import { ArrowIcon } from "components/Elements/Icons/Index"
 import SectionSeparator from "components/Elements/SectionSeparator/SectionSeparator"
-import Slider from "components/Elements/Slider/Slider"
+import ItemSlider from "components/Elements/ItemSlider/ItemSlider"
 import FormCheckbox from "containers/Forms/FormCheckbox"
 import { Color } from "global/styles/constants"
 import globalStyles from "global/styles/styles"
@@ -11,14 +11,28 @@ import EditMasterPersonalData from "./EditMasterPersonalData"
 import { Formik, Field } from "formik"
 import { getColorWithOpacity } from "global/styles/utils"
 import EditMasterWorkTime from "./EditMasterWorkTime"
-import { phoneNumberFormatter } from "utils/formatters"
+import {
+    dateSwapYearAndMonthFormatter,
+    phoneNumberFormatter,
+    simplePhoneNumberFormatter,
+    toCanonicalDateFormatter
+} from "utils/formatters"
+import axios from "axios"
+import { axiosAPI2 } from "utils/axios"
+import { createMasterEndpoint, createMastersWorkTimeEndpoint } from "utils/apiHelpers/endpointGenerators"
+import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
+import { useSelector } from "react-redux"
+import { userSelector } from "store/selectors/userSlice"
+import Toast from 'react-native-simple-toast'
 
-const EditMaster = ({masters, services}) => {
+const EditMaster = ({ masters, services }) => {
 
     const [servicesCopy, setServicesCopy] = useState([])
     const [selectedMaster, setSelectedMaster] = useState(0)
     const [selectedService, setSelectedService] = useState(0)
     const [workTime, setWorkTime] = useState([])
+
+    const userInfo = useSelector(userSelector)
 
     useEffect(() => {
         setServicesCopy(services.map(el => {
@@ -38,7 +52,54 @@ const EditMaster = ({masters, services}) => {
         setSelectedService(servicesCopy.findIndex(el => el.id === service.id))
     }
 
-    const onSubmit = (values) => {
+    const onSubmit = async (values) => {
+        const masterMainData = {
+            first_name: values.name,
+            second_name: values.surname,
+            third_name: values.patronymic,
+            phone: simplePhoneNumberFormatter(values.phone),
+            email: values.email,
+            password: values.password,
+            services: values.services.map((el, index) =>
+                el === 'true' ? services[index].id : null
+            ).filter(val => val)
+        }
+        const masterWorkTime = {
+            dates: workTime.map(el => ({
+                startDate: toCanonicalDateFormatter(
+                    dateSwapYearAndMonthFormatter(el.date, '-'),
+                    `${el.startH}:${el.startM}`),
+                endDate: toCanonicalDateFormatter(
+                    dateSwapYearAndMonthFormatter(el.date, '-'),
+                    `${el.endH}:${el.endM}`),
+            }))
+        }
+
+        return axios.all([
+            axiosAPI2.put(createMasterEndpoint(masters[selectedMaster].id),
+                masterMainData,
+                {
+                    headers: createAuthorizationHeader(userInfo.authToken)
+                }),
+            axiosAPI2.post(createMastersWorkTimeEndpoint(masters[selectedMaster].id),
+                masterWorkTime,
+                {
+                    headers: createAuthorizationHeader(userInfo.authToken)
+                })
+        ])
+            .then(axios.spread((masterMainDataRes, masterWorkTimeRes) => {
+                if (masterMainDataRes.data.success && masterWorkTimeRes.data.success) {
+                    Toast.show("Информация о мастере обновлена")
+                }
+                else {
+                    Toast.show("Не удалось обновить информацию о мастере: " +
+                        masterMainDataRes.data.data.message + ' ' +
+                        masterWorkTimeRes.data.data.message)
+                }
+            }))
+            .catch(err => {
+                Toast.show("Ошибка: не удалось обновить информацию о мастере")
+            })
     }
 
     return (
@@ -48,7 +109,7 @@ const EditMaster = ({masters, services}) => {
                 surname: masters[selectedMaster]?.surname,
                 name: masters[selectedMaster]?.name,
                 patronymic: masters[selectedMaster]?.patronymic,
-                phone: masters[selectedMaster]?.phone ? 
+                phone: masters[selectedMaster]?.phone ?
                     phoneNumberFormatter(masters[selectedMaster]?.phone) :
                     '+7',
                 email: masters[selectedMaster]?.email,
@@ -58,7 +119,9 @@ const EditMaster = ({masters, services}) => {
             onSubmit={onSubmit}
         >
             {({ handleSubmit, isValid, isSubmitting }) => (
-                <>
+                <View
+                    pointerEvents={isSubmitting ? 'none' : 'auto'}
+                >
                     <View
                         style={styles.horizontalSection}
                     >
@@ -75,7 +138,7 @@ const EditMaster = ({masters, services}) => {
                                     masters[selectedMaster].surname :
                                     '-'}
                             </Text>
-                            <Slider
+                            <ItemSlider
                                 data={masters}
                                 onItemSelected={onMasterSelected}
                                 itemComponent={({ item, isSelected }) => (
@@ -119,7 +182,7 @@ const EditMaster = ({masters, services}) => {
                                     servicesCopy[selectedService].name :
                                     '-'}
                             </Text>
-                            <Slider
+                            <ItemSlider
                                 data={servicesCopy}
                                 onItemSelected={onServiceSelected}
                                 itemComponent={({ item, isSelected, index }) => (
@@ -140,6 +203,7 @@ const EditMaster = ({masters, services}) => {
                                         <Field
                                             name={`services[${index}]`}
                                             component={FormCheckbox}
+                                            disabled={isSubmitting}
                                         />
                                     </View>
                                 )}
@@ -159,7 +223,7 @@ const EditMaster = ({masters, services}) => {
                     >
                         График работы
                     </Text>
-                    <EditMasterWorkTime 
+                    <EditMasterWorkTime
                         {...{
                             masters,
                             selectedMaster,
@@ -178,7 +242,7 @@ const EditMaster = ({masters, services}) => {
                             globalStyles.centeredElement
                         ]}
                     />
-                </>
+                </View>
             )}
         </Formik>
     )

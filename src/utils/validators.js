@@ -63,7 +63,7 @@ export const timeValidator = (value, allowEmpty = false, maxHours = 99, maxMinut
     return undefined
 }
 
-export const priceValidator = (value, allowEmpty = false) => {
+export const numberValidator = (value, allowEmpty = false) => {
     if (!value && allowEmpty) return undefined
     if (!value) return 'Укажите стоимость'
     const match = value.match(/(\d+)(\.)?(\d*)/)

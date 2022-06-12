@@ -5,6 +5,7 @@ import {
     ENDPOINT_CHATS,
     ENDPOINT_CLIENTS,
     ENDPOINT_ADMINS,
+    ENDPOINT_STYLES,
 } from "constants/endpoints"
 
 export const createServiceEndpoint = (serviceId) =>
@@ -30,3 +31,6 @@ export const createAdminEndpoint = (adminId) =>
 
 export const createMastersWorkTimeEndpoint = (masterId) =>
     `${createMasterEndpoint(masterId)}/work_time`
+
+export const createStyleEndpoint = (styleTag) => 
+    `${ENDPOINT_STYLES}/${styleTag}`

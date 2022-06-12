@@ -25,7 +25,7 @@ const Registration = ({
     const passwordFieldHeight = useRef(new Animated.Value(0)).current
     const [sendCodeRemainingTime, setSendCodeRemainingTime] = useState(90)
     const dispatch = useDispatch()
-    
+
     useEffect(() => {
         Animated.timing(passwordFieldHeight,
             {
@@ -48,7 +48,7 @@ const Registration = ({
             }
             return await axiosAPI.post(ENDPOINT_MAIN_REG, data)
                 .then(res => {
-                    if (res.data?.success){
+                    if (res.data?.success) {
                         setSendCodeRemainingTime(res.data.data.remaining_time)
                         setStage(1)
                     } else if (!res.data?.success) {
@@ -76,7 +76,7 @@ const Registration = ({
             }
             return await axiosAPI.post(ENDPOINT_MAIN_REG, data).then(
                 async (res) => {
-                    if (res.data?.success){
+                    if (res.data?.success) {
                         const authToken = res.data.data.auth
                         const refreshToken = res.data.data.refresh
                         if (authToken && refreshToken) {
@@ -91,29 +91,30 @@ const Registration = ({
     }
 
     const updateUserInfo = async (authToken, refreshToken) =>
-    await axiosAPI2.get(ENDPOINT_USER,
-        {
-            headers: createAuthorizationHeader(authToken)
-        }).then(res => {
-            const data = res.data.data
-            const userData = {
-                authToken,
-                refreshToken,
-                id: data.id,
-                name: data.first_name,
-                surname: data.second_name,
-                patronymic: data.third_name,
-                phone: data.phone,
-                email: data.email
-            }
-            dispatch(updateUser(userData))
-            AsyncStorage.setItem('authToken', userData.authToken)
-            AsyncStorage.setItem('refreshToken', userData.refreshToken)
-            onRegSuccess()
-        }).catch(err => {
-            Toast.show("Произошла ошибка при обновлении данных пользователя")
-            setStage(0)
-        })
+        await axiosAPI2.get(ENDPOINT_USER,
+            {
+                headers: createAuthorizationHeader(authToken)
+            }).then(res => {
+                const data = res.data.data
+                const userData = {
+                    authToken,
+                    refreshToken,
+                    id: data.id,
+                    name: data.first_name,
+                    surname: data.second_name,
+                    patronymic: data.third_name,
+                    phone: data.phone,
+                    email: data.email,
+                    permission: data.permission
+                }
+                dispatch(updateUser(userData))
+                AsyncStorage.setItem('authToken', userData.authToken)
+                AsyncStorage.setItem('refreshToken', userData.refreshToken)
+                onRegSuccess()
+            }).catch(err => {
+                Toast.show("Произошла ошибка при обновлении данных пользователя")
+                setStage(0)
+            })
 
     const onToggleSignTypePreCallback = () => {
         Animated.timing(passwordFieldHeight,
@@ -196,15 +197,15 @@ const Registration = ({
                             )}
                         </View>
                         {stage === 0 && (
-                        <Text
-                            style={[
-                                globalStyles.text,
-                                globalStyles.centeredElement,
-                                { marginVertical: 10 }
-                            ]}
-                            onPress={() => onToggleSignTypePreCallback()}
-                        >
-                            Войти в существующий аккаунт
+                            <Text
+                                style={[
+                                    globalStyles.text,
+                                    globalStyles.centeredElement,
+                                    { marginVertical: 10 }
+                                ]}
+                                onPress={() => onToggleSignTypePreCallback()}
+                            >
+                                Войти в существующий аккаунт
                             </Text>
                         )}
                         {stage === 1 && (
@@ -225,11 +226,11 @@ const Registration = ({
                         <Button
                             primary
                             title={
-                                stage === 0 ? 
-                                'Далее' :
-                                stage === 1 ? 
-                                'Отправить' :
-                                'Регистрация'
+                                stage === 0 ?
+                                    'Далее' :
+                                    stage === 1 ?
+                                        'Отправить' :
+                                        'Регистрация'
                             }
                             style={globalStyles.centeredElement}
                             onPress={handleSubmit}

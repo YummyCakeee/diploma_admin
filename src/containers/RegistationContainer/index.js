@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate"
 import globalStyles from "global/styles/styles"
 import { StyleSheet, Text, View } from "react-native"
 import { useNavigation } from "@react-navigation/core"
-import AsyncStorage from "@react-native-async-storage/async-storage"
 import Authorization from "containers/Forms/Authorization"
 import Registration from "containers/Forms/Registration"
-import { updateUser } from "store/actions/userSlice"
-import { store } from "store"
+import { Screen } from "components/AppNavigation/AppNavigation"
 export const AUTH_TYPE = 'auth_type'
 export const REG_TYPE = 'reg_type'
 
@@ -24,14 +22,14 @@ const RegistationContainer = () => {
 
     const onAuthSuccess = () => {
         navigation.reset({
-            index: 0, 
-            routes: [{name: 'Feed'}]
+            index: 0,
+            routes: [{ name: Screen.Feed }]
         })
     }
     const onRegSuccess = () => {
         navigation.reset({
-            index: 0, 
-            routes: [{name: 'Feed'}]
+            index: 0,
+            routes: [{ name: Screen.Feed }]
         })
     }
 
@@ -47,30 +45,26 @@ const RegistationContainer = () => {
             <View
                 style={styles.mainContainer}
             >
-                <View
-                    style={styles.contentContainer}
+                <Text
+                    style={[
+                        globalStyles.text,
+                        globalStyles.centeredElement,
+                        styles.signTypeText
+                    ]}
                 >
-                    <Text
-                        style={[
-                            globalStyles.text,
-                            globalStyles.centeredElement,
-                            styles.signTypeText
-                        ]}
-                    >
-                        {signType === AUTH_TYPE ?
-                            'Вход в аккаунт' :
-                            'Регистрация'
-                        }
-                    </Text>
                     {signType === AUTH_TYPE ?
-                        <Authorization
-                            onAuthSuccess={onAuthSuccess}
-                            onToggleSignType={onToggleSignType} /> :
-                        <Registration
-                            onRegSuccess={onRegSuccess}
-                            onToggleSignType={onToggleSignType} />
+                        'Вход в аккаунт' :
+                        'Регистрация'
                     }
-                </View>
+                </Text>
+                {signType === AUTH_TYPE ?
+                    <Authorization
+                        onAuthSuccess={onAuthSuccess}
+                        onToggleSignType={onToggleSignType} /> :
+                    <Registration
+                        onRegSuccess={onRegSuccess}
+                        onToggleSignType={onToggleSignType} />
+                }
             </View>
         </ScreenTemplate>
     )

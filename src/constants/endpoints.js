@@ -13,3 +13,6 @@ export const ENDPOINT_APPOINTMENTS = '/api/appointments'
 export const ENDPOINT_WORKPLACES = '/api/workplaces'
 
 export const ENDPOINT_CHATS = '/api/chats'
+
+export const ENDPOINT_STYLES = '/api/design/styles'
+export const ENDPOINT_CONTENT = '/api/design/contents'

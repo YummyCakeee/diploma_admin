@@ -5,7 +5,7 @@ import { StyleSheet, View, Text } from "react-native"
 import EditMasterPersonalData from "./EditMasterPersonalData"
 import { Field } from "formik"
 import SectionSeparator from "components/Elements/SectionSeparator/SectionSeparator"
-import Slider from "components/Elements/Slider/Slider"
+import ItemSlider from "components/Elements/ItemSlider/ItemSlider"
 import FormCheckbox from "containers/Forms/FormCheckbox"
 import globalStyles from "global/styles/styles"
 import { Color } from "global/styles/constants"
@@ -72,7 +72,6 @@ const AddMaster = ({
     }
 
     return (
-        <View>
             <Formik
                 onSubmit={onSubmit}
                 initialValues={{
@@ -87,7 +86,9 @@ const AddMaster = ({
                 enableReinitialize
             >
                 {({ handleSubmit, isSubmitting, isValid }) => (
-                    <>
+                    <View
+                        pointerEvents={isSubmitting ? 'none' : 'auto'}
+                    >
                         <Text
                             style={globalStyles.title}
                         >
@@ -101,7 +102,7 @@ const AddMaster = ({
                         >
                             Услуги мастера
                         </Text>
-                        <Slider
+                        <ItemSlider
                             data={services}
                             itemComponent={({ item, isSelected, index }) => (
                                 <View
@@ -121,6 +122,7 @@ const AddMaster = ({
                                     <Field
                                         name={`services[${index}]`}
                                         component={FormCheckbox}
+                                        disabled={isSubmitting}
                                     />
                                 </View>
                             )}
@@ -137,10 +139,9 @@ const AddMaster = ({
                                 onPress={handleSubmit}
                             />
                         </View>
-                    </>
+                    </View>
                 )}
             </Formik>
-        </View>
     )
 }
 

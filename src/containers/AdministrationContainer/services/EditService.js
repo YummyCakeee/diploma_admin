@@ -3,14 +3,14 @@ import { Text, View, StyleSheet } from 'react-native'
 import Button from "components/Elements/Button/Button"
 import { ArrowIcon } from "components/Elements/Icons/Index"
 import SectionSeparator from "components/Elements/SectionSeparator/SectionSeparator"
-import Slider from "components/Elements/Slider/Slider"
+import ItemSlider from "components/Elements/ItemSlider/ItemSlider"
 import FormCheckbox from "containers/Forms/FormCheckbox"
 import { Color } from "global/styles/constants"
 import globalStyles from "global/styles/styles"
 import { Formik, Field } from "formik"
 import { getColorWithOpacity } from "global/styles/utils"
 import EditServiceMainData from "./EditServiceMainData"
-import { priceFormatter, timeFormatter } from "utils/formatters"
+import { numberFormatter, timeFormatter } from "utils/formatters"
 import { axiosAPI2 } from "utils/axios"
 import { createServiceEndpoint } from "utils/apiHelpers/endpointGenerators"
 import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
@@ -20,6 +20,7 @@ import Toast from 'react-native-simple-toast'
 
 const EditService = ({
     services,
+    setServices,
     masters,
     workplaces
 }) => {
@@ -48,6 +49,7 @@ const EditService = ({
     }
 
     const onSubmit = async (values) => {
+        const id = services[selectedService].id
         const data = {
             name: values.name,
             description: values.description,
@@ -58,16 +60,31 @@ const EditService = ({
                 el === 'true' ? masters[index].id : null
             ).filter(val => val)
         }
-        return axiosAPI2.put(createServiceEndpoint(services[selectedService].id), data, 
+        return axiosAPI2.put(createServiceEndpoint(id), data, 
         {
             headers: createAuthorizationHeader(userInfo.authToken)
         })
         .then(res => {
-            console.log(res.data)
+            if (res.data.success) {
+                setServices(
+                    services.map(el => {
+                        if (el.id !== id)
+                            return el
+                        else return {
+                            name: data.name,
+                            description: data.description,
+                            duration: data.duration,
+                            price: data.price,
+                            masters: data.masters,
+                        }
+                    })
+                )
+                Toast.show("Услуга успешно изменена")
+            }
         })
         .catch(err => {
             Toast.show("Ошибка: Не удалось обновить данные об услуге")
-            console.log(err.response.data)
+            console.log(err)
         })
     }
 
@@ -78,7 +95,7 @@ const EditService = ({
                 name: services[selectedService].name,
                 description: services[selectedService].description,
                 duration: timeFormatter(services[selectedService].duration),
-                price: priceFormatter(services[selectedService].price),
+                price: numberFormatter(services[selectedService].price),
                 masters: mastersCopy.map(el => el.selected ? 'true' : 'false')
             }}
             validateOnMount
@@ -101,7 +118,7 @@ const EditService = ({
                                     services[selectedService].name :
                                     '-'}
                             </Text>
-                            <Slider
+                            <ItemSlider
                                 data={services}
                                 onItemSelected={onServiceSelected}
                                 itemComponent={({ item, isSelected }) => (
@@ -146,7 +163,7 @@ const EditService = ({
                                     '-'}
                                 
                             </Text>
-                            <Slider
+                            <ItemSlider
                                 data={mastersCopy}
                                 onItemSelected={onMasterSelected}
                                 itemComponent={({ item, isSelected, index }) => (

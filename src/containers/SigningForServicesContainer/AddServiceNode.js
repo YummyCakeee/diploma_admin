@@ -1,10 +1,11 @@
 import globalStyles from "global/styles/styles"
 import React, { useEffect, useState } from "react"
 import { StyleSheet, View, Text } from "react-native"
-import Slider from "components/Elements/Slider/Slider"
+import ItemSlider from "components/Elements/ItemSlider/ItemSlider"
 import RichList from "components/Elements/RichList/RichList"
 import Button from "components/Elements/Button/Button"
 import ServiceNodeDateTime from "./ServiceNodeDateTime"
+import { Color } from "global/styles/constants"
 
 export const MODE_MASTER = 0
 export const MODE_SERVICE = 1
@@ -186,10 +187,22 @@ const AddServiceNode = ({
                 style={styles.horizontalSection}
             >
                 {stage === STAGE_MODE_SELECT && (
-                    <Slider
-                        items={modeTypeSliderItems}
+                    <ItemSlider
                         onItemSelected={(item) => setMode(item.tag)}
+                        data={modeTypeSliderItems}
                         horizontal
+                        itemComponent={({isSelected, item}) => (
+                            <Text
+                                style={[
+                                    globalStyles.text,
+                                    isSelected ? 
+                                    styles.modeItemSliderSelectedText :
+                                    styles.modeItemSliderText
+                                ]}
+                            >
+                                {item.text}
+                            </Text>
+                        )}
                     />
                 )}
                 {stage >= STAGE_SECOND_PARAM_SELECT && (
@@ -264,6 +277,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 20,
     },
+    modeItemSliderText: {
+        color: Color.Gray
+    },
+    modeItemSliderSelectedText: {
+        color: Color.White
+    }
 })
 
 export default AddServiceNode

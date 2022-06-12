@@ -22,6 +22,7 @@ const MastersControl = ({
             setSelectedMode(MODE_NONE)
         else setSelectedMode(dropDownMode)
     }
+    
     return (
 
         <View>
@@ -53,62 +54,5 @@ const MastersControl = ({
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    horizontalSection: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-    },
-    sliderContainer: {
-        height: 200,
-        width: 170,
-        paddingHorizontal: 5,
-        borderColor: Color.Gray,
-        backgroundColor: getColorWithOpacity(Color.Gray, 0.1),
-        borderWidth: 1,
-        borderRadius: 10,
-        marginHorizontal: 5,
-    },
-    sliderItem: {
-        display: 'flex',
-        flexDirection: 'row'
-    },
-    sliderItemText: {
-        color: Color.Gray
-    },
-    sliderItemSelected: {
-        color: Color.White
-    },
-    sliderItemSplitter: {
-        width: '100%',
-        height: 1,
-        backgroundColor: Color.White
-    },
-    button: {
-
-    },
-    selectedMasterText: {
-        color: Color.Gray,
-        alignSelf: 'center',
-        textAlign: 'center',
-        marginBottom: 3,
-    },
-    selectedServiceText: {
-        color: Color.Gray,
-        alignSelf: 'center',
-        textAlign: 'center',
-        marginBottom: 3,
-    },
-    arrowIcon: {
-        width: 20,
-        height: 20,
-        transform: [{
-            rotate: '90deg'
-        }],
-        marginTop: 30,
-    }
-})
 
 export default MastersControl

@@ -4,8 +4,8 @@ import { Color } from "global/styles/constants"
 import { getColorWithOpacity } from "global/styles/utils"
 import React from "react"
 import { View, StyleSheet } from "react-native"
-import { priceFormatter, timeFormatter } from "utils/formatters"
-import { fieldNonEmptyValidator, priceValidator, timeValidator } from "utils/validators"
+import { numberFormatter, timeFormatter } from "utils/formatters"
+import { fieldNonEmptyValidator, numberValidator, timeValidator } from "utils/validators"
 
 const EditServiceMainData = () => {
     return (
@@ -18,12 +18,14 @@ const EditServiceMainData = () => {
                     component={FormFieldInput}
                     label="Название:"
                     validate={fieldNonEmptyValidator}
+                    style={styles.inputFieldContainer}
                 />
                 <Field
                     name="description"
                     component={FormFieldInput}
                     label="Описание:"
                     multiline
+                    style={styles.inputFieldContainer}
                 />
                 <Field
                     name="duration"
@@ -33,15 +35,17 @@ const EditServiceMainData = () => {
                     mask={timeFormatter}
                     placeholder="00:00"
                     keyboardType="decimal-pad"
+                    style={styles.inputFieldContainer}
                 />
                 <Field
                     name="price"
                     component={FormFieldInput}
                     label="Стоимость:"
-                    mask={priceFormatter}
-                    validate={priceValidator}
+                    mask={numberFormatter}
+                    validate={numberValidator}
                     placeholder="100.00"
                     keyboardType="decimal-pad"
+                    style={styles.inputFieldContainer}
                 />
             </View>
         </View>
@@ -57,6 +61,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         padding: 10,
         paddingTop: 0
+    },
+    inputFieldContainer: {
+        marginTop: 10,
     }
 })
 

@@ -10,13 +10,14 @@ import { createMastersWorkTimeEndpoint } from 'utils/apiHelpers/endpointGenerato
 import { createAuthorizationHeader } from 'utils/apiHelpers/headersGenerator'
 import { useSelector } from 'react-redux'
 import { userSelector } from 'store/selectors/userSlice'
-import Slider from 'components/Elements/Slider/Slider'
+import ItemSlider from 'components/Elements/ItemSlider/ItemSlider'
 import { dateTimeSplitter } from 'utils/splitters'
 import { dateSwapYearAndMonthFormatter } from 'utils/formatters'
 import { getColorWithOpacity } from 'global/styles/utils'
 import SectionSeparator from 'components/Elements/SectionSeparator/SectionSeparator'
 import Button from 'components/Elements/Button/Button'
 import Toast from 'react-native-simple-toast'
+import DateTimePicker from '@react-native-community/datetimepicker'
 
 const EditMasterWorkTime = ({ masters, selectedMaster, workTime, setWorkTime }) => {
 
@@ -27,14 +28,20 @@ const EditMasterWorkTime = ({ masters, selectedMaster, workTime, setWorkTime }) 
     const [selectedTimeEndH, setSelectedTimeEndH] = useState('')
     const [selectedTimeEndM, setSelectedTimeEndM] = useState('')
     const [initialSelectedTimePredicates, setInitialSelectedTimePredicates] = useState([null, null, null, null])
+    const [isDatePickerShow, setIsDatePickerShow] = useState(false)
+    const [date, setDate] = useState(new Date())
     const [hours, setHours] = useState([])
     const [minutes, setMinutes] = useState([])
     const userInfo = useSelector(userSelector)
+    const controller = new AbortController()
 
     useEffect(() => {
         if (masters && masters[selectedMaster]) {
             setSelectedWotkTime(null)
             getMasterWorkTime(masters[selectedMaster].id)
+        }
+        return () => {
+            controller.abort()
         }
     }, [masters, selectedMaster])
 
@@ -56,29 +63,35 @@ const EditMasterWorkTime = ({ masters, selectedMaster, workTime, setWorkTime }) 
         await axiosAPI2.get(
             createMastersWorkTimeEndpoint(masterId),
             {
-                headers: createAuthorizationHeader(userInfo.authToken)
+                headers: createAuthorizationHeader(userInfo.authToken),
+                signal: controller.signal
             })
             .then(res => {
                 const data = res.data
                 if (data.success) {
-                    const splitTimeRegex = /(\w*):(\w*)/
-                    setWorkTime(data.data?.map(el => {
-                        const { date, time: start } = dateTimeSplitter(new Date(el.startDate))
-                        const end = dateTimeSplitter(new Date(el.endDate)).time
-                        const [startH, startM] = start.match(splitTimeRegex).slice(1)
-                        const [endH, endM] = end.match(splitTimeRegex).slice(1)
-                        return {
-                            date: dateSwapYearAndMonthFormatter(date, '.'),
-                            startH,
-                            startM,
-                            endH,
-                            endM
-                        }
-                    }))
+                    if (!data.data) {
+                        setWorkTime([])
+                    }
+                    else {
+                        const splitTimeRegex = /(\w*):(\w*)/
+                        setWorkTime(data.data?.map(el => {
+                            const { date, time: start } = dateTimeSplitter(new Date(el.startDate))
+                            const end = dateTimeSplitter(new Date(el.endDate)).time
+                            const [startH, startM] = start.match(splitTimeRegex).slice(1)
+                            const [endH, endM] = end.match(splitTimeRegex).slice(1)
+                            return {
+                                date: dateSwapYearAndMonthFormatter(date, '.'),
+                                startH,
+                                startM,
+                                endH,
+                                endM
+                            }
+                        }))
+                    }
                     setLoadingStatus(loadableStatus.SUCCESS)
                 }
                 else {
-
+                    Toast.show("Произошла ошибка при загрузке графика мастера: " + data.data.message)
                 }
             })
             .catch(err => {
@@ -117,10 +130,44 @@ const EditMasterWorkTime = ({ masters, selectedMaster, workTime, setWorkTime }) 
         setWorkTime(updatedWorkTime)
     }
 
+    const onAddDate = () => {
+        setIsDatePickerShow(true)
+    }
+
+    const onDateChange = (event, selectedDate) => {
+        setIsDatePickerShow(false)
+        if (event.type === 'set' && selectedDate){
+            const newDate = dateSwapYearAndMonthFormatter(dateTimeSplitter(selectedDate).date, '.')
+            for (day of workTime) {
+                if (day.date === newDate) {
+                    Toast.show("Эта дата уже есть в списке")
+                    return
+                }
+            }
+            const newDay = {
+                date: newDate,
+                startH: '09',
+                startM: '00',
+                endH: '18',
+                endM: '00'
+            }
+            setWorkTime([...workTime, newDay])
+        }
+        
+    }
+
     return (
         <View
             style={styles.container}
         >
+            {isDatePickerShow &&
+                <DateTimePicker
+                    value={date}
+                    minimumDate={date}
+                    mode={"date"}
+                    onChange={onDateChange}
+                />
+            }
             <Loadable
                 status={loadingStatus}
                 onLoadingComponent={WorkTimesLoading}
@@ -129,7 +176,7 @@ const EditMasterWorkTime = ({ masters, selectedMaster, workTime, setWorkTime }) 
                 <View
                     style={styles.horizontalSection}
                 >
-                    <Slider
+                    <ItemSlider
                         data={workTime}
                         itemComponent={({ isSelected, item }) => (
                             <View>
@@ -146,6 +193,21 @@ const EditMasterWorkTime = ({ masters, selectedMaster, workTime, setWorkTime }) 
                             </View>
                         )}
                         splitterComponent={SectionSeparator}
+                        bottomComponent={() => (
+                            <TouchableOpacity
+                                activeOpacity={1}
+                                onPress={onAddDate}
+                            >
+                                <Text
+                                    style={[
+                                        globalStyles.text,
+                                        styles.sliderItemText
+                                    ]}
+                                >
+                                    Добавить дату...
+                                </Text>
+                            </TouchableOpacity>
+                        )}
                         onItemSelected={onWorkTimeSelected}
                         style={styles.sliderContainer}
                     />
@@ -174,7 +236,7 @@ const EditMasterWorkTime = ({ masters, selectedMaster, workTime, setWorkTime }) 
                                         >
                                             ЧЧ:
                                         </Text>
-                                        <Slider
+                                        <ItemSlider
                                             data={hours}
                                             itemComponent={({ isSelected, item }) => (
                                                 <Text
@@ -201,7 +263,7 @@ const EditMasterWorkTime = ({ masters, selectedMaster, workTime, setWorkTime }) 
                                         >
                                             ММ:
                                         </Text>
-                                        <Slider
+                                        <ItemSlider
                                             data={minutes}
                                             itemComponent={({ isSelected, item }) => (
                                                 <Text
@@ -241,7 +303,7 @@ const EditMasterWorkTime = ({ masters, selectedMaster, workTime, setWorkTime }) 
                                         >
                                             ЧЧ:
                                         </Text>
-                                        <Slider
+                                        <ItemSlider
                                             data={hours}
                                             itemComponent={({ isSelected, item }) => (
                                                 <Text
@@ -268,7 +330,7 @@ const EditMasterWorkTime = ({ masters, selectedMaster, workTime, setWorkTime }) 
                                         >
                                             ММ:
                                         </Text>
-                                        <Slider
+                                        <ItemSlider
                                             data={minutes}
                                             itemComponent={({ isSelected, item }) => (
                                                 <Text
@@ -413,7 +475,7 @@ const styles = StyleSheet.create({
     horizontalSection: {
         display: 'flex',
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'space-between'
     },
     updateTimeContainer: {

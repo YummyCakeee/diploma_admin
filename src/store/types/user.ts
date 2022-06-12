@@ -7,6 +7,7 @@ type userType = {
     patronymic: string,
     phone: string,
     email: string,
+    permission: string
 }
 
 export default userType

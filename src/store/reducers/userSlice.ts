@@ -12,6 +12,7 @@ const userInitialState: userType = {
     patronymic: '',
     phone: '',
     email: '',
+    permission: ''
 }
 
 const userReducer: Reducer<userType> = (

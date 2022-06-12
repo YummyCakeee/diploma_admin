@@ -11,12 +11,20 @@ const globalStyles = StyleSheet.create({
         color: Color.White,
         fontSize: 20,
     },
+    hamburgerIcon: {
+        marginTop: 23,
+        marginLeft: 20,
+        marginBottom: 15,
+    },
+    headerMenuButtonColor: {
+        backgroundColor: 'rgb(30, 30, 30)'
+    },
     text: {
         color: Color.White,
         fontSize: 16,
         fontFamily: ''
     },
-    text_blocked: {
+    textBlocked: {
         color: Color.Gray
     },
     title: {
@@ -69,8 +77,20 @@ const globalStyles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 20,
     },
-    drawerDark: {
+    drawer: {
         backgroundColor: "rgba(30, 45, 55, 0.95)"
+    },
+    drawerItemContainer: {
+        borderRadius: 15,
+        paddingHorizontal: 5,
+    },
+    drawerItem: {
+        color: 'rgb(200, 200, 200)',
+        backgroundColor: 'rgba(150, 170, 180, 0.3)'
+    },
+    drawerItemSelected: {
+        color: 'rgb(250, 250, 250)',
+        backgroundColor: 'rgba(120, 220, 250, 0.7)'
     },
     centeredElement: {
         alignSelf: "center"

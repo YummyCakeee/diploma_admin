@@ -50,9 +50,9 @@ export const timeFormatter =
         return timeValue
     }
 
-export const priceFormatter = 
+export const numberFormatter = 
     (value: string): string => {
-        const cleanedValue = value.replace(/^\.[^\d\.]*/, '')
+        const cleanedValue = value.replace(/^\.?[^\d\.]*/, '')
         const match = cleanedValue.match(/(\d+)(\.)?(\d*)/)
         if (!match) return cleanedValue
         const price = [

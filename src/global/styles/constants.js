@@ -6,5 +6,6 @@ export const Color = {
     SoftDarkBlue: 'rgb(38, 35, 45)',
     SoftBlue: '#1B70E0',
     OceanBlue: 'rgb(50, 120, 150)',
-    SoftRed: '#e35f5f'
+    SoftRed: '#e35f5f',
+    None: '#fff0'
 }

@@ -23,6 +23,7 @@ import Toast from 'react-native-simple-toast'
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator";
 import { Screen } from "components/AppNavigation/AppNavigation";
+import { userSelector } from "store/selectors/userSlice";
 
 const SigningForServicesContainer = () => {
     const [services, setServices] = useState([])
@@ -31,7 +32,10 @@ const SigningForServicesContainer = () => {
     const [loadingStatus, setLoadingStatus] = useState(loadableStatus.LOADING)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const navigation = useNavigation()
-    const token = useSelector(state => state.user.authToken)
+    const userInfo = useSelector(userSelector)
+
+
+
     useEffect(() => {
         getMastersAndServices()
     }, [])
@@ -40,10 +44,10 @@ const SigningForServicesContainer = () => {
         await axios.all(
             [
                 axiosAPI2.get(ENDPOINT_SERVICES, {
-                    headers: createAuthorizationHeader(token)
+                    headers: createAuthorizationHeader(userInfo.authToken)
                 }),
                 axiosAPI2.get(ENDPOINT_MASTERS, {
-                    headers: createAuthorizationHeader(token)
+                    headers: createAuthorizationHeader(userInfo.authToken)
                 })
             ]
         ).then(axios.spread((servicesRes, mastersRes) => {
@@ -54,8 +58,10 @@ const SigningForServicesContainer = () => {
             mastersData.forEach(el => {
                 el.name = el.first_name
                 el.surname = el.second_name
-                el.patronymic = el.third_mame
-                delete el.fio
+                el.patronymic = el.third_name
+                delete el.first_name
+                delete el.second_name
+                delete el.third_name
                 if (el.services) {
                     el.servicesFormatted = servicesData.
                         filter(a => el.services.find(b => b === a.id)).map(c => c.name).join(', ')
@@ -163,9 +169,7 @@ const SigningForServicesContainer = () => {
             ENDPOINT_ORDERS,
             data,
             {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: createAuthorizationHeader(userInfo.authToken)
             })
             .then(res => {
                 if (res.data.success) {

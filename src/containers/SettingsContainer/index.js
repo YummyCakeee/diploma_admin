@@ -72,6 +72,7 @@ const SettingsContainer = () => {
                                 style={globalStyles.centeredElement}
                             >
                             <Button 
+                                primary
                                 title='Отправить'
                                 onPress={handleSubmit}
                                 disabled={values.code.length !== 4}
@@ -86,6 +87,7 @@ const SettingsContainer = () => {
                                 label="Имя:"
                                 validate={nameValidator}
                                 mask={nameFormatter}
+                                style={styles.inputFieldContainer}
                             />
                             <Field
                                 name="surname"
@@ -93,6 +95,7 @@ const SettingsContainer = () => {
                                 label="Фамилия:"
                                 validate={value => surnameValidator(value, true)}
                                 mask={nameFormatter}
+                                style={styles.inputFieldContainer}
                             />
                             <Field
                                 name="patronymic"
@@ -100,6 +103,7 @@ const SettingsContainer = () => {
                                 label="Отчество:"
                                 validate={value => patronymicValidator(value, true)}
                                 mask={nameFormatter}
+                                style={styles.inputFieldContainer}
                             />
                         </SettingsSection>
                         <SettingsSection
@@ -108,8 +112,9 @@ const SettingsContainer = () => {
                                 name="phone"
                                 component={FormFieldInput}
                                 label="Телефон:"
-                                mask={phoneNumberFormatter}
                                 validate={phoneNumberValidator}
+                                mask={phoneNumberFormatter}
+                                style={styles.inputFieldContainer}
                             />
                             <Field
                                 name="email"
@@ -117,6 +122,7 @@ const SettingsContainer = () => {
                                 label="Почта:"
                                 placeholder="email@mail.com"
                                 validate={value => emailValidator(value, true)}
+                                style={styles.inputFieldContainer}
                             />
                         </SettingsSection>
                         <SettingsSection
@@ -129,6 +135,7 @@ const SettingsContainer = () => {
                                 placeholder="Новый пароль"
                                 secureTextEntry
                                 validate={value => passwordValidator(value, true)}
+                                style={styles.inputFieldContainer}
                             />
                         </SettingsSection>
                         <View>
@@ -143,6 +150,7 @@ const SettingsContainer = () => {
                             style={globalStyles.centeredElement}
                         >
                             <Button
+                                primary
                                 title="Сохранить"
                                 onPress={handleSubmit}
                                 disabled={!isValid}
@@ -165,8 +173,10 @@ const styles = StyleSheet.create({
     },
     enterCodeTextPhone: {
         color: Color.SoftBlue
+    },
+    inputFieldContainer: {
+        marginTop: 10,
     }
-
 })
 
 export default SettingsContainer

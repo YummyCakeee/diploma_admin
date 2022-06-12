@@ -1,23 +1,26 @@
 import globalStyles from "global/styles/styles"
 import React, { useEffect, useState } from "react"
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
+import { View, Text, StyleSheet, TouchableOpacity, StyleProp, ViewStyle } from "react-native"
 import { CrossIcon } from "components/Elements/Icons/Index"
 import { serviceNodeType } from "./types"
-import { dateSwapYearAndMonthFormatter } from "utils/formatters"
 import { Color } from "global/styles/constants"
 
 type serviceNodeProps = {
     node: serviceNodeType,
     index: number,
-    onNodePress?: (index: number) => void,
-    onRemoveNodePress?: (index: number) => void
+    removeButton?: boolean,
+    onNodePress?: () => void,
+    onRemoveNodePress?: (index: number) => void,
+    style?: StyleProp<ViewStyle>
 }
 
 const ServiceNode: React.FC<serviceNodeProps> = ({
     node,
     index,
+    removeButton = false,
     onNodePress = () => { },
     onRemoveNodePress = () => { },
+    style
 }) => {
     const [serviceEndTime, setServiceEndTime] = useState('')
     useEffect(() => {
@@ -43,10 +46,13 @@ const ServiceNode: React.FC<serviceNodeProps> = ({
     return (
         <TouchableOpacity
             activeOpacity={1}
-            onPress={() => onNodePress(index)}
+            onPress={onNodePress}
         >
             <View
-                style={styles.container}
+                style={[
+                    styles.container,
+                    style
+                ]}
             >
                 <View
                     style={styles.horizontalSection}
@@ -88,15 +94,17 @@ const ServiceNode: React.FC<serviceNodeProps> = ({
                             styles.removeNodeSection
                         ]}
                     >
-                        <View>
-                            <TouchableOpacity
-                                onPress={() => onRemoveNodePress(index)}
-                            >
-                                <CrossIcon
-                                    color="white"
-                                />
-                            </TouchableOpacity>
-                        </View>
+                        {removeButton && (
+                            <View>
+                                <TouchableOpacity
+                                    onPress={() => onRemoveNodePress(index)}
+                                >
+                                    <CrossIcon
+                                        color="white"
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                        )}
                     </View>
                 </View>
                 <View
@@ -123,7 +131,7 @@ const ServiceNode: React.FC<serviceNodeProps> = ({
                         <Text
                             style={globalStyles.text}
                         >
-                            Дата: {dateSwapYearAndMonthFormatter(node.date)}
+                            Дата: {node.date}
                         </Text>
                         <Text
                             style={globalStyles.text}

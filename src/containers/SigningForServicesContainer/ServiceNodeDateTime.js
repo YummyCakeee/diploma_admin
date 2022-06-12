@@ -1,6 +1,6 @@
 import GradientLoading from "components/Elements/Loadable/GradientLoading"
 import Loadable, { loadableStatus } from "components/Elements/Loadable/Loadable"
-import Slider from "components/Elements/Slider/Slider"
+import ItemSlider from "components/Elements/ItemSlider/ItemSlider"
 import globalStyles from "global/styles/styles"
 import React, { useEffect, useState } from "react"
 import { View, Text, StyleSheet } from "react-native"
@@ -50,7 +50,7 @@ const ServiceNodeDateTime = ({
                 }
             })
             .then(res => {
-                const data = res.data.data
+                const data = res.data.data || []
                 const daysOfWeek = [
                     'Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'
                 ]
@@ -84,7 +84,7 @@ const ServiceNodeDateTime = ({
                 }
             })
             .then(res => {
-                const data = res.data.data[0].intervals
+                const data = res.data.data[0].intervals || []
                 const regex = /(\d*):(\d*)/
                 const allowedTime = []
                 const dateStart = new Date()
@@ -167,7 +167,7 @@ const ServiceNodeDateTime = ({
                     )}
                 >
                     {dates.length ?
-                        <Slider
+                        <ItemSlider
                             data={dates}
                             onItemSelected={onDateSelected}
                             horizontal
@@ -233,7 +233,7 @@ const ServiceNodeDateTime = ({
                             style={styles.timeListContainer}
                         >
                             {times.length ?
-                                <Slider
+                                <ItemSlider
                                     data={times}
                                     onItemSelected={onTimeSelected}
                                     horizontal

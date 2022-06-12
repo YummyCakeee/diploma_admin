@@ -8,15 +8,23 @@ import { CheckIcon } from "../Icons/Index"
 type checkBoxProps = {
     checked: boolean,
     onCheckChanged: () => void,
+    disabled: boolean,
     label?: string,
 }
 
 const Checkbox: React.FC<checkBoxProps> = ({
     checked = false,
     onCheckChanged = () => { },
+    disabled = false,
     label,
     ...props
 }) => {
+
+    const onCheckboxPress = () => {
+        if (!disabled) {
+            onCheckChanged()
+        }
+    }
 
     return (
         <View
@@ -24,12 +32,17 @@ const Checkbox: React.FC<checkBoxProps> = ({
             {...props}
         >
             <TouchableOpacity
-                onPress={onCheckChanged}
+                onPress={onCheckboxPress}
                 activeOpacity={1}
                 style={styles.touchableContainer}
             >
             <View
-                style={styles.checkboxContainer}
+                style={[
+                    styles.checkboxContainer,
+                    disabled ? 
+                    styles.checkboxContainerDisabled :
+                    null
+                ]}
             >
                 {checked && (
                     <CheckIcon
@@ -72,6 +85,9 @@ const styles = StyleSheet.create({
         padding: 2,
         borderColor: Color.OceanBlue,
         backgroundColor: Color.White,
+    },
+    checkboxContainerDisabled: {
+        backgroundColor: Color.LightGray
     },
     labelContainer: {
         marginLeft: 5,

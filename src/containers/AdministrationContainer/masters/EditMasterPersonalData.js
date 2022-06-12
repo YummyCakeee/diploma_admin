@@ -26,6 +26,7 @@ const EditMasterPersonalData = ({ editPassword }) => {
                     label="Фамилия:"
                     validate={surnameValidator}
                     mask={nameFormatter}
+                    style={styles.inputFieldContainer}
                 />
                 <Field
                     name="name"
@@ -33,6 +34,7 @@ const EditMasterPersonalData = ({ editPassword }) => {
                     label="Имя:"
                     validate={nameValidator}
                     mask={nameFormatter}
+                    style={styles.inputFieldContainer}
                 />
                 <Field
                     name="patronymic"
@@ -40,6 +42,7 @@ const EditMasterPersonalData = ({ editPassword }) => {
                     label="Отчество:"
                     validate={(val) => patronymicValidator(val, true)}
                     mask={nameFormatter}
+                    style={styles.inputFieldContainer}
                 />
                 <Field
                     name="phone"
@@ -47,12 +50,14 @@ const EditMasterPersonalData = ({ editPassword }) => {
                     label="Телефон:"
                     validate={phoneNumberValidator}
                     mask={phoneNumberFormatter}
+                    style={styles.inputFieldContainer}
                 />
                 <Field
                     name="email"
                     component={FormFieldInput}
                     label="Email:"
-                    validate={emailValidator}
+                    validate={(val) => emailValidator(val, true)}
+                    style={styles.inputFieldContainer}
                 />
                 {editPassword && (
                     <Field
@@ -61,6 +66,7 @@ const EditMasterPersonalData = ({ editPassword }) => {
                         label="Пароль:"
                         validate={passwordValidator}
                         secureTextEntry
+                        style={styles.inputFieldContainer}
                     />
                 )}
             </View>
@@ -77,6 +83,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         padding: 10,
         paddingTop: 0
+    },
+    inputFieldContainer: {
+        marginTop: 10,
     }
 })
 

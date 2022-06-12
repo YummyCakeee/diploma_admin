@@ -3,9 +3,12 @@ import { StyleSheet, View, ScrollView, Animated, NativeSyntheticEvent, NativeScr
 import ServiceNode from "./ServiceNode";
 import LinearGradient from "react-native-linear-gradient";
 import { serviceNodeType } from "./types";
+import { Color } from "global/styles/constants";
+import { getColorWithOpacity } from "global/styles/utils";
 
 type servicesNodeListProps = {
     services: serviceNodeType[],
+    allowNodeRemove?: boolean,
     onRemoveNodePress: (index: number) => void,
     onNodePress: (index: number) => void,
     style?: StyleProp<ViewStyle>,
@@ -13,6 +16,7 @@ type servicesNodeListProps = {
 
 const ServiceNodeList: React.FC<servicesNodeListProps> = ({
     services,
+    allowNodeRemove = false,
     onRemoveNodePress,
     onNodePress,
     style
@@ -22,6 +26,7 @@ const ServiceNodeList: React.FC<servicesNodeListProps> = ({
     const listTopOpacity = useRef(new Animated.Value(0)).current
     const scrollRef = useRef<ScrollView>(null)
     const [nodeHeight, setNodeHeight] = useState(0)
+    const [selectedNodeIndex, setSelectedNodeIndex] = useState<number>(-1)
 
     useEffect(() => {
         if (services?.length * nodeHeight < 300) {
@@ -62,6 +67,12 @@ const ServiceNodeList: React.FC<servicesNodeListProps> = ({
                 useNativeDriver: true
             }).start()
     }
+
+    const onNodePressEvent = (index: number) => {
+        setSelectedNodeIndex(index)
+        onNodePress(index)
+    }
+
     return (
         <View
             style={[
@@ -102,8 +113,10 @@ const ServiceNodeList: React.FC<servicesNodeListProps> = ({
                         {...{
                             node: el,
                             index,
+                            removeButton: allowNodeRemove,
                             onRemoveNodePress,
-                            onNodePress
+                            onNodePress: () => onNodePressEvent(index),
+                            style: index === selectedNodeIndex ? styles.selectedNode : null
                         }}
                     />
                 ))}
@@ -157,6 +170,9 @@ const styles = StyleSheet.create({
     listBorder: {
         height: 1,
         width: '100%'
+    },
+    selectedNode: {
+        backgroundColor: getColorWithOpacity(Color.Gray, 0.2)
     }
 })
 

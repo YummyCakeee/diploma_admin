@@ -1,10 +1,11 @@
-import React from "react"
+import React, { useContext } from "react"
 import { ScrollView, StatusBar, SafeAreaView, Dimensions, View, StyleSheet } from "react-native"
-import globalStyles from "global/styles/styles"
 import Header from "components/Header/Header"
 import { Color } from "global/styles/constants"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
 
 const ScreenTemplate = ({ children, style, headerHamburgerIcon, scrollable = true }) => {
+    const globalStyles = useContext(GlobalStylesContext)
     return (
         <>
             <StatusBar
@@ -13,6 +14,7 @@ const ScreenTemplate = ({ children, style, headerHamburgerIcon, scrollable = tru
             />
             <SafeAreaView style={[
                 globalStyles.container,
+                globalStyles.background,
                 style,
             ]}>
                 <Header {

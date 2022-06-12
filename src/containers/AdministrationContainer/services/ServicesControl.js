@@ -33,6 +33,7 @@ const ServicesControl = ({
                 <EditService 
                     {...{
                         services,
+                        setServices,
                         masters,
                         workplaces
                     }}
@@ -55,9 +56,5 @@ const ServicesControl = ({
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    
-})
 
 export default ServicesControl

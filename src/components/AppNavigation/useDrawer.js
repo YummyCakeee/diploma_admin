@@ -24,6 +24,12 @@ const useDrawer = () => {
             section: 'top',
         },
         {
+            label: 'Записи на услуги',
+            icon: () => ListIcon({color: Color.White}),
+            screen: Screen.ServiceRecordsAdmin,
+            section: 'top',
+        },
+        {
             label: 'Онлайн чат',
             icon: () => TalkBubblesIcon({ color: Color.White }),
             screen: Screen.OnlineChat,

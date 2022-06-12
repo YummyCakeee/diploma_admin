@@ -12,7 +12,7 @@ const GradientLoading: React.FC<gradientLoadingType> = ({
 }) => {
 
     const screenWidth = Dimensions.get('screen').width
-    const gradientPos = useRef(new Animated.Value(-100)).current
+    const gradientPos = useRef(new Animated.Value(0)).current
 
     useEffect(() => {
         Animated.loop(Animated.timing(

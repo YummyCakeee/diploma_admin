@@ -21,7 +21,7 @@ const SignUpForServices = () => {
             <Text
                 style={[globalStyles.text, styles.text]}
             >
-                Запишитесь на приём к мастеру в одно касание!
+                Запишитесь на приём к мастеру в несколько касаний!
             </Text>
         </View>
     )
@@ -40,6 +40,7 @@ const styles = StyleSheet.create({
     text: {
         alignSelf: 'center',
         marginTop: 5,
+        textAlign: 'center'
     }
 })
 

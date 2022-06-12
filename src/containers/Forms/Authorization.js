@@ -142,7 +142,8 @@ const Authorization = ({
                     surname: data.second_name,
                     patronymic: data.third_name,
                     phone: data.phone,
-                    email: data.email
+                    email: data.email,
+                    permission: data.permission
                 }
                 dispatch(updateUser(userData))
                 AsyncStorage.setItem('authToken', userData.authToken)

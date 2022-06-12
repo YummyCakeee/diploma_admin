@@ -17,12 +17,11 @@ const Header = ({hamburgerIcon = true}) => {
     const onHamburgerPress = () => {
         navigation.openDrawer()
     }
-    
     return (
         <Animated.View 
             style={[
                 styles.container,
-                globalStyles.header?.container
+                globalStyles.header
             ]}
         >
             {hamburgerIcon ?
@@ -34,11 +33,18 @@ const Header = ({hamburgerIcon = true}) => {
                 <HamburgerIcon
                     width={25}
                     height={25}
-                    color={'rgb(30, 30, 30)'}
+                    color={globalStyles.headerMenuButton?.backgroundColor}
                 />
             </TouchableOpacity> : null
 }
-            <Text style={styles.text}>Stinky Beard</Text>
+            <Text 
+                style={[
+                    styles.text,
+                    globalStyles.headerTitle
+                ]}
+            >
+                Stinky Beard
+            </Text>
         </Animated.View>
     )
 }

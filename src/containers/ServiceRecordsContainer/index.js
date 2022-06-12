@@ -230,6 +230,7 @@ const ServiceRecordsContainer = () => {
                     <>
                         <ServiceNodeList
                             services={orders}
+                            allowNodeRemove
                             onNodePress={onNodePress}
                             onRemoveNodePress={onRemoveNodePress}
                             style={styles.serviceListContainer}

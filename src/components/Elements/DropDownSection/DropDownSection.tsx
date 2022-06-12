@@ -19,25 +19,41 @@ type dropDownSectionProps = {
     title?: string,
     isOpen: boolean,
     onHeaderPress: () => void,
+    onOpen: () => void,
+    onClose: () => void,
+    renderOnlyIfOpen: boolean,
     children: React.ReactChildren,
-    style: StyleProp<ViewStyle>
+    style?: StyleProp<ViewStyle>,
+    contentContainerStyle?: StyleProp<ViewStyle>
 }
 
 const DropDownSection: React.FC<dropDownSectionProps> = ({
     title,
     isOpen,
     onHeaderPress = () => { },
+    onOpen = () => {},
+    onClose = () => {},
+    renderOnlyIfOpen = false,
     children,
-    style
+    style,
+    contentContainerStyle
 }) => {
 
     const contentHeight = useRef(new Animated.Value(0)).current
     const triangleRotation = useRef(new Animated.Value(0)).current
     const [triangleRotationFormated, setTriangleRotationFormated] = useState<any>('0deg')
+    const [isRenderChildren, setIsRenderChildren] = useState(true)
+    const [isClosed, setIsClosed] = useState(isOpen)
 
     useEffect(() => {
-        if (isOpen) showContent()
-        else hideContent()
+        if (isOpen) {
+            onOpen()
+            showContent()
+        }
+        else {
+            onClose()
+            hideContent()
+        }
     }, [isOpen])
 
     useEffect(() => {
@@ -48,7 +64,18 @@ const DropDownSection: React.FC<dropDownSectionProps> = ({
             }))
     }, [triangleRotation])
 
+    useEffect(() => {
+        if (renderOnlyIfOpen) {
+            if (isClosed)
+                setIsRenderChildren(false)
+            else
+                setIsRenderChildren(true)
+        }
+        else setIsRenderChildren(true)
+    }, [isClosed, renderOnlyIfOpen])
+
     const showContent = () => {
+        setIsClosed(false)
         Animated.timing(contentHeight, {
             toValue: 2000,
             duration: 300,
@@ -66,7 +93,7 @@ const DropDownSection: React.FC<dropDownSectionProps> = ({
             toValue: 0,
             duration: 300,
             useNativeDriver: false
-        }).start()
+        }).start(() => setIsClosed(true))
         Animated.timing(triangleRotation, {
             toValue: 0,
             duration: 300,
@@ -74,17 +101,25 @@ const DropDownSection: React.FC<dropDownSectionProps> = ({
         }).start()
     }
 
+    const childrenWithProps = React.Children.map(children, child => {
+        if (React.isValidElement(child)) {
+            const childrenProps = { isFocused: isOpen }
+            return React.cloneElement(child, childrenProps);
+        }
+        return child;
+    })
+
     return (
         <View
-            style={[
-                styles.container,
-                style
-            ]}
+            style={styles.container}
         >
             <TouchableOpacity
-                style={styles.header}
                 onPress={onHeaderPress}
                 activeOpacity={1}
+                style={[
+                    styles.header,
+                    style
+                ]}
             >
                 <Animated.View
                     style={
@@ -112,13 +147,16 @@ const DropDownSection: React.FC<dropDownSectionProps> = ({
             <Animated.View
                 style={[
                     styles.contentContainer,
-                    { maxHeight: contentHeight }
+                    { maxHeight: contentHeight },
                 ]}
             >
                 <View
-                    style={styles.content}
+                    style={[
+                        styles.content,
+                        contentContainerStyle
+                    ]}
                 >
-                    {children}
+                    {isRenderChildren && childrenWithProps}
                     <LinearGradient
                         colors={[
                             'rgba(100, 100, 100, 0)',

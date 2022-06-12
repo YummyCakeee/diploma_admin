@@ -1,4 +1,4 @@
-import Slider from "components/Elements/Slider/Slider"
+import ItemSlider from "components/Elements/ItemSlider/ItemSlider"
 import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate"
 import globalStyles from "global/styles/styles"
 import React, { useState, useEffect } from "react"
@@ -14,10 +14,12 @@ import { userSelector } from "store/selectors/userSlice"
 import { ENDPOINT_MASTERS, ENDPOINT_SERVICES, ENDPOINT_WORKPLACES } from "constants/endpoints"
 import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
 import ServicesControl from "./services/ServicesControl"
+import DesignControl from "./design/DesignControl"
 
 const MODE_MASTERS = 0
 const MODE_SERVICES = 1
 const MODE_DESIGN = 2
+const MODE_CONTENT = 3
 
 const AdministrationContainer = () => {
 
@@ -27,7 +29,8 @@ const AdministrationContainer = () => {
     const [modeSliderItems] = useState([
         { text: "Мастера", mode: MODE_MASTERS },
         { text: "Услуги", mode: MODE_SERVICES },
-        { text: "Дизайн", mode: MODE_DESIGN }
+        { text: "Дизайн", mode: MODE_DESIGN },
+        { text: "Контент", mode: MODE_CONTENT },
     ])
     const [selectedMode, setSelectedMode] = useState(MODE_MASTERS)
     const [mastersAndServicesLoadingStatus, setMastersAndServicesLoadingStatus]
@@ -64,10 +67,10 @@ const AdministrationContainer = () => {
             mastersData.data.forEach(el => {
                 el.name = el.first_name
                 el.surname = el.second_name
-                el.patronymic = el.third_mame || ''
+                el.patronymic = el.third_name || ''
                 delete el.first_name
                 delete el.second_name
-                delete el.third_mame
+                delete el.third_name
             })
             setServices(servicesData.data)
             setMasters(mastersData.data)
@@ -88,7 +91,7 @@ const AdministrationContainer = () => {
                 >
                     Администрирование
                 </Text>
-                <Slider
+                <ItemSlider
                     data={modeSliderItems}
                     onItemSelected={(item) => setSelectedMode(item.mode)}
                     horizontal
@@ -139,6 +142,9 @@ const AdministrationContainer = () => {
                                 }}
                             />
                         </Loadable>
+                    }
+                    {selectedMode === MODE_DESIGN &&
+                        <DesignControl/>
                     }
                 </View>
             </View>

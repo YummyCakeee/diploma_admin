@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { Text, View, StyleSheet } from 'react-native'
 import Button from "components/Elements/Button/Button"
 import { ArrowIcon } from "components/Elements/Icons/Index"
@@ -6,7 +6,6 @@ import SectionSeparator from "components/Elements/SectionSeparator/SectionSepara
 import ItemSlider from "components/Elements/ItemSlider/ItemSlider"
 import FormCheckbox from "containers/Forms/FormCheckbox"
 import { Color } from "global/styles/constants"
-import globalStyles from "global/styles/styles"
 import { Formik, Field } from "formik"
 import { getColorWithOpacity } from "global/styles/utils"
 import EditServiceMainData from "./EditServiceMainData"
@@ -17,6 +16,8 @@ import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
 import { useSelector } from "react-redux"
 import { userSelector } from "store/selectors/userSlice"
 import Toast from 'react-native-simple-toast'
+import { ModalControllerContext } from "containers/ModalController"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
 
 const EditService = ({
     services,
@@ -29,6 +30,10 @@ const EditService = ({
     const [selectedMaster, setSelectedMaster] = useState(0)
     const [selectedService, setSelectedService] = useState(0)
     const userInfo = useSelector(userSelector)
+    const {
+        setConfirmActionModalState
+    } = useContext(ModalControllerContext)
+    const globalStyles = useContext(GlobalStylesContext)
 
     useEffect(() => {
         setMastersCopy(masters.map(el => {
@@ -71,6 +76,7 @@ const EditService = ({
                         if (el.id !== id)
                             return el
                         else return {
+                            id,
                             name: data.name,
                             description: data.description,
                             duration: data.duration,
@@ -81,10 +87,43 @@ const EditService = ({
                 )
                 Toast.show("Услуга успешно изменена")
             }
+            else {
+                Toast.show("Не удалось обновить данные об услуге: " + res.data.data.message)
+            }
         })
         .catch(err => {
-            Toast.show("Ошибка: Не удалось обновить данные об услуге")
+            Toast.show("Не удалось обновить данные об услуге: " + err)
             console.log(err)
+        })
+    }
+
+    const onDeleteService = () => {
+        const service = services[selectedService]
+        if (service)
+            setConfirmActionModalState({
+                text: "Вы уверены, что хотите удалить услугу " +
+                    `"${service.name}"?`,
+                onConfirm: () => deleteService(service.id)
+            })
+    }
+
+    const deleteService = (serviceId) => {
+        axiosAPI2.delete(createServiceEndpoint(serviceId),
+        {
+            headers: createAuthorizationHeader(userInfo.authToken)
+        })
+        .then(res => {
+            if (res.data.success) {
+                setServices(services.filter(el => el.id !== serviceId))
+                setConfirmActionModalState(false)
+                Toast.show("Услуга удалена")
+            }
+            else {
+                Toast.show("Не удалось удалить услугу: " + res.data.data.message)
+            }
+        })
+        .catch(err => {
+            Toast.show("Не удалось удалить услугу: " + err)
         })
     }
 
@@ -205,6 +244,15 @@ const EditService = ({
                         primary
                         disabled={isSubmitting || !isValid}
                         onPress={handleSubmit}
+                        style={[
+                            globalStyles.centeredElement
+                        ]}
+                    />
+                    <Button
+                        title="Удалить услугу"
+                        size="large"
+                        disabled={!isValid || isSubmitting}
+                        onPress={onDeleteService}
                         style={[
                             globalStyles.centeredElement
                         ]}

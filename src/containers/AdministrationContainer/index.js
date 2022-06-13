@@ -1,7 +1,6 @@
 import ItemSlider from "components/Elements/ItemSlider/ItemSlider"
 import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate"
-import globalStyles from "global/styles/styles"
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native"
 import MastersControl from "./masters/MastersControl"
 import axios from "axios"
@@ -15,6 +14,8 @@ import { ENDPOINT_MASTERS, ENDPOINT_SERVICES, ENDPOINT_WORKPLACES } from "consta
 import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
 import ServicesControl from "./services/ServicesControl"
 import DesignControl from "./design/DesignControl"
+import ContentControl from "./content/ContentControl"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
 
 const MODE_MASTERS = 0
 const MODE_SERVICES = 1
@@ -22,7 +23,6 @@ const MODE_DESIGN = 2
 const MODE_CONTENT = 3
 
 const AdministrationContainer = () => {
-
     const [masters, setMasters] = useState([])
     const [services, setServices] = useState([])
     const [workplaces, setWorkplaces] = useState([])
@@ -35,8 +35,8 @@ const AdministrationContainer = () => {
     const [selectedMode, setSelectedMode] = useState(MODE_MASTERS)
     const [mastersAndServicesLoadingStatus, setMastersAndServicesLoadingStatus]
         = useState(loadableStatus.LOADING)
-
     const userInfo = useSelector(userSelector)
+    const globalStyles = useContext(GlobalStylesContext)
 
     useEffect(() => {
         getMastersAndServices()
@@ -145,6 +145,9 @@ const AdministrationContainer = () => {
                     }
                     {selectedMode === MODE_DESIGN &&
                         <DesignControl/>
+                    }
+                    {selectedMode === MODE_CONTENT &&
+                        <ContentControl />
                     }
                 </View>
             </View>

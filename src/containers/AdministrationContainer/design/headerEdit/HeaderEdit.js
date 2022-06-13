@@ -1,13 +1,6 @@
-import React, { useEffect, useState } from "react"
-import { View, Text } from "react-native"
-import ColorPicker from "components/Elements/ColorPicker/ColorPicker"
-import globalStyles from "global/styles/styles"
-import Button from "components/Elements/Button/Button"
-import useDesign from "../useDesign"
-import { styles } from "../styles"
-import Toast from 'react-native-simple-toast'
-import InputField from "components/Elements/InputField/InputField"
-import { numberFormatter } from "utils/formatters"
+import React, { useState } from "react"
+import { View } from "react-native"
+import { styles } from "../../styles/styles"
 import DropDownSection from "components/Elements/DropDownSection/DropDownSection"
 import HeaderContainerEdit from "./HeaderContainerEdit"
 import { Color } from "global/styles/constants"
@@ -19,7 +12,7 @@ const MODE_EDIT_HEADER = 1
 const MODE_EDIT_HEADER_TITLE = 2
 const MODE_EDIT_HEADER_MENU_BUTTON = 3
 
-const HeaderEdit = ({ isFocused }) => {
+const HeaderEdit = () => {
 
     const [selectedMode, setSelectedMode] = useState(MODE_NONE)
 

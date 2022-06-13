@@ -4,8 +4,6 @@ import { useSelector } from "react-redux"
 import { userSelector } from "store/selectors/userSlice"
 import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
 import { createStyleEndpoint } from "utils/apiHelpers/endpointGenerators"
-import { ENDPOINT_STYLES } from "constants/endpoints"
-import axios from "axios"
 
 
 const useDesign = () => {

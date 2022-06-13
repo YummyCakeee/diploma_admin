@@ -1,13 +1,12 @@
 import Button from "components/Elements/Button/Button"
 import { Formik } from "formik"
-import React from "react"
+import React, { useContext } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import EditMasterPersonalData from "./EditMasterPersonalData"
 import { Field } from "formik"
 import SectionSeparator from "components/Elements/SectionSeparator/SectionSeparator"
 import ItemSlider from "components/Elements/ItemSlider/ItemSlider"
 import FormCheckbox from "containers/Forms/FormCheckbox"
-import globalStyles from "global/styles/styles"
 import { Color } from "global/styles/constants"
 import { getColorWithOpacity } from "global/styles/utils"
 import { axiosAPI2 } from "utils/axios"
@@ -17,6 +16,7 @@ import { useSelector } from "react-redux"
 import { userSelector } from "store/selectors/userSlice"
 import Toast from 'react-native-simple-toast'
 import { simplePhoneNumberFormatter } from "utils/formatters"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
 
 const AddMaster = ({
     masters,
@@ -25,6 +25,7 @@ const AddMaster = ({
 }) => {
 
     const userInfo = useSelector(userSelector)
+    const globalStyles = useContext(GlobalStylesContext)
 
     const onSubmit = async (values) => {
         const data = {

@@ -1,11 +1,11 @@
-import globalStyles from "global/styles/styles";
-import React, { useRef, useState, useEffect, createRef } from "react";
+import React, { useRef, useState, useEffect, createRef, useContext } from "react";
 import { StyleSheet, TextInput, View, Text, NativeModules } from "react-native";
 import AnimatedFieldError from 'components/Elements/AnimatedFieldError/AnimatedFieldError'
 import axiosAPI from 'utils/axios'
 import { ORGANIZATION_ID, USER_TYPE } from 'constants/application'
 import { simplePhoneNumberFormatter } from "utils/formatters";
 import Toast from 'react-native-simple-toast'
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper";
 
 type codeInputFieldProps = {
     value: string,
@@ -33,6 +33,7 @@ const CodeInputField: React.FC<codeInputFieldProps> = ({
     const [values, setValues] = useState(new Map<number, string>([]))
     const resendCodeTimer = useRef<NodeJS.Timeout>()
     const [resendCodeTimeLeft, setResendCodeTimeLeft] = useState(startRemainingTime)
+    const globalStyles = useContext(GlobalStylesContext)
 
     useEffect(() => {
         if (resendCodeTimeLeft > 0) {

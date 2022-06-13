@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import {
     StyleSheet,
     View,
@@ -16,12 +16,13 @@ import { dateSwapYearAndMonthFormatter } from "utils/formatters"
 import Loadable, { loadableStatus } from "components/Elements/Loadable/Loadable"
 import { LoadingIcon, ReloadIcon } from "components/Elements/Icons/Index"
 import { Color } from "global/styles/constants"
-import globalStyles from "global/styles/styles"
 import ModalWindow from "components/Elements/ModalWindow/ModalWindow"
 import Button from "components/Elements/Button/Button"
 import { useNavigation } from "@react-navigation/native"
 import { Screen } from "components/AppNavigation/AppNavigation"
 import { createAppointmentIdEndpoint } from "utils/apiHelpers/endpointGenerators"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
+import { userSelector } from "store/selectors/userSlice"
 
 const ServiceRecordsContainer = () => {
 
@@ -30,8 +31,9 @@ const ServiceRecordsContainer = () => {
     const [selectedOrderIndex, setSelectedOrderIndex] = useState(null)
     const [isShowModal, setIsShowModal] = useState(false)
     const navigation = useNavigation()
+    const globalStyles = useContext(GlobalStylesContext)
 
-    const token = useSelector(state => state.user.authToken)
+    const userInfo = useSelector(userSelector)
     useEffect(() => {
         getOrders()
     }, [])
@@ -41,7 +43,7 @@ const ServiceRecordsContainer = () => {
         setOrdersLoadingStatus(loadableStatus.LOADING)
         axiosAPI2.get(ENDPOINT_APPOINTMENTS,
             {
-                headers: createAuthorizationHeader(token)
+                headers: createAuthorizationHeader(userInfo.authToken)
             })
             .then(res => {
                 if (res.data.success) {
@@ -89,7 +91,7 @@ const ServiceRecordsContainer = () => {
 
     const onRemoveNodeConfirm = () => {
         axiosAPI2.delete(createAppointmentIdEndpoint(orders[selectedOrderIndex].id), {
-            headers: createAuthorizationHeader(token),
+            headers: createAuthorizationHeader(userInfo.authToken),
         }).then(res => {
             if (res.data.success) {
                 setIsShowModal(false)

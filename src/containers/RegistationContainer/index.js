@@ -1,11 +1,11 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate"
-import globalStyles from "global/styles/styles"
 import { StyleSheet, Text, View } from "react-native"
 import { useNavigation } from "@react-navigation/core"
 import Authorization from "containers/Forms/Authorization"
 import Registration from "containers/Forms/Registration"
 import { Screen } from "components/AppNavigation/AppNavigation"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
 export const AUTH_TYPE = 'auth_type'
 export const REG_TYPE = 'reg_type'
 
@@ -13,6 +13,7 @@ const RegistationContainer = () => {
 
     const [signType, setSignType] = useState(AUTH_TYPE)
     const navigation = useNavigation()
+    const globalStyles = useContext(GlobalStylesContext)
 
     const onToggleSignType = () => {
         signType === AUTH_TYPE ?

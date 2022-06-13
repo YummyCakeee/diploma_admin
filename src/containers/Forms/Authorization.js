@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { 
     View, Text, StyleSheet, 
     Animated, Easing, NativeModules 
 } from "react-native";
 import Toast from 'react-native-simple-toast'
-import globalStyles from "global/styles/styles";
 import Button from "components/Elements/Button/Button";
 import { 
     phoneNumberFormatter, 
@@ -22,11 +21,11 @@ import axiosAPI, { axiosAPI2 } from "utils/axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ENDPOINT_MAIN_AUTH, ENDPOINT_USER } from "constants/endpoints";
 import { ORGANIZATION_ID, USER_TYPE } from "constants/application";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { updateUser } from "store/actions/userSlice";
 import { Color } from "global/styles/constants";
 import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator";
-import { userSelector } from "store/selectors/userSlice";
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper";
 
 
 const Authorization = ({
@@ -39,6 +38,7 @@ const Authorization = ({
     const usePasswordTextHeight = useRef(new Animated.Value(0)).current
     const [sendCodeRemainingTime, setSendCodeRemainingTime] = useState(90)
     const dispatch = useDispatch()
+    const globalStyles = useContext(GlobalStylesContext)
 
     useEffect(() => {
         Animated.timing(usePasswordTextHeight,

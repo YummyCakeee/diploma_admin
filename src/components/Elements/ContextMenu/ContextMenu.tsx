@@ -1,6 +1,5 @@
-import { Color } from "global/styles/constants"
-import globalStyles from "global/styles/styles"
-import React, { useEffect, useRef, useState } from "react"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
+import React, { useContext, useEffect, useRef, useState } from "react"
 import { 
     View, 
     TouchableOpacity, 
@@ -42,6 +41,7 @@ const ContextMenu: React.FC<contextMenuProps> = ({
     style
 }) => {
 
+    const globalStyles = useContext(GlobalStylesContext)
     const menuScaleRef = useRef(new Animated.Value(0)).current
 
     useEffect(() => {

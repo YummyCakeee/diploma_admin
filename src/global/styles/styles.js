@@ -19,6 +19,12 @@ const globalStyles = StyleSheet.create({
     headerMenuButtonColor: {
         backgroundColor: 'rgb(30, 30, 30)'
     },
+    headerTitle: {
+        fontSize: 24,
+        fontWeight: '400',
+        color: '#fff',
+        fontFamily: "Courgette-Regular"
+    },  
     text: {
         color: Color.White,
         fontSize: 16,

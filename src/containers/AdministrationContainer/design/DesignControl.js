@@ -2,7 +2,7 @@ import React, { useState, Suspense } from "react"
 import { View } from 'react-native'
 import DropDownSection from "components/Elements/DropDownSection/DropDownSection"
 import GradientLoading from "components/Elements/Loadable/GradientLoading"
-import { styles } from "./styles"
+import { styles } from "../styles/styles"
 import { useSelector } from "react-redux"
 import { userSelector } from "store/selectors/userSlice"
 const HeaderEdit = React.lazy(() => import("./headerEdit/HeaderEdit"))

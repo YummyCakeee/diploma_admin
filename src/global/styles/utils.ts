@@ -2,7 +2,7 @@ export const getColorWithOpacity = (
   color: string,
   opacity: number = 1.0
 ): string => {
-  const opacityConverted = Number((opacity * 256).toFixed()).toString(16)
+  const opacityConverted = Number(opacity * 255).toString(16).padStart(2, '0')
   return color + opacityConverted
 }
 
@@ -12,7 +12,7 @@ export const hslToHex = (h: number, s: number, l: number, o: number): string => 
   const f = (n: number) => {
     const k = (n + h / 30) % 12;
     const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-    return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
+    return Math.round(255 * color).toString(16).padStart(2, '0');
   };
   const opacity = Math.round(255 * o).toString(16).padStart(2, '0')
   return `#${f(0)}${f(8)}${f(4)}${opacity}`;

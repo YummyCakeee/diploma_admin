@@ -1,11 +1,13 @@
-import React from "react";
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper";
+import React, { useContext } from "react";
 import { Text, View, StyleSheet } from "react-native";
-import globalStyles from "global/styles/styles";
 import OurServicesItem from "./OurServicesItem";
 import useOurServices from './useOurServices'
 
 const OurServices = () => {
     const {services} = useOurServices()
+    const globalStyles = useContext(GlobalStylesContext)
+    
     return (
         <View style={styles.container}>
             <Text style={[globalStyles.title, { textAlign: 'center' }]}>Наши услуги: </Text>

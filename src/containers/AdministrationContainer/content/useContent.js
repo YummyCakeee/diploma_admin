@@ -3,36 +3,23 @@ import Toast from 'react-native-simple-toast'
 import { useSelector } from "react-redux"
 import { userSelector } from "store/selectors/userSlice"
 import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
-import { createStyleEndpoint } from "utils/apiHelpers/endpointGenerators"
+import { createContentEndpoint } from "utils/apiHelpers/endpointGenerators"
 
 
-const useDesign = () => {
+const useContent = () => {
 
     const userInfo = useSelector(userSelector)
-    const styleNames = {
-        header: 'header',
+    const contentNames = {
         headerTitle: 'headerTitle',
-        headerMenuButton: 'headerMenuButton',
-        background: 'background',
-        text: 'text',
-        title: 'title',
-        pageTitle: 'pageTitle',
-        button: 'button',
-        buttonPrimary: 'buttonPrimary',
-        buttonPressed: 'buttonPressed',
-        buttonBlocked: 'buttonBlocked',
-        drawer: 'drawer',
-        drawerItem: 'drawerItem',
-        drawerItemSelected: 'drawerItemSelected'
     }
 
-    const getStylesInfo = async (
+    const getContentInfo = async (
         tag,
         onSuccessResult = (res) => { },
         onUnsuccessResult,
         onRequestFail
     ) => {
-        axiosAPI2.get(createStyleEndpoint(tag), 
+        axiosAPI2.get(createContentEndpoint(tag), 
             {
                 headers: createAuthorizationHeader(userInfo.authToken),
             })
@@ -44,7 +31,7 @@ const useDesign = () => {
                         onUnsuccessResult(res.data)
                     }
                     else {
-                        Toast.show("Ошибка: не удалось загрузить стили: " + res.data.data.message)
+                        Toast.show("Не удалось загрузить контент: " + res.data.data.message)
                     }
                 }
             })
@@ -54,12 +41,12 @@ const useDesign = () => {
                 }
                 else {
                     console.log(err)
-                    Toast.show("Ошибка: не удалось загрузить стили")
+                    Toast.show("Ошибка: не удалось загрузить контент")
                 }
             })
     }
 
-    const setStylesInfo = async (
+    const setContentInfo = async (
         tag,
         styles,
         onSuccessResult = (res) => { },
@@ -70,7 +57,7 @@ const useDesign = () => {
             tag: tag,
             object: styles
         }
-        axiosAPI2.put(createStyleEndpoint(tag),
+        axiosAPI2.put(createContentEndpoint(tag),
             data,
             {
                 headers: createAuthorizationHeader(userInfo.authToken),
@@ -83,7 +70,7 @@ const useDesign = () => {
                         onUnsuccessResult(res.data)
                     }
                     else {
-                        Toast.show("Ошибка: не удалось сохранить стили: " + res.data.data.message)
+                        Toast.show("Не удалось сохранить контент: " + res.data.data.message)
                     }
                 }
             })
@@ -93,27 +80,27 @@ const useDesign = () => {
                 }
                 else {
                     console.log(err)
-                    Toast.show("Ошибка: не удалось сохранить стили")
+                    Toast.show("Ошибка: не удалось сохранить контент")
                 }
             })
     }
 
-    const resetStyleInfo = async (
+    const resetContentInfo = async (
         tag,
         onSuccessResult = (res) => {},
         onUnsuccessResult,
         onRequestFail
     ) => {
-        setStylesInfo(tag, {}, onSuccessResult, onUnsuccessResult, onRequestFail)
+        setContentInfo(tag, {}, onSuccessResult, onUnsuccessResult, onRequestFail)
     }
 
     return {
-        getStylesInfo,
-        setStylesInfo,
-        resetStyleInfo,
-        styleNames
+        getContentInfo,
+        setContentInfo,
+        resetContentInfo,
+        contentNames
     }
 }
 
 
-export default useDesign
+export default useContent

@@ -1,9 +1,9 @@
-import globalStyles from "global/styles/styles"
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { View, Text, StyleSheet, TouchableOpacity, StyleProp, ViewStyle } from "react-native"
 import { CrossIcon } from "components/Elements/Icons/Index"
 import { serviceNodeType } from "./types"
 import { Color } from "global/styles/constants"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
 
 type serviceNodeProps = {
     node: serviceNodeType,
@@ -22,7 +22,9 @@ const ServiceNode: React.FC<serviceNodeProps> = ({
     onRemoveNodePress = () => { },
     style
 }) => {
+    const globalStyles = useContext(GlobalStylesContext)
     const [serviceEndTime, setServiceEndTime] = useState('')
+
     useEffect(() => {
         if (!node.time) return
         const regex = /(\d*):(\d*)/

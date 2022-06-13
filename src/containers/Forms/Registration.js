@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { View, Text, StyleSheet, Animated, Easing, NativeModules } from "react-native";
-import globalStyles from "global/styles/styles";
 import Button from "components/Elements/Button/Button";
 import { Formik, Field } from "formik";
 import FormFieldInput from "containers/Forms/FormFieldInput";
@@ -16,6 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from 'react-native-simple-toast'
 import { Color } from "global/styles/constants";
 import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator";
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper";
 
 const Registration = ({
     onRegSuccess = () => { },
@@ -24,6 +24,7 @@ const Registration = ({
     const [stage, setStage] = useState(0)
     const passwordFieldHeight = useRef(new Animated.Value(0)).current
     const [sendCodeRemainingTime, setSendCodeRemainingTime] = useState(90)
+    const globalStyles = useContext(GlobalStylesContext)
     const dispatch = useDispatch()
 
     useEffect(() => {

@@ -1,12 +1,11 @@
 import Button from "components/Elements/Button/Button"
 import { Formik } from "formik"
-import React from "react"
+import React, { useContext } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { Field } from "formik"
 import SectionSeparator from "components/Elements/SectionSeparator/SectionSeparator"
 import ItemSlider from "components/Elements/ItemSlider/ItemSlider"
 import FormCheckbox from "containers/Forms/FormCheckbox"
-import globalStyles from "global/styles/styles"
 import { Color } from "global/styles/constants"
 import { getColorWithOpacity } from "global/styles/utils"
 import EditServiceMainData from "./EditServiceMainData"
@@ -16,6 +15,7 @@ import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
 import { useSelector } from "react-redux"
 import { userSelector } from "store/selectors/userSlice"
 import Toast from 'react-native-simple-toast'
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
 
 const AddService = ({
     services,
@@ -25,6 +25,8 @@ const AddService = ({
 }) => {
 
     const userInfo = useSelector(userSelector)
+    const globalStyles = useContext(GlobalStylesContext)
+
     const onSubmit = async (values) => {
         const data = {
             name: values.name,

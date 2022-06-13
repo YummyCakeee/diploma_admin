@@ -1,5 +1,5 @@
-import globalStyles from "global/styles/styles"
-import React, { useState, useEffect } from "react"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper";
+import React, { useState, useEffect, useContext } from "react"
 import {
     StyleSheet,
     View,
@@ -31,6 +31,7 @@ const RichList: React.FC<richListProps> = ({
     fields = []
 }) => {
 
+    const globalStyles = useContext(GlobalStylesContext)
     const [selectedItemIndex, setSelectedItemIndex] = useState<number>(0)
 
     useEffect(() => {

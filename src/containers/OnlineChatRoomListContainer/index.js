@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react"
-import { StyleSheet, View, Text, NativeModules } from "react-native"
+import React, { useState, useEffect, useContext } from "react"
+import { StyleSheet, View, Text } from "react-native"
 import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate"
 import { ENDPOINT_CHATS } from "constants/endpoints"
 import { axiosAPI2 } from "utils/axios"
@@ -7,18 +7,18 @@ import { useSelector } from "react-redux"
 import { userSelector } from "store/selectors/userSlice"
 import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
 import ChatRoomMinimized from "./ChatRoomMinimized"
-import axios from "axios"
 import Loadable, { loadableStatus } from "components/Elements/Loadable/Loadable"
 import { LoadingIcon, ReloadIcon } from "components/Elements/Icons/Index"
 import { Color } from "global/styles/constants"
-import globalStyles from "global/styles/styles"
 import { TouchableOpacity } from "react-native-gesture-handler"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
 
 const OnlineChatRoomListContainer = () => {
     const userInfo = useSelector(userSelector)
     const [chatRooms, setChatRooms] = useState([])
     const controller = new AbortController()
     const [loadingStatus, setLoadingStatus] = useState(loadableStatus.LOADING)
+    const globalStyles = useContext(GlobalStylesContext)
 
     useEffect(() => {
         getChatRooms()

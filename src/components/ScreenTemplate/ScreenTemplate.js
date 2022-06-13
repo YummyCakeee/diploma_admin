@@ -3,6 +3,7 @@ import { ScrollView, StatusBar, SafeAreaView, Dimensions, View, StyleSheet } fro
 import Header from "components/Header/Header"
 import { Color } from "global/styles/constants"
 import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
+import ModalController from "containers/ModalController"
 
 const ScreenTemplate = ({ children, style, headerHamburgerIcon, scrollable = true }) => {
     const globalStyles = useContext(GlobalStylesContext)
@@ -20,15 +21,17 @@ const ScreenTemplate = ({ children, style, headerHamburgerIcon, scrollable = tru
                 <Header {
                     ...{ hamburgerIcon: headerHamburgerIcon }
                 } />
-                <ScrollView
-                    scrollEnabled={scrollable}
-                >
-                    <View
-                        style={styles.childrenContainer}
+                <ModalController>
+                    <ScrollView
+                        scrollEnabled={scrollable}
                     >
-                        {children}
-                    </View>
-                </ScrollView>
+                        <View
+                            style={styles.childrenContainer}
+                        >
+                            {children}
+                        </View>
+                    </ScrollView>
+                </ModalController>
             </SafeAreaView>
         </>
     )

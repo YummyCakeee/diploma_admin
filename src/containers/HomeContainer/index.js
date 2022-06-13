@@ -1,12 +1,12 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import { StyleSheet, Text } from "react-native"
 import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate"
-import globalStyles from "global/styles/styles"
 import BannerSlider from "components/BannerSlider/BannerSlider"
 import BannerImage from "components/Elements/BannerImage/BannerImage"
 import SignUpForServices from "components/Elements/SignUpForServices/SignUpForServices"
 import OurServices from "components/OurServices/OurServices"
 import HomeSection from "./HomeSection"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
 
 const HomeContainer = () => {
     const [images, setImages] = useState([
@@ -17,6 +17,8 @@ const HomeContainer = () => {
         'https://avatars.mds.yandex.net/get-altay/2134557/2a0000016cde3b1c431082f2d91e8a6b5fc2/XXL',
         'https://mykaleidoscope.ru/uploads/posts/2020-02/1581707138_22-p-sbori-zhenikhov-v-barbershope-58.jpg',
     ])
+    const globalStyles = useContext(GlobalStylesContext)
+
     return (
         <ScreenTemplate>
                 <Text style={globalStyles.pageTitle}>Главная</Text>

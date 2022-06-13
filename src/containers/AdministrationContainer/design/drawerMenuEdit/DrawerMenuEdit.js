@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { View } from "react-native"
-import { styles } from "../styles"
+import { styles } from "../../styles/styles"
 import DropDownSection from "components/Elements/DropDownSection/DropDownSection"
 import { Color } from "global/styles/constants"
 import DrawerMenuItemsEdit from "./DrawerMenuItemsEdit"

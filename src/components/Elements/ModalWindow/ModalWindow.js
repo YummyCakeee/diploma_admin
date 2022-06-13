@@ -24,7 +24,7 @@ const ModalWindow = ({
         if (isShowing) {
             Animated.timing(modalWindowSize,
                 {
-                    toValue: 500,
+                    toValue: 1,
                     duration: 300,
                     useNativeDriver: false
                 }).start()
@@ -53,8 +53,14 @@ const ModalWindow = ({
                         style={[
                             styles.modalContainer,
                             {
-                                maxHeight: modalWindowSize,
-                                maxWidth: modalWindowSize,
+                                maxHeight: modalWindowSize.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: ['0%', '90%']
+                                }),
+                                maxWidth: modalWindowSize.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: ['0%', '90%']
+                                }),
                             },
                             style
                         ]}
@@ -70,12 +76,15 @@ const ModalWindow = ({
                                         onPress={() => setIshowing(false)}
                                     >
                                         <CrossIcon
-
                                         />
                                     </TouchableOpacity>
                                 </View>
                             )}
-                            {children}
+                            <View
+                                style={styles.childrenContainer}
+                            >
+                                {children}
+                            </View>
                         </View>
                     </Animated.View>
                 </TouchableOpacity>
@@ -96,7 +105,7 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",        
     },
     modalContainer: {
         margin: 20,
@@ -110,6 +119,9 @@ const styles = StyleSheet.create({
     modalContent: {
         paddingVertical: 10,
         paddingHorizontal: 15
+    },
+    childrenContainer: {
+        paddingHorizontal: 40
     },
     closeButtonContainer: {
         alignItems: 'flex-end',

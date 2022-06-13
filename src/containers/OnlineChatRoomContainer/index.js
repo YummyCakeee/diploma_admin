@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, createRef } from "react"
+import React, { useState, useRef, useEffect, createRef, useContext } from "react"
 import { 
     StyleSheet,
     Text, 
@@ -11,12 +11,10 @@ import {
     NativeModules
 } from "react-native"
 import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate"
-import globalStyles from "global/styles/styles"
 import MessageInputField from "components/Elements/MessageInputField/MessageInputField"
 import Message, { MessagesDateSplitter, messageStatus } from "./Message"
 import { Color } from "global/styles/constants"
 import { CopyIcon, LoadingIcon, SendIcon, TrashIcon } from "components/Elements/Icons/Index"
-import Toast from 'react-native-simple-toast'
 import ContextMenu from "components/Elements/ContextMenu/ContextMenu"
 import { useSelector } from "react-redux"
 import { userSelector } from "store/selectors/userSlice"
@@ -28,6 +26,7 @@ import { Screen } from "components/AppNavigation/AppNavigation"
 import { createChatRoomEndpoint } from "utils/apiHelpers/endpointGenerators"
 import Clipboard from '@react-native-clipboard/clipboard'
 import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
 
 const OnlineChatRoomContainer = ({
     route,
@@ -51,6 +50,7 @@ const OnlineChatRoomContainer = ({
     const socket = useRef()
     const userInfo = useSelector(userSelector)
     const navigation = useNavigation()
+    const globalStyles = useContext(GlobalStylesContext)
 
     useEffect(() => {
         const appStateSubscription = AppState.addEventListener('change', (nextState) => {

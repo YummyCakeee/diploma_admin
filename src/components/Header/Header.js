@@ -9,10 +9,12 @@ import { HamburgerIcon } from "components/Elements/Icons/Index"
 import { useNavigation } from "@react-navigation/core"
 import { Color } from "global/styles/constants"
 import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
+import { GlobalContentContext } from "global/content/GlobalContentWrapper"
 
 const Header = ({hamburgerIcon = true}) => {
 
     const globalStyles = useContext(GlobalStylesContext)
+    const globalContent = useContext(GlobalContentContext)
     const navigation = useNavigation()
     const onHamburgerPress = () => {
         navigation.openDrawer()
@@ -38,12 +40,9 @@ const Header = ({hamburgerIcon = true}) => {
             </TouchableOpacity> : null
 }
             <Text 
-                style={[
-                    styles.text,
-                    globalStyles.headerTitle
-                ]}
+                style={globalStyles.headerTitle}
             >
-                Stinky Beard
+                {globalContent.headerTitle.text}
             </Text>
         </Animated.View>
     )
@@ -58,12 +57,6 @@ const styles = StyleSheet.create({
         display: "flex",
         alignItems: "center",
         justifyContent: "center"
-    },
-    text: {
-        fontSize: 24,
-        fontWeight: '400',
-        color: '#fff',
-        fontFamily: "Courgette-Regular"
     },
     hamburger: {
         position: 'absolute',

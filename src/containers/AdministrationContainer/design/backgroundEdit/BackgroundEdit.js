@@ -1,12 +1,12 @@
 import { Color } from 'global/styles/constants'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { View, Text} from 'react-native'
 import useDesign from '../useDesign'
 import Toast from 'react-native-simple-toast'
-import { styles } from '../styles'
+import { styles } from '../../styles/styles'
 import ColorPicker from 'components/Elements/ColorPicker/ColorPicker'
 import Button from 'components/Elements/Button/Button'
-import globalStyles from 'global/styles/styles'
+import { GlobalStylesContext } from 'global/styles/GlobalStylesWrapper'
 
 const BackgroundEdit = ({
     isFocused
@@ -19,6 +19,7 @@ const BackgroundEdit = ({
         resetStyleInfo,
         styleNames
     } = useDesign()
+    const globalStyles = useContext(GlobalStylesContext)
 
     useEffect(() => {
         if (isFocused) {

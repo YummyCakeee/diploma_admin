@@ -1,43 +1,42 @@
-import { ENDPOINT_STYLES } from "constants/endpoints"
+import { ENDPOINT_CONTENT } from "constants/endpoints"
 import React, { createContext, useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import { userSelector } from "store/selectors/userSlice"
 import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
 import { axiosAPI2 } from "utils/axios"
 import {merge} from 'lodash'
-import globalStyles from "./styles"
+import globalContent from "./content"
 
-export const GlobalStylesContext = createContext(globalStyles)
+export const GlobalContentContext = createContext()
 
-const GlobalStylesWrapper = ({children}) => {
-    const [styles, setStyles] = useState(globalStyles)
+const GlobalContentWrapper = ({children}) => {
+    const [content, setContent] = useState(globalContent)
     const userInfo = useSelector(userSelector)
-
     useEffect(() => {
         if (userInfo.authToken !== '')
-            getStyles()
+            getContent()
     }, [userInfo?.authToken])
 
-    const getStyles = () => {
-        axiosAPI2.get(ENDPOINT_STYLES, 
+    const getContent = () => {
+        axiosAPI2.get(ENDPOINT_CONTENT, 
             {
                 headers: createAuthorizationHeader(userInfo.authToken)
             })
             .then(res => {
                 if (res.data.success) {
                     if (res.data.data) {
-                        const styles =
+                        const content =
                             res.data.data.reduce((prev, cur) => {
                                 return {
                                     ...prev,
                                     [cur.tag]: cur.object
                                 }
                             }, {})
-                        parseNumbers(styles)
+                        parseNumbers(content)
 
-                        const newStyles = {}
-                        merge(newStyles, globalStyles, styles)
-                        setStyles(newStyles)
+                        const newContent = {}
+                        merge(newContent, globalContent, content)
+                        setContent(newContent)
                     }
                 }
                 else {
@@ -45,7 +44,7 @@ const GlobalStylesWrapper = ({children}) => {
                 }
             })
             .catch(err => {
-                console.log("Не удалось получить стили " + err)
+                console.log("Не удалось получить контент " + err)
             })
     }
 
@@ -64,12 +63,12 @@ const GlobalStylesWrapper = ({children}) => {
     }
 
     return(
-        <GlobalStylesContext.Provider
-            value={styles}
+        <GlobalContentContext.Provider
+            value={content}
         >
             {children}
-        </GlobalStylesContext.Provider>
+        </GlobalContentContext.Provider>
     )
 }
 
-export default GlobalStylesWrapper
+export default GlobalContentWrapper

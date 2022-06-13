@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
+import React, { useContext } from 'react'
 import ScreenTemplate from 'components/ScreenTemplate/ScreenTemplate'
 import { StyleSheet, Text, View } from 'react-native'
-import globalStyles from 'global/styles/styles'
 import Button from 'components/Elements/Button/Button'
 import SettingsSection from 'components/Elements/SettingsSection/SettingsSection'
 import useSettings from './useSettings'
@@ -13,6 +12,7 @@ import ModalWindow from 'components/Elements/ModalWindow/ModalWindow'
 import FormCodeFieldInput from 'containers/Forms/FormCodeFieldInput'
 import { Color } from 'global/styles/constants'
 import { ENDPOINT_USER } from 'constants/endpoints'
+import { GlobalStylesContext } from 'global/styles/GlobalStylesWrapper'
 
 const SettingsContainer = () => {
     const {
@@ -23,6 +23,8 @@ const SettingsContainer = () => {
         onSignOut,
         onSubmit,
     } = useSettings()
+    const globalStyles = useContext(GlobalStylesContext)
+
     return (
         <ScreenTemplate>
             <Text style={globalStyles.pageTitle}>Настройки</Text>

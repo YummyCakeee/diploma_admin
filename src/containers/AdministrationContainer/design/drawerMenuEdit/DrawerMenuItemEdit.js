@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { View, Text } from "react-native"
 import { numberFormatter } from "utils/formatters"
 import ColorPicker from "components/Elements/ColorPicker/ColorPicker"
 import Button from "components/Elements/Button/Button"
 import InputField from "components/Elements/InputField/InputField"
-import globalStyles from "global/styles/styles"
-import { styles } from "../styles"
+import { styles } from "../../styles/styles"
 import useDesign from "../useDesign"
 import Toast from 'react-native-simple-toast'
 import { Color } from "global/styles/constants"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
 
 const DrawerMenuItemEdit = ({
     isFocused,
@@ -20,6 +20,7 @@ const DrawerMenuItemEdit = ({
         setStylesInfo,
         resetStyleInfo,
     } = useDesign()
+    const globalStyles = useContext(GlobalStylesContext)
 
     const [color, setColor] = useState(Color.White)
     const [textColor, setTextColor] = useState(Color.White)

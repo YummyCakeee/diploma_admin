@@ -1,13 +1,8 @@
 import React, { useState } from "react"
-import { View, Text, StyleSheet } from "react-native"
-import ColorPicker from "components/Elements/ColorPicker/ColorPicker"
-import globalStyles from "global/styles/styles"
-import Button from "components/Elements/Button/Button"
-import InputField from "components/Elements/InputField/InputField"
-import { styles } from "../styles"
+import { View } from "react-native"
+import { styles } from "../../styles/styles"
 import DropDownSection from "components/Elements/DropDownSection/DropDownSection"
 import { Color } from "global/styles/constants"
-import { numberFormatter } from "utils/formatters"
 import useDesign from "../useDesign"
 import DrawerMenuItemEdit from "./DrawerMenuItemEdit"
 
@@ -18,9 +13,7 @@ const MODE_EDIT_ITEM = 2
 const DrawerMenuItemsEdit = () => {
 
     const [selectedMode, setSelectedMode] = useState(MODE_NONE)
-    const [color, setColor] = useState('#d15c5c')
-    const [textColor, setTextColor] = useState(Color.White)
-    const [fontSize, setFontSize] = useState('14')
+
     const {
         styleNames
     } = useDesign()

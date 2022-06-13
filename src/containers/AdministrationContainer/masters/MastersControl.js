@@ -34,6 +34,7 @@ const MastersControl = ({
                 <EditMaster
                     {...{
                         masters,
+                        setMasters,
                         services
                     }}
                 />

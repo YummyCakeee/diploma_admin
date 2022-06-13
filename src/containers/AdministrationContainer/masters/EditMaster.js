@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { Text, View, StyleSheet } from 'react-native'
 import Button from "components/Elements/Button/Button"
 import { ArrowIcon } from "components/Elements/Icons/Index"
@@ -6,7 +6,6 @@ import SectionSeparator from "components/Elements/SectionSeparator/SectionSepara
 import ItemSlider from "components/Elements/ItemSlider/ItemSlider"
 import FormCheckbox from "containers/Forms/FormCheckbox"
 import { Color } from "global/styles/constants"
-import globalStyles from "global/styles/styles"
 import EditMasterPersonalData from "./EditMasterPersonalData"
 import { Formik, Field } from "formik"
 import { getColorWithOpacity } from "global/styles/utils"
@@ -24,15 +23,20 @@ import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
 import { useSelector } from "react-redux"
 import { userSelector } from "store/selectors/userSlice"
 import Toast from 'react-native-simple-toast'
+import { ModalControllerContext } from "containers/ModalController"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
 
-const EditMaster = ({ masters, services }) => {
+const EditMaster = ({ masters, setMasters, services }) => {
 
+    const globalStyles = useContext(GlobalStylesContext)
     const [servicesCopy, setServicesCopy] = useState([])
     const [selectedMaster, setSelectedMaster] = useState(0)
     const [selectedService, setSelectedService] = useState(0)
     const [workTime, setWorkTime] = useState([])
-
     const userInfo = useSelector(userSelector)
+    const {
+        setConfirmActionModalState
+    } = useContext(ModalControllerContext)
 
     useEffect(() => {
         setServicesCopy(services.map(el => {
@@ -53,6 +57,7 @@ const EditMaster = ({ masters, services }) => {
     }
 
     const onSubmit = async (values) => {
+        const id = masters[selectedMaster].id
         const masterMainData = {
             first_name: values.name,
             second_name: values.surname,
@@ -76,12 +81,12 @@ const EditMaster = ({ masters, services }) => {
         }
 
         return axios.all([
-            axiosAPI2.put(createMasterEndpoint(masters[selectedMaster].id),
+            axiosAPI2.put(createMasterEndpoint(id),
                 masterMainData,
                 {
                     headers: createAuthorizationHeader(userInfo.authToken)
                 }),
-            axiosAPI2.post(createMastersWorkTimeEndpoint(masters[selectedMaster].id),
+            axiosAPI2.post(createMastersWorkTimeEndpoint(id),
                 masterWorkTime,
                 {
                     headers: createAuthorizationHeader(userInfo.authToken)
@@ -89,6 +94,22 @@ const EditMaster = ({ masters, services }) => {
         ])
             .then(axios.spread((masterMainDataRes, masterWorkTimeRes) => {
                 if (masterMainDataRes.data.success && masterWorkTimeRes.data.success) {
+                    setMasters(
+                        masters.map(el => {
+                            if (el.id !== id)
+                                return el
+                            else return {
+                                id,
+                                name: masterMainData.first_name,
+                                surname: masterMainData.second_name,
+                                patronymic: masterMainData.third_name,
+                                phone: masterMainData.phone,
+                                email: masterMainData.email,
+                                password: masterMainData.password,
+                                services: masterMainData.services
+                            }
+                        })
+                    )
                     Toast.show("Информация о мастере обновлена")
                 }
                 else {
@@ -100,6 +121,36 @@ const EditMaster = ({ masters, services }) => {
             .catch(err => {
                 Toast.show("Ошибка: не удалось обновить информацию о мастере")
             })
+    }
+
+    const onDeleteMaster = () => {
+        const master = masters[selectedMaster]
+        if (master)
+            setConfirmActionModalState({
+                text: "Вы уверены, что хотите удалить мастера " +
+                    `${master.surname} ${master.name}?`,
+                onConfirm: () => deleteMaster(master.id)
+            })
+    }
+
+    const deleteMaster = (masterId) => {
+        axiosAPI2.delete(createMasterEndpoint(masterId),
+        {
+            headers: createAuthorizationHeader(userInfo.authToken)
+        })
+        .then(res => {
+            if (res.data.success) {
+                setMasters(masters.filter(el => el.id !== masterId))
+                setConfirmActionModalState(false)
+                Toast.show("Мастер удалён")
+            }
+            else {
+                Toast.show("Не удалось удалить мастера: " + res.data.data.message)
+            }
+        })
+        .catch(err => {
+            Toast.show("Не удалось удалить мастера: " + err)
+        })
     }
 
     return (
@@ -238,6 +289,15 @@ const EditMaster = ({ masters, services }) => {
                         disabled={!isValid || isSubmitting}
                         primary
                         onPress={handleSubmit}
+                        style={[
+                            globalStyles.centeredElement
+                        ]}
+                    />
+                    <Button
+                        title="Удалить мастера"
+                        size="large"
+                        disabled={!isValid || isSubmitting}
+                        onPress={onDeleteMaster}
                         style={[
                             globalStyles.centeredElement
                         ]}

@@ -1,8 +1,7 @@
 import GradientLoading from "components/Elements/Loadable/GradientLoading"
 import Loadable, { loadableStatus } from "components/Elements/Loadable/Loadable"
 import ItemSlider from "components/Elements/ItemSlider/ItemSlider"
-import globalStyles from "global/styles/styles"
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { View, Text, StyleSheet } from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { dateSwapYearAndMonthFormatter } from "utils/formatters"
@@ -14,6 +13,9 @@ import {
 import { useSelector } from "react-redux"
 import Toast from 'react-native-simple-toast'
 import { Color } from "global/styles/constants"
+import { userSelector } from "store/selectors/userSlice"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
+import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
 
 const ServiceNodeDateTime = ({
     selectedMaster,
@@ -27,7 +29,8 @@ const ServiceNodeDateTime = ({
     const [times, setTimes] = useState([])
     const [datesLoadingStatus, setDatesLoadingStatus] = useState(loadableStatus.LOADING)
     const [timesLoadingStatus, setTimesLoadingStatus] = useState(loadableStatus.LOADING)
-    const token = useSelector(state => state.user.authToken)
+    const userInfo = useSelector(userSelector)
+    const globalStyles = useContext(GlobalStylesContext)
 
     useEffect(() => {
         getDates()
@@ -45,9 +48,7 @@ const ServiceNodeDateTime = ({
         setDatesLoadingStatus(loadableStatus.LOADING)
         axiosAPI2.get(createMastersWorkTimeEndpoint(selectedMaster.id),
             {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: createAuthorizationHeader(userInfo.authToken)
             })
             .then(res => {
                 const data = res.data.data || []
@@ -74,9 +75,7 @@ const ServiceNodeDateTime = ({
         setTimesLoadingStatus(loadableStatus.LOADING)
         axiosAPI2.get(createServicesAvailableTimeEndpoint(selectedService.id),
             {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
+                headers: createAuthorizationHeader(userInfo.authToken),
                 params: {
                     master_id: selectedMaster.id,
                     start_date: selectedDate,

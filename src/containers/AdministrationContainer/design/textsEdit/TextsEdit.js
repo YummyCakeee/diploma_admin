@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { View } from "react-native"
-import { styles } from "../styles"
+import { styles } from "../../styles/styles"
 import DropDownSection from "components/Elements/DropDownSection/DropDownSection"
 import { Color } from "global/styles/constants"
 import TextEdit from "./TextEdit"
@@ -20,8 +20,8 @@ const TextsEdit = () => {
     } = useDesign()
 
     const [sections] = useState([
-        { title: "Заголовки страниц", mode: MODE_EDIT_PAGE_TITLES, styleTag: styleNames.text },
-        { title: "Заголовки", mode: MODE_EDIT_TITLES, styleTag: styleNames.text },
+        { title: "Заголовки страниц", mode: MODE_EDIT_PAGE_TITLES, styleTag: styleNames.pageTitle },
+        { title: "Заголовки", mode: MODE_EDIT_TITLES, styleTag: styleNames.title },
         { title: "Обычный текст", mode: MODE_EDIT_TEXT, styleTag: styleNames.text }
     ])
 

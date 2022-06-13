@@ -1,9 +1,9 @@
 import { Color } from "global/styles/constants"
-import globalStyles from "global/styles/styles"
-import React, { useState, useRef, useEffect } from "react"
+import React, { useState, useRef, useEffect, useContext } from "react"
 import { StyleSheet, View, Text, TouchableOpacity, StyleProp } from "react-native"
 import LinearGradient from "react-native-linear-gradient"
 import { ExclamationMarkIcon, SendIcon } from "components/Elements/Icons/Index"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
 
 type messageProps = {
     userName: string,
@@ -38,6 +38,8 @@ const Message: React.FC<messageProps> = ({
 }) => {
     const [messageTime, setMessageTime] = useState('')
     const ref = useRef<TouchableOpacity>(null)
+    const globalStyles = useContext(GlobalStylesContext)
+
     useEffect(() => {
         const time = date?.toLocaleTimeString('ru-RU').replace(/:\d+$/, '')
         setMessageTime(time)
@@ -135,6 +137,7 @@ const Message: React.FC<messageProps> = ({
 }
 
 export const MessagesDateSplitter: React.FC<{ date: Date }> = ({ date }) => {
+    const globalStyles = useContext(GlobalStylesContext)
     return (
         <View
             style={styles.splitterContainer}

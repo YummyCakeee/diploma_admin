@@ -1,11 +1,11 @@
-import globalStyles from "global/styles/styles"
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import ItemSlider from "components/Elements/ItemSlider/ItemSlider"
 import RichList from "components/Elements/RichList/RichList"
 import Button from "components/Elements/Button/Button"
 import ServiceNodeDateTime from "./ServiceNodeDateTime"
 import { Color } from "global/styles/constants"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
 
 export const MODE_MASTER = 0
 export const MODE_SERVICE = 1
@@ -31,6 +31,7 @@ const AddServiceNode = ({
         { text: "Мастер", tag: MODE_MASTER },
         { text: "Услуга", tag: MODE_SERVICE }
     ])
+    const globalStyles = useContext(GlobalStylesContext)
 
     useEffect(() => {
         if (stage === STAGE_MODE_SELECT) {

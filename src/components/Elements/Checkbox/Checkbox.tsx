@@ -1,6 +1,6 @@
 import { Color } from "global/styles/constants"
-import globalStyles from "global/styles/styles"
-import React from "react"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
+import React, { useContext } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { CheckIcon } from "../Icons/Index"
@@ -20,6 +20,7 @@ const Checkbox: React.FC<checkBoxProps> = ({
     ...props
 }) => {
 
+    const globalStyles = useContext(GlobalStylesContext)
     const onCheckboxPress = () => {
         if (!disabled) {
             onCheckChanged()

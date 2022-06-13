@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate";
-import globalStyles from "global/styles/styles";
 import Button from "components/Elements/Button/Button";
-import { axiosAPI, axiosAPI2 } from "utils/axios";
+import { axiosAPI2 } from "utils/axios";
 import axios from "axios";
 import ServiceNodeList from "../../components/ServiceNodeList/ServiceNodeList";
 import AddServiceNode from "./AddServiceNode";
@@ -24,6 +23,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator";
 import { Screen } from "components/AppNavigation/AppNavigation";
 import { userSelector } from "store/selectors/userSlice";
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper";
 
 const SigningForServicesContainer = () => {
     const [services, setServices] = useState([])
@@ -33,8 +33,7 @@ const SigningForServicesContainer = () => {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const navigation = useNavigation()
     const userInfo = useSelector(userSelector)
-
-
+    const globalStyles = useContext(GlobalStylesContext)
 
     useEffect(() => {
         getMastersAndServices()

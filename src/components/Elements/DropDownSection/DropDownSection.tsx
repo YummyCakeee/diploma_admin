@@ -1,5 +1,5 @@
 import { Color } from "global/styles/constants"
-import React, { useEffect, useRef, useState } from "react"
+import React, { useContext, useEffect, useRef, useState } from "react"
 import {
     StyleProp,
     StyleSheet,
@@ -11,9 +11,9 @@ import {
 } from "react-native"
 import { TriangleIcon } from 'components/Elements/Icons/Index'
 import { withAnchorPoint } from 'react-native-anchor-point';
-import globalStyles from "global/styles/styles";
 import LinearGradient from "react-native-linear-gradient";
 import { getColorWithOpacity } from "global/styles/utils";
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper";
 
 type dropDownSectionProps = {
     title?: string,
@@ -39,6 +39,7 @@ const DropDownSection: React.FC<dropDownSectionProps> = ({
     contentContainerStyle
 }) => {
 
+    const globalStyles = useContext(GlobalStylesContext)
     const contentHeight = useRef(new Animated.Value(0)).current
     const triangleRotation = useRef(new Animated.Value(0)).current
     const [triangleRotationFormated, setTriangleRotationFormated] = useState<any>('0deg')

@@ -1,10 +1,9 @@
 import Loadable, { loadableStatus } from 'components/Elements/Loadable/Loadable'
 import { Color } from 'global/styles/constants'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { LoadingIcon, ReloadIcon } from 'components/Elements/Icons/Index'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import globalStyles from 'global/styles/styles'
 import { axiosAPI2 } from 'utils/axios'
 import { createMastersWorkTimeEndpoint } from 'utils/apiHelpers/endpointGenerators'
 import { createAuthorizationHeader } from 'utils/apiHelpers/headersGenerator'
@@ -18,6 +17,7 @@ import SectionSeparator from 'components/Elements/SectionSeparator/SectionSepara
 import Button from 'components/Elements/Button/Button'
 import Toast from 'react-native-simple-toast'
 import DateTimePicker from '@react-native-community/datetimepicker'
+import { GlobalStylesContext } from 'global/styles/GlobalStylesWrapper'
 
 const EditMasterWorkTime = ({ masters, selectedMaster, workTime, setWorkTime }) => {
 
@@ -33,6 +33,7 @@ const EditMasterWorkTime = ({ masters, selectedMaster, workTime, setWorkTime }) 
     const [hours, setHours] = useState([])
     const [minutes, setMinutes] = useState([])
     const userInfo = useSelector(userSelector)
+    const globalStyles = useContext(GlobalStylesContext)
     const controller = new AbortController()
 
     useEffect(() => {

@@ -1,5 +1,5 @@
-import globalStyles from "global/styles/styles";
-import React, { useState, useEffect, useRef } from "react";
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { View, StyleSheet, TouchableOpacity, ScrollView, LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native'
 
 type sliderProps = {

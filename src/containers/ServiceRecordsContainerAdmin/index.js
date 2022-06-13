@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import {
     StyleSheet,
     View,
@@ -16,13 +16,13 @@ import { dateSwapYearAndMonthFormatter } from "utils/formatters"
 import Loadable, { loadableStatus } from "components/Elements/Loadable/Loadable"
 import { LoadingIcon, ReloadIcon } from "components/Elements/Icons/Index"
 import { Color } from "global/styles/constants"
-import globalStyles from "global/styles/styles"
 import Button from "components/Elements/Button/Button"
 import { useNavigation } from "@react-navigation/native"
 import { Screen } from "components/AppNavigation/AppNavigation"
 import { createClientEndpoint } from "utils/apiHelpers/endpointGenerators"
 import Combobox from "components/Elements/Combobox/Combobox"
 import { userSelector } from "store/selectors/userSlice"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
 
 const ServiceRecordsContainerAdmin = () => {
 
@@ -32,6 +32,7 @@ const ServiceRecordsContainerAdmin = () => {
     const [masters, setMasters] = useState([])
     const [masterFilter, setMasterFilter] = useState(null)
     const navigation = useNavigation()
+    const globalStyles = useContext(GlobalStylesContext)
 
     const userInfo = useSelector(userSelector)
     useEffect(() => {

@@ -1,10 +1,9 @@
 import { useNavigation } from "@react-navigation/native"
 import { Screen } from "components/AppNavigation/AppNavigation"
 import { USER_TYPE } from "constants/application"
-import { ENDPOINT_ADMINS, ENDPOINT_CLIENTS } from "constants/endpoints"
-import { Color } from "global/styles/constants"
-import globalStyles from "global/styles/styles"
-import React, { useEffect, useState } from "react"
+import { ENDPOINT_ADMINS } from "constants/endpoints"
+import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
+import React, { useContext, useEffect, useState } from "react"
 import { StyleSheet, Text, View } from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { useSelector } from "react-redux"
@@ -19,14 +18,16 @@ const ChatRoomMinimized = ({id = '', userId = ''}) => {
     const [chatUserList, setChatUserList] = useState([])
     const navigation = useNavigation()
     const userInfo = useSelector(userSelector)
-    const onRoomPress = () => {
-        if (chatName && chatUserList.length)
-            navigation.navigate(Screen.OnlineChatRoom, { roomId: id, chatName, chatUserList })
-    }
+    const globalStyles = useContext(GlobalStylesContext)
 
     useEffect(() => {
         getChatInfo()
     }, [])
+
+    const onRoomPress = () => {
+        if (chatName && chatUserList.length)
+            navigation.navigate(Screen.OnlineChatRoom, { roomId: id, chatName, chatUserList })
+    }
 
     const getChatInfo = async () => {
             const chatUsers = []

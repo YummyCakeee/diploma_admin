@@ -4,14 +4,15 @@ import { useSelector } from "react-redux"
 import { userSelector } from "store/selectors/userSlice"
 import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
 import { axiosAPI2 } from "utils/axios"
-import globalStyles from "./styles"
 import {merge} from 'lodash'
+import globalStyles from "./styles"
 
-export const GlobalStylesContext = createContext()
+export const GlobalStylesContext = createContext(globalStyles)
 
 const GlobalStylesWrapper = ({children}) => {
     const [styles, setStyles] = useState(globalStyles)
     const userInfo = useSelector(userSelector)
+
     useEffect(() => {
         if (userInfo.authToken !== '')
             getStyles()

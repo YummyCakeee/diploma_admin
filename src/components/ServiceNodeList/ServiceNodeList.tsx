@@ -17,8 +17,8 @@ type servicesNodeListProps = {
 const ServiceNodeList: React.FC<servicesNodeListProps> = ({
     services,
     allowNodeRemove = false,
-    onRemoveNodePress,
-    onNodePress,
+    onRemoveNodePress = () => {},
+    onNodePress = () => {},
     style
 }) => {
 

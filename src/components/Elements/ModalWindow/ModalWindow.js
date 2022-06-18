@@ -42,11 +42,16 @@ const ModalWindow = ({
     return (
         <>
             {isShowing && (
-                <TouchableOpacity
+                <>
+                <TouchableOpacity 
                     activeOpacity={1}
                     onPress={() => closeOnOutterClick ?
                         setIshowing(false) :
                         null}
+                    style={styles.background}
+                />
+                <View
+                    
                     style={styles.container}
                 >
                     <Animated.View
@@ -87,7 +92,8 @@ const ModalWindow = ({
                             </View>
                         </View>
                     </Animated.View>
-                </TouchableOpacity>
+                </View>
+                </>
             )}
         </>
     )
@@ -96,8 +102,6 @@ const ModalWindow = ({
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        zIndex: 5000,
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
         top: 0,
         bottom: 0,
         left: 0,
@@ -107,7 +111,18 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",        
     },
+    background: {
+        position: 'absolute',
+        zIndex: 5000,
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+    },
     modalContainer: {
+        position: "absolute",
+        zIndex: 5001,
         margin: 20,
         paddingVertical: 10,
         borderRadius: 20,

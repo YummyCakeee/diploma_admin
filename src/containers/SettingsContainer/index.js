@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import Button from 'components/Elements/Button/Button'
 import SettingsSection from 'components/Elements/SettingsSection/SettingsSection'
 import useSettings from './useSettings'
-import { nameFormatter, phoneNumberFormatter } from 'utils/formatters'
+import { nameFormatter, phoneNumberFormatter, simplePhoneNumberFormatter } from 'utils/formatters'
 import { Formik, Field } from 'formik'
 import FormFieldInput from 'containers/Forms/FormFieldInput'
 import { emailValidator, nameValidator, passwordValidator, patronymicValidator, phoneNumberValidator, surnameValidator } from 'utils/validators'
@@ -17,6 +17,7 @@ import { GlobalStylesContext } from 'global/styles/GlobalStylesWrapper'
 const SettingsContainer = () => {
     const {
         initialValues,
+        extraInitialValues,
         sendCodeRemainingTime,
         isShowModal,
         setIsShowModal,
@@ -35,6 +36,7 @@ const SettingsContainer = () => {
                     surname: initialValues.surname,
                     patronymic: initialValues.patronymic,
                     phone: initialValues.phone,
+                    newPhone: extraInitialValues.newPhone,
                     email: initialValues.email,
                     password: initialValues.password,
                     code: ''
@@ -60,25 +62,26 @@ const SettingsContainer = () => {
                                 <Text
                                     style={styles.enterCodeTextPhone}
                                 >
-                                    {values.phone}
+                                    {phoneNumberFormatter(values.newPhone)}
                                 </Text>
                             </Text>
                             <Field
                                 name="code"
                                 component={FormCodeFieldInput}
+                                phone={simplePhoneNumberFormatter(values.newPhone)}
                                 startRemainingTime={sendCodeRemainingTime}
                                 endpoint={ENDPOINT_USER}
-                                style={{color: Color.Black, borderColor: Color.Black}}
+                                style={{ color: Color.Black, borderColor: Color.Black }}
                             />
                             <View
                                 style={globalStyles.centeredElement}
                             >
-                            <Button 
-                                primary
-                                title='Отправить'
-                                onPress={handleSubmit}
-                                disabled={values.code.length !== 4}
-                            />
+                                <Button
+                                    primary
+                                    title='Отправить'
+                                    onPress={handleSubmit}
+                                    disabled={values.code.length !== 4}
+                                />
                             </View>
                         </ModalWindow>
                         <SettingsSection

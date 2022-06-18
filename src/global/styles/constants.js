@@ -1,11 +1,11 @@
 export const Color = {
     White: '#ffffff',
-    Black: '#000',
+    Black: '#000000',
     Gray: '#7f7f7f',
-    LightGray: 'rgb(150, 150, 150)',
-    SoftDarkBlue: 'rgb(38, 35, 45)',
+    LightGray: '#969696',
+    SoftDarkBlue: '#26232d',
     SoftBlue: '#1B70E0',
-    OceanBlue: 'rgb(50, 120, 150)',
+    OceanBlue: '#327896',
     SoftRed: '#e35f5f',
     None: '#fff0'
 }

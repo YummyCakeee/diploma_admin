@@ -16,6 +16,15 @@ const globalStyles = StyleSheet.create({
         marginLeft: 20,
         marginBottom: 15,
     },
+    header: {
+        height: 70,
+        width: '100%',
+        alignSelf: "center",
+        backgroundColor: Color.OceanBlue,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+    },  
     headerMenuButtonColor: {
         backgroundColor: 'rgb(30, 30, 30)'
     },

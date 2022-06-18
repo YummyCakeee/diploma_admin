@@ -151,6 +151,7 @@ const Registration = ({
                                         component={FormFieldInput}
                                         mask={phoneNumberFormatter}
                                         validate={phoneNumberValidator}
+                                        style={styles.inputFieldContainer}
                                     />
                                     <Animated.View
                                         style={[
@@ -165,6 +166,7 @@ const Registration = ({
                                             validate={passwordValidator}
                                             placeholder="Придумайте пароль"
                                             secureTextEntry
+                                            style={styles.inputFieldContainer}
                                         />
                                     </Animated.View>
                                 </>
@@ -257,6 +259,9 @@ const styles = StyleSheet.create({
     },
     enterCodeTextPhone: {
         color: Color.SoftBlue
+    },
+    inputFieldContainer: {
+        marginTop: 10,
     }
 })
 

@@ -25,9 +25,7 @@ const ScreenTemplate = ({ children, style, headerHamburgerIcon, scrollable = tru
                     <ScrollView
                         scrollEnabled={scrollable}
                     >
-                        <View
-                            style={styles.childrenContainer}
-                        >
+                        <View>
                             {children}
                         </View>
                     </ScrollView>
@@ -37,10 +35,5 @@ const ScreenTemplate = ({ children, style, headerHamburgerIcon, scrollable = tru
     )
 }
 
-const styles = StyleSheet.create({
-    childrenContainer: {
-        minHeight: Dimensions.get('window').height - 70
-    }
-})
 
 export default ScreenTemplate

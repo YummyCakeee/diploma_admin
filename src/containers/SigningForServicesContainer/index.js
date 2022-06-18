@@ -274,7 +274,7 @@ const SigningForServicesContainer = () => {
                     <ServiceNodeList
                         {...{
                             services: orderServices,
-                            onRemoveNodePress: onRemoveNode,
+                            onRemoveNodePress: onRemoveNode, 
                             style: styles.chosenServicesContainer
                         }}
                     />

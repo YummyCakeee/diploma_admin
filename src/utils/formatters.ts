@@ -1,4 +1,5 @@
 export const phoneNumberFormatter = (value: string): string => {
+    if (!value) return value
     const cleanedUpNumber = value.replace(/(\+7)?\D*/g, '')
     const match = cleanedUpNumber
         .match(/^(\d{1,3})?(\d{1,3})?(\d{1,2})?(\d{1,2})?\d*$/)
@@ -15,7 +16,7 @@ export const phoneNumberFormatter = (value: string): string => {
 
 export const simplePhoneNumberFormatter =
     (value: string): string =>
-        '+' + value.replace(/\D*/g, '')
+        '+' + value?.replace(/\D*/g, '')
 
 export const dateSwapYearAndMonthFormatter =
     (value: string, separator: string = '.'): string => {

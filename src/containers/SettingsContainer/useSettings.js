@@ -12,6 +12,7 @@ import { userSelector } from "store/selectors/userSlice";
 
 const useSettings = () => {
     const [initialValues, setInitialValues] = useState({})
+    const [extraInitialValues, setExtraInitialValues] = useState({})
     const [sendCodeRemainingTime, setSendCodeRemainingTime] = useState(90)
     const [isShowModal, setIsShowModal] = useState(false)
     const navigation = useNavigation()
@@ -27,6 +28,13 @@ const useSettings = () => {
             email: userData.email
         })
     }, [userData])
+
+    useEffect(() => {
+        setExtraInitialValues({
+            newPhone: ''
+        })
+    }, [])
+
 
     const onSignOut = async () => {
         dispatch(clearUser())
@@ -73,6 +81,10 @@ const useSettings = () => {
                         }
                         if (res.data.data.required_code) {
                             values.code = ''
+                            setExtraInitialValues({
+                                newPhone: values.phone
+                            })
+                            values.phone = initialValues.phone
                             setIsShowModal(true)
                             if (res.data.data.remaining_time)
                                 setSendCodeRemainingTime(res.data.data.remaining_time)
@@ -83,7 +95,7 @@ const useSettings = () => {
                         }
                     } else {
                         if (res.data.data.remaining_time) {
-                            Toast.show(`Код уже был отправлен на номер ${values.phone}`)
+                            Toast.show(`Код уже был отправлен на номер ${values.newPhone}`)
                             values.code = ''
                             setIsShowModal(true)
                             setSendCodeRemainingTime(res.data.data.remaining_time)
@@ -107,8 +119,12 @@ const useSettings = () => {
                         res.data.data.fields?.forEach(el => {
                             updatedValues[fieldsMap.get(el)] = values[fieldsMap.get(el)]
                         })
+                        if (updatedValues.phone) {
+                            updatedValues.phone = values.newPhone
+                        }
                         delete updatedValues.password
                         values.password = ''
+                        console.log(updatedValues)
                         dispatch(updateUser(updatedValues))
                         Toast.show("Данные обновлены")
                         setIsShowModal(false)
@@ -124,6 +140,7 @@ const useSettings = () => {
 
     return {
         initialValues,
+        extraInitialValues,
         sendCodeRemainingTime,
         isShowModal,
         setIsShowModal,

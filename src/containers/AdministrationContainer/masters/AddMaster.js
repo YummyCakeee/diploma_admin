@@ -49,9 +49,10 @@ const AddMaster = ({
                     values.name = ''
                     values.surname = ''
                     values.patronymic = ''
-                    values.phone = ''
+                    values.phone = '+7'
                     values.email = ''
                     values.password = ''
+                    values.services = services.map(el => 'false')
                     const newMaster = {
                         id: resData.data.id,
                         name: resData.data.first_name,
@@ -105,16 +106,14 @@ const AddMaster = ({
                         </Text>
                         <ItemSlider
                             data={services}
-                            itemComponent={({ item, isSelected, index }) => (
+                            itemComponent={({ item, index }) => (
                                 <View
                                     style={styles.sliderItem}
                                 >
                                     <Text
                                         style={[
                                             globalStyles.text,
-                                            isSelected ?
-                                                styles.sliderItemSelected :
-                                                styles.sliderItemText
+                                            styles.sliderItemText
                                         ]}
                                         numberOfLines={1}
                                     >

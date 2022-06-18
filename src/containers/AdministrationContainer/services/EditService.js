@@ -131,10 +131,14 @@ const EditService = ({
         <Formik
             enableReinitialize
             initialValues={{
-                name: services[selectedService].name,
-                description: services[selectedService].description,
-                duration: timeFormatter(services[selectedService].duration),
-                price: numberFormatter(services[selectedService].price),
+                name: services[selectedService]?.name,
+                description: services[selectedService]?.description,
+                duration: services[selectedService]?.duration ?
+                    timeFormatter(services[selectedService].duration) :
+                    '',
+                price: services[selectedService]?.price ?
+                    numberFormatter(services[selectedService].price) :
+                    '',
                 masters: mastersCopy.map(el => el.selected ? 'true' : 'false')
             }}
             validateOnMount

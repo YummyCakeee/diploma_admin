@@ -21,10 +21,7 @@ const Header = ({hamburgerIcon = true}) => {
     }
     return (
         <Animated.View 
-            style={[
-                styles.container,
-                globalStyles.header
-            ]}
+            style={globalStyles.header}  
         >
             {hamburgerIcon ?
             <TouchableOpacity
@@ -49,15 +46,6 @@ const Header = ({hamburgerIcon = true}) => {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        height: 70,
-        width: '100%',
-        alignSelf: "center",
-        backgroundColor: Color.OceanBlue,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-    },
     hamburger: {
         position: 'absolute',
         left: 20,

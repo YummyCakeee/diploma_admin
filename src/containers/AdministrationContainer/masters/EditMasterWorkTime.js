@@ -1,6 +1,6 @@
 import Loadable, { loadableStatus } from 'components/Elements/Loadable/Loadable'
 import { Color } from 'global/styles/constants'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { LoadingIcon, ReloadIcon } from 'components/Elements/Icons/Index'
 import { TouchableOpacity } from 'react-native-gesture-handler'
@@ -387,6 +387,7 @@ const WorkTimesLoading = () => {
 }
 
 const WorkTimesLoadingFail = (onReload) => {
+    const globalStyles = useContext(GlobalStylesContext)
     return (
         <View
             style={styles.loadingContainer}

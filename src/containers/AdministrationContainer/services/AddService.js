@@ -47,6 +47,7 @@ const AddService = ({
             values.description = '',
             values.duration = ''
             values.price = ''
+            values.masters = masters.map(el => 'false')
             setServices([...services, res.data.data])
         })
         .catch(err => {
@@ -90,9 +91,7 @@ const AddService = ({
                                     <Text
                                         style={[
                                             globalStyles.text,
-                                            isSelected ?
-                                                styles.sliderItemSelected :
-                                                styles.sliderItemText
+                                            styles.sliderItemText
                                         ]}
                                         numberOfLines={1}
                                     >

@@ -217,6 +217,7 @@ const Authorization = ({
                                         component={FormFieldInput}
                                         mask={phoneNumberFormatter}
                                         validate={phoneNumberValidator}
+                                        style={styles.inputFieldContainer}
                                     />
                                     <Animated.View
                                         style={[
@@ -234,6 +235,7 @@ const Authorization = ({
                                                     undefined
                                             }
                                             secureTextEntry
+                                            style={styles.inputFieldContainer}
                                         />
                                     </Animated.View>
                                 </>
@@ -353,6 +355,9 @@ const styles = StyleSheet.create({
     },
     enterCodeTextPhone: {
         color: Color.SoftBlue
+    },
+    inputFieldContainer: {
+        marginTop: 10,
     }
 })
 

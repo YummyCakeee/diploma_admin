@@ -13,9 +13,6 @@ const MODE_EDIT_ITEMS = 2
 const DrawerMenuEdit = () => {
 
     const [selectedMode, setSelectedMode] = useState(MODE_NONE)
-    const [color, setColor] = useState('#d15c5c')
-    const [textColor, setTextColor] = useState(Color.White)
-    const [fontSize, setFontSize] = useState('14')
 
     const onDropDownHeaderPress = (dropDownMode) => {
         if (selectedMode === dropDownMode)

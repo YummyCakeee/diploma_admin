@@ -4,13 +4,14 @@ import { USER_TYPE } from "constants/application"
 import { ENDPOINT_ADMINS } from "constants/endpoints"
 import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
 import React, { useContext, useEffect, useState } from "react"
-import { StyleSheet, Text, View } from "react-native"
+import { StyleSheet, Text } from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { useSelector } from "react-redux"
 import { userSelector } from "store/selectors/userSlice"
 import { createClientEndpoint } from "utils/apiHelpers/endpointGenerators"
 import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
 import { axiosAPI2 } from "utils/axios"
+import Toast from 'react-native-simple-toast'
 
 const ChatRoomMinimized = ({id = '', userId = ''}) => {
 
@@ -38,19 +39,14 @@ const ChatRoomMinimized = ({id = '', userId = ''}) => {
             .then(res => {
                 const data = res.data
                 if (data.success) {
-                    if (USER_TYPE === 'client') {
-                        const adminNames = data.data.map(el => (
-                            el.first_name ?
-                                `${el.first_name} ${el.second_name}` :
-                                'Администратор'
-                        )).join(', ')
-                        setChatName(adminNames)
-                    }
                     chatUsers.push(...data.data)
+                }
+                else {
+                    Toast.show("Произошла ошибка при загрузке информации о чате: " + data.data.message)
                 }
             })
             .catch(err => {
-                console.log(err)
+                Toast.show("Произошла ошибка при загрузке информации о чате")
             })
             await axiosAPI2.get(createClientEndpoint(userId),
                 {
@@ -59,19 +55,16 @@ const ChatRoomMinimized = ({id = '', userId = ''}) => {
             .then(res => {
                 const data = res.data
                 if (data.success) {
-                    if (USER_TYPE === 'admin') {
                         const userName =
                             data.data.first_name ?
                                 `${data.data.first_name} ${data.data.second_name}` :
                                 'Пользователь'
                         setChatName(userName)
-                    }
                     chatUsers.push(data.data)
                     setChatUserList(chatUsers)
                 }
             })
             .catch(err => {
-                console.log(err)
             })
     }
 

@@ -27,7 +27,7 @@ const SettingsContainer = () => {
     const globalStyles = useContext(GlobalStylesContext)
 
     return (
-        <ScreenTemplate>
+        <>
             <Text style={globalStyles.pageTitle}>Настройки</Text>
             <Formik
                 enableReinitialize
@@ -43,8 +43,10 @@ const SettingsContainer = () => {
                 }}
                 onSubmit={onSubmit}
             >
-                {({ handleSubmit, values, isValid }) => (
-                    <>
+                {({ handleSubmit, values, isValid, isSubmitting }) => (
+                    <View
+                        pointerEvents={isSubmitting ? 'none' : 'auto'}
+                    >
                         <ModalWindow
                             isShowing={isShowModal}
                             setIshowing={setIsShowModal}
@@ -158,12 +160,13 @@ const SettingsContainer = () => {
                                 primary
                                 title="Сохранить"
                                 onPress={handleSubmit}
-                                disabled={!isValid}
+                                disabled={!isValid || isSubmitting}
                             />
                         </View>
-                    </>)}
+                    </View>
+                )}
             </Formik>
-        </ScreenTemplate>
+        </>
     )
 }
 

@@ -13,27 +13,35 @@ const ScreenTemplate = ({ children, style, headerHamburgerIcon, scrollable = tru
                 backgroundColor={Color.Black}
                 barStyle='light-content'
             />
-            <SafeAreaView style={[
-                globalStyles.container,
-                globalStyles.background,
-                style,
-            ]}>
-                <Header {
-                    ...{ hamburgerIcon: headerHamburgerIcon }
-                } />
-                <ModalController>
+            <ModalController>
+                <SafeAreaView style={[
+                    globalStyles.container,
+                    globalStyles.background,
+                    style,
+                ]}>
+                    <Header {
+                        ...{ hamburgerIcon: headerHamburgerIcon }
+                    } />
                     <ScrollView
                         scrollEnabled={scrollable}
                     >
-                        <View>
+                        <View
+                            style={styles.childrenContainer}
+                        >
                             {children}
                         </View>
                     </ScrollView>
-                </ModalController>
-            </SafeAreaView>
+                </SafeAreaView>
+            </ModalController>
         </>
     )
 }
+
+const styles = StyleSheet.create({
+    childrenContainer: {
+        minHeight: Dimensions.get('window').height - 70
+    }
+})
 
 
 export default ScreenTemplate

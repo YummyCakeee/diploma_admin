@@ -1,9 +1,14 @@
 import React from "react";
 import RegistationContainer from "containers/RegistationContainer"
+import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate";
 
 const Registration = () => {
-    return(
-        <RegistationContainer/>
+    return (
+        <ScreenTemplate
+            headerHamburgerIcon={false}
+        >
+            <RegistationContainer />
+        </ScreenTemplate>
     )
 }
 

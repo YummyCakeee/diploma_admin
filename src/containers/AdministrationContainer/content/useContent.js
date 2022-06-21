@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { axiosAPI2 } from "utils/axios"
 import Toast from 'react-native-simple-toast'
 import { useSelector } from "react-redux"
@@ -8,6 +9,9 @@ import { createContentEndpoint } from "utils/apiHelpers/endpointGenerators"
 
 const useContent = () => {
 
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+    
     const userInfo = useSelector(userSelector)
     const contentNames = {
         headerTitle: 'headerTitle',
@@ -19,7 +23,8 @@ const useContent = () => {
         onUnsuccessResult,
         onRequestFail
     ) => {
-        axiosAPI2.get(createContentEndpoint(tag), 
+        setIsLoading(true)
+        await axiosAPI2.get(createContentEndpoint(tag), 
             {
                 headers: createAuthorizationHeader(userInfo.authToken),
             })
@@ -40,10 +45,10 @@ const useContent = () => {
                     onRequestFail(err)
                 }
                 else {
-                    console.log(err)
                     Toast.show("Ошибка: не удалось загрузить контент")
                 }
             })
+        setIsLoading(false)
     }
 
     const setContentInfo = async (
@@ -53,11 +58,12 @@ const useContent = () => {
         onUnsuccessResult,
         onRequestFail
     ) => {
+        setIsSubmitting(true)
         const data = {
             tag: tag,
             object: styles
         }
-        axiosAPI2.put(createContentEndpoint(tag),
+        await axiosAPI2.put(createContentEndpoint(tag),
             data,
             {
                 headers: createAuthorizationHeader(userInfo.authToken),
@@ -79,10 +85,10 @@ const useContent = () => {
                     onRequestFail(err)
                 }
                 else {
-                    console.log(err)
                     Toast.show("Ошибка: не удалось сохранить контент")
                 }
             })
+        setIsSubmitting(false)
     }
 
     const resetContentInfo = async (
@@ -98,6 +104,10 @@ const useContent = () => {
         getContentInfo,
         setContentInfo,
         resetContentInfo,
+        isLoading,
+        setIsLoading,
+        isSubmitting,
+        setIsLoading,
         contentNames
     }
 }

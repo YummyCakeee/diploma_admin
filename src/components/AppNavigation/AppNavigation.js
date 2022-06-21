@@ -10,9 +10,7 @@ import {
 import { createStackNavigator } from '@react-navigation/stack'
 import Home from 'screens/homeScreen/Home'
 import Settings from 'screens/settingsScreen/Settings'
-import SigningForServices from 'screens/signingForServicesScreen/SigningForServices'
 import Registation from 'screens/registationScreen/Registation'
-import ServiceRecords from 'screens/serviceRecordsScreen/ServiceRecords'
 import OnlineChatRoomList from 'screens/onlineChatRoomListScreen/OnlineChatRoomList'
 import Initialization from 'screens/initializationScreen/Initialization'
 import useDrawer from './useDrawer'
@@ -38,8 +36,6 @@ export const Screen = {
   Registration: 'Registration',
   Feed: 'Feed',
   Home: 'Home',
-  SigningForServices: 'SigningForServices',
-  ServiceRecords: 'ServiceRecords',
   ServiceRecordsAdmin: 'ServiceRecordsAdmin',
   OnlineChat: 'OnlineChat',
   OnlineChatRoomList: 'OnlineChatRoomList',
@@ -67,15 +63,15 @@ const NavigationMainContainer = () => {
     const updateTimeout = setTimeout(async () => {
       if (authToken && refreshToken) {
         const data = {
-          refreshToken,
+          refresh_token: refreshToken,
           org: ORGANIZATION_ID,
           fingerprint: NativeModules.PlatformConstants.Fingerprint
         }
         await axiosAPI.post(ENDPOINT_TOKENS_UPDATE, data)
           .then(async (res) => {
             if (res.data.success) {
-              const newAuthToken = res.data.data.auth
-              const newRefreshToken = res.data.data.refresh
+              const newAuthToken = res.data.data.auth_token
+              const newRefreshToken = res.data.data.refresh_token
               await AsyncStorage.setItem('authToken', newAuthToken)
               await AsyncStorage.setItem('refreshToken', newRefreshToken)
               const userData = {
@@ -144,14 +140,6 @@ const FeedNavigation = () => {
       <Drawer.Screen
         name={Screen.Home}
         component={Home}
-      />
-      <Drawer.Screen
-        name={Screen.SigningForServices}
-        component={SigningForServices}
-      />
-      <Drawer.Screen
-        name={Screen.ServiceRecords}
-        component={ServiceRecords}
       />
       <Drawer.Screen
         name={Screen.ServiceRecordsAdmin}

@@ -19,17 +19,20 @@ const InitializationContainer = () => {
         const getUserData = async () => {
             let refreshToken = await AsyncStorage.getItem('refreshToken')
             if (!refreshToken)
-                return navigation.navigate(Screen.Registration)
+                return navigation.reset({
+                    index: 0,
+                    routes: [{ name: Screen.Registration }]
+                })
             const data = {
-                refreshToken,
+                refresh_token: refreshToken,
                 org: ORGANIZATION_ID,
                 fingerprint: NativeModules.PlatformConstants.Fingerprint
             }
             await axiosAPI.post(ENDPOINT_TOKENS_UPDATE, data)
                 .then(async (res) => {
                     if (res.data.success) {
-                        const authToken = res.data.data.auth
-                        refreshToken = res.data.data.refresh
+                        const authToken = res.data.data.auth_token
+                        refreshToken = res.data.data.refresh_token
                         await AsyncStorage.setItem('authToken', authToken)
                         await AsyncStorage.setItem('refreshToken', refreshToken)
                         await axiosAPI2.get(ENDPOINT_USER,
@@ -49,15 +52,24 @@ const InitializationContainer = () => {
                                     permission: data.permission
                                 }
                                 store.dispatch(updateUser(userData))
-                                navigation.navigate(Screen.Feed)
+                                navigation.reset({
+                                    index: 0,
+                                    routes: [{ name: Screen.Feed }]
+                                })
                             }).catch(err => {
                                 Toast.show("Произошла ошибка при обращении к серверу")
                                 getUserData()
                             })
                     }
-                    else navigation.navigate(Screen.Registration)
+                    else navigation.reset({
+                        index: 0,
+                        routes: [{ name: Screen.Registration }]
+                    })
                 }).catch(err => {
-                    navigation.navigate(Screen.Registration)
+                    navigation.reset({
+                        index: 0,
+                        routes: [{ name: Screen.Registration }]
+                    })
                 })
         }
         getUserData()

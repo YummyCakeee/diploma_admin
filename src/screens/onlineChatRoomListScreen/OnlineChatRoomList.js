@@ -1,9 +1,14 @@
 import React from "react"
 import OnlineChatRoomListContainer from "containers/OnlineChatRoomListContainer"
+import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate"
 
 const OnlineChatRoomList = () => {
     return (
-        <OnlineChatRoomListContainer />
+        <ScreenTemplate
+            scrollable={false}
+        >
+            <OnlineChatRoomListContainer />
+        </ScreenTemplate>
     )
 }
 

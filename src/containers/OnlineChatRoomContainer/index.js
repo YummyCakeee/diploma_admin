@@ -10,11 +10,10 @@ import {
     AppState,
     NativeModules
 } from "react-native"
-import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate"
 import MessageInputField from "components/Elements/MessageInputField/MessageInputField"
 import Message, { MessagesDateSplitter, messageStatus } from "./Message"
 import { Color } from "global/styles/constants"
-import { CopyIcon, LoadingIcon, SendIcon, TrashIcon } from "components/Elements/Icons/Index"
+import { ArrowIcon, CopyIcon, LoadingIcon, SendIcon, TrashIcon } from "components/Elements/Icons/Index"
 import ContextMenu from "components/Elements/ContextMenu/ContextMenu"
 import { useSelector } from "react-redux"
 import { userSelector } from "store/selectors/userSlice"
@@ -27,6 +26,9 @@ import { createChatRoomEndpoint } from "utils/apiHelpers/endpointGenerators"
 import Clipboard from '@react-native-clipboard/clipboard'
 import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
 import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
+import { TouchableOpacity } from "react-native-gesture-handler"
+import useIsMounted from "utils/components/useIsMounted"
+import Toast from 'react-native-simple-toast'
 
 const OnlineChatRoomContainer = ({
     route,
@@ -51,15 +53,13 @@ const OnlineChatRoomContainer = ({
     const userInfo = useSelector(userSelector)
     const navigation = useNavigation()
     const globalStyles = useContext(GlobalStylesContext)
+    const isMounted = useIsMounted()
 
     useEffect(() => {
         const appStateSubscription = AppState.addEventListener('change', (nextState) => {
             setAppState(nextState)
         })
-
-        return () => {
-            appStateSubscription.remove()
-        }
+        return () => appStateSubscription.remove()
     }, [])
 
     useEffect(() => {
@@ -86,9 +86,7 @@ const OnlineChatRoomContainer = ({
             connectSocket()
         return () => {
             if (isConnected && socket.current && appState !== 'background') {
-                console.log(appState)
                 socket.current.close()
-                console.log('use effect clearing')
             }
         }
     }, [isConnected, chatRoomId, appState])
@@ -124,25 +122,26 @@ const OnlineChatRoomContainer = ({
             null, {headers: createAuthorizationHeader(userInfo.authToken)})
         socket.current.onopen = () => {
             if (messages.length === 0) {
-                getMessages()
+                if (isMounted.current)
+                    getMessages()
             }
-            setIsConnected(true)
-            console.log('opened')
+            if (isMounted.current)
+                setIsConnected(true)
         }
         socket.current.onclose = (e) => {
-            setIsConnected(false)
-            console.log('closed')
+            if (isMounted.current)
+                setIsConnected(false)
             if (e.code !== 0) {
 
             }
         }
         socket.current.onerror = (e) => {
-            //Toast.show(`Произошла ошибка: ${e.message}`)
-            console.log('error: ' + e.message)
-            setIsConnected(false)
+            if (isMounted.current)
+                setIsConnected(false)
         }
         socket.current.onmessage = (e) => {
-            setServerReceivedData(e.data)
+            if (isMounted.current)
+                setServerReceivedData(e.data)
         }
     }
 
@@ -159,7 +158,7 @@ const OnlineChatRoomContainer = ({
             socket.current?.send(JSON.stringify(data))
         }
         catch (err) {
-            console.log("Не удалось загрузить все сообщения: " + err)
+            Toast.show("Не удалось загрузить все сообщения")
         }
     }
 
@@ -176,11 +175,18 @@ const OnlineChatRoomContainer = ({
             data.messages.push(message)
         })
         try {
-        socket.current?.send(JSON.stringify(data))
-        } 
-        catch(err) {
-            console.log("Не удалось отправить на сервер прочитанные сообщения: " + err)
+            socket.current?.send(JSON.stringify(data))
         }
+        catch (err) {
+        }
+    }
+
+    const setAllMessagesRead = () => {
+        const unreadMessages = messages.filter(el =>
+            el.status === messageStatus.UNREAD &&
+            el.user !== userInfo.id
+        )
+        setMessagesRead(...unreadMessages)
     }
 
     const onMessageSend = (value) => {
@@ -196,7 +202,7 @@ const OnlineChatRoomContainer = ({
                 }
                 socket.current?.send(JSON.stringify(data))
                 const sendingMessage = {
-                    text: value,
+                    text: trimmedValue,
                     user: userInfo.id,
                     date: new Date(),
                     status: messageStatus.SENDING
@@ -207,16 +213,9 @@ const OnlineChatRoomContainer = ({
                 setMessages(copiedMessages)
                 messagesListRef.current?.scrollToEnd()
                 setCurrentMessage('')
-                const unreadMessages = []
-                messages.forEach(el => {
-                    unreadMessages.push(...el.messages.filter(msg =>
-                        msg.status === messageStatus.UNREAD &&
-                        msg.user !== userInfo.id))
-                })
-                setMessagesRead(unreadMessages)
+                setAllMessagesRead()
             }
             catch (err) {
-                console.log(err)
             }
         }
     }
@@ -261,21 +260,28 @@ const OnlineChatRoomContainer = ({
 
     const onServerLoadAllMessages = (data) => {
         const allMessages = []
+        const unreadMessages = []
         data.messages?.forEach(el => {
             const message = {
                 id: el.id,
                 text: el.message,
                 date: new Date(el.date),
                 user: el.user_id,
-                status: el.read ?
-                    messageStatus.READ :
-                    messageStatus.UNREAD,
+                status:
+                    el.user !== userInfo.id ?
+                        messageStatus.READ :
+                        el.read ?
+                            messageStatus.READ :
+                            messageStatus.UNREAD,
                 ref: createRef()
             }
             addMessageToList(allMessages, message)
+            if (el.user !== userInfo.id && el.read === messageStatus.UNREAD)
+                unreadMessages.push(message)
         })
         sortMessageList(allMessages)
         setMessages(allMessages)
+        setMessagesRead(...unreadMessages)
     }
 
     const onServerDeleteMessages = (data) => {
@@ -288,7 +294,7 @@ const OnlineChatRoomContainer = ({
     }
 
     const onServerReadMessages = (data) => {
-        console.log(data)
+        ''
         const copiedMessages = getMessageListCopy(messages)
         data.messages.forEach(el => {
             const readMessage = findMessage(copiedMessages, msg => msg.id === el.id)
@@ -361,7 +367,6 @@ const OnlineChatRoomContainer = ({
             socket.current?.send(JSON.stringify(data))
         }
         catch (err) {
-            console.log("Не удалось удалить сообщение")
         }
     }
 
@@ -374,6 +379,7 @@ const OnlineChatRoomContainer = ({
                 onPress: () => {
                     Clipboard.setString(msg.text)
                     setIsContextMenuOpen(false)
+                    Toast.show("Сообщение было скопировано")
                 }
             }]
         if (msg.status === messageStatus.ERROR)
@@ -414,13 +420,15 @@ const OnlineChatRoomContainer = ({
                         msg.status === messageStatus.UNREAD &&
                         msg.user !== userInfo.id))
                 })
-                unreadMessages.forEach(el => {
-                    el.ref.current?.measure((x, y, w, h, pX, pY) => {
+                unreadMessages.reverse()
+                for (const msg of unreadMessages) {
+                    msg.ref.current?.measure((x, y, w, h, pX, pY) => {
                         if (pY >= listPageY && pY + h / 2 <= listPageY + listHeight) {
-                            setMessagesRead(el)
+                            setMessagesRead(...unreadMessages.slice(unreadMessages.findIndex(el => el.id === msg.id)))
+                            return
                         }
                     })
-                })
+                }
             })
     }    
     
@@ -431,10 +439,11 @@ const OnlineChatRoomContainer = ({
         }
     }
 
+    const onGoBack = () => {
+        navigation.goBack()
+    }
+
     return (
-        <ScreenTemplate
-            scrollable={false}
-        >
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={styles.container}
@@ -459,6 +468,17 @@ const OnlineChatRoomContainer = ({
                 <View
                     style={styles.headerContainer}
                 >
+                    <TouchableOpacity
+                        activeOpacity={1}
+                        onPress={onGoBack}
+                        style={styles.headerGoBackArrow}
+                    >
+                        <ArrowIcon
+                            color={Color.White}
+                            width={15}
+                            height={15}
+                        />
+                    </TouchableOpacity>
                     <Text
                         style={[globalStyles.text]}
                     >
@@ -506,7 +526,7 @@ const OnlineChatRoomContainer = ({
                                             collapsable={false}
                                         >
                                             <Message
-                                                userName={chatUserList.get(msg.user).name}
+                                                userName={chatUserList?.get(msg.user)?.name}
                                                 showUserName={msgIndex === 0 || msgArray[msgIndex-1].user !== msg.user}
                                                 text={msg.text}
                                                 date={msg.date}
@@ -541,7 +561,6 @@ const OnlineChatRoomContainer = ({
                     />
                 </View>
             </KeyboardAvoidingView>
-        </ScreenTemplate>
     )
 }
 
@@ -570,10 +589,19 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 50,
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
-        //position: "absolute",
         zIndex: 5000,
         paddingHorizontal: 10,
         paddingVertical: 5,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center'
+    },
+    headerGoBackArrow: {
+        transform: [{
+            rotate: '-90deg'
+        }],
+        marginRight: 10,
     },
     messagesContainer: {
         flex: 1,

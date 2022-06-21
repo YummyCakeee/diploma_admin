@@ -46,7 +46,7 @@ const useSettings = () => {
         })
     }
 
-    const onSubmit = (values) => {
+    const onSubmit = async (values) => {
         const fieldsMap = new Map([
             ['name', 'first_name'],
             ['surname', 'second_name'],
@@ -65,7 +65,7 @@ const useSettings = () => {
                     data[fieldsMap.get(key)] = values[key]
             })
             if (data.phone) data.phone = simplePhoneNumberFormatter(data.phone)
-            axiosAPI2.put(ENDPOINT_USER,
+            return await axiosAPI2.put(ENDPOINT_USER,
                 data,
                 {
                     headers: createAuthorizationHeader(userData.authToken)
@@ -88,7 +88,7 @@ const useSettings = () => {
                             setIsShowModal(true)
                             if (res.data.data.remaining_time)
                                 setSendCodeRemainingTime(res.data.data.remaining_time)
-                            if (fields) 
+                            if (fields)
                                 Toast.show("Некоторые данные обновлены")
                         } else {
                             Toast.show("Данные обновлены")
@@ -100,6 +100,9 @@ const useSettings = () => {
                             setIsShowModal(true)
                             setSendCodeRemainingTime(res.data.data.remaining_time)
                         }
+                        else {
+                            Toast.show("Произошла ошибка: " + res.data.data.message)
+                        }
                     }
                 }).catch(err => {
                     Toast.show("Произошла ошибка при обновлении данных")
@@ -107,9 +110,9 @@ const useSettings = () => {
         }
         else {
             const data = {
-                code: Number(values.code)
+                code: values.code
             }
-            axiosAPI2.put(ENDPOINT_USER,
+            return await axiosAPI2.put(ENDPOINT_USER,
                 data,
                 {
                     headers: createAuthorizationHeader(userData.authToken)
@@ -124,7 +127,6 @@ const useSettings = () => {
                         }
                         delete updatedValues.password
                         values.password = ''
-                        console.log(updatedValues)
                         dispatch(updateUser(updatedValues))
                         Toast.show("Данные обновлены")
                         setIsShowModal(false)

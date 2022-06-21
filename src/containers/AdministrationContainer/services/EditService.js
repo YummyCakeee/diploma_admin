@@ -93,7 +93,6 @@ const EditService = ({
         })
         .catch(err => {
             Toast.show("Не удалось обновить данные об услуге: " + err)
-            console.log(err)
         })
     }
 
@@ -145,7 +144,10 @@ const EditService = ({
             onSubmit={onSubmit}
         >
             {({ handleSubmit, isValid, isSubmitting }) => (
-                <>
+                <View
+                    pointerEvents={isSubmitting ? 'none' : 'auto'}
+                    style={styles.container}
+                >
                     <View
                         style={styles.horizontalSection}
                     >
@@ -261,7 +263,7 @@ const EditService = ({
                             globalStyles.centeredElement
                         ]}
                     />
-                </>
+                </View>
             )}
         </Formik>
     )
@@ -269,7 +271,7 @@ const EditService = ({
 
 const styles = StyleSheet.create({
     container: {
-
+        paddingHorizontal: 5,
     },
     horizontalSection: {
         display: 'flex',
@@ -279,7 +281,7 @@ const styles = StyleSheet.create({
     },
     sliderContainer: {
         height: 200,
-        width: 170,
+        width: 150,
         paddingHorizontal: 5,
         borderColor: Color.Gray,
         backgroundColor: getColorWithOpacity(Color.Gray, 0.1),

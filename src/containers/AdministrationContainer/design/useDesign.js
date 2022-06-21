@@ -4,9 +4,13 @@ import { useSelector } from "react-redux"
 import { userSelector } from "store/selectors/userSlice"
 import { createAuthorizationHeader } from "utils/apiHelpers/headersGenerator"
 import { createStyleEndpoint } from "utils/apiHelpers/endpointGenerators"
+import { useState } from "react"
 
 
 const useDesign = () => {
+
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
     const userInfo = useSelector(userSelector)
     const styleNames = {
@@ -32,7 +36,8 @@ const useDesign = () => {
         onUnsuccessResult,
         onRequestFail
     ) => {
-        axiosAPI2.get(createStyleEndpoint(tag), 
+        setIsLoading(true)
+        await axiosAPI2.get(createStyleEndpoint(tag), 
             {
                 headers: createAuthorizationHeader(userInfo.authToken),
             })
@@ -53,10 +58,10 @@ const useDesign = () => {
                     onRequestFail(err)
                 }
                 else {
-                    console.log(err)
                     Toast.show("Ошибка: не удалось загрузить стили")
                 }
             })
+        setIsLoading(false)
     }
 
     const setStylesInfo = async (
@@ -66,24 +71,25 @@ const useDesign = () => {
         onUnsuccessResult,
         onRequestFail
     ) => {
+        setIsSubmitting(true)
         const data = {
             tag: tag,
             object: styles
         }
-        axiosAPI2.put(createStyleEndpoint(tag),
+        await axiosAPI2.put(createStyleEndpoint(tag),
             data,
             {
                 headers: createAuthorizationHeader(userInfo.authToken),
             })
             .then(res => {
                 if (res.data.success)
-                    onSuccessResult(res.data)
+                    onSuccessResult(res)
                 else {
                     if (typeof(onUnsuccessResult) === 'function'){
-                        onUnsuccessResult(res.data)
+                        onUnsuccessResult(res)
                     }
                     else {
-                        Toast.show("Ошибка: не удалось сохранить стили: " + res.data.data.message)
+                        Toast.show("Не удалось сохранить стили: " + res.data.data.message)
                     }
                 }
             })
@@ -92,10 +98,10 @@ const useDesign = () => {
                     onRequestFail(err)
                 }
                 else {
-                    console.log(err)
                     Toast.show("Ошибка: не удалось сохранить стили")
                 }
             })
+        setIsSubmitting(false)
     }
 
     const resetStyleInfo = async (
@@ -111,6 +117,10 @@ const useDesign = () => {
         getStylesInfo,
         setStylesInfo,
         resetStyleInfo,
+        isLoading,
+        setIsLoading,
+        isSubmitting,
+        setIsSubmitting,
         styleNames
     }
 }

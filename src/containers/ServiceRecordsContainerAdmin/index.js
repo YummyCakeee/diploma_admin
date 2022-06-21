@@ -148,7 +148,9 @@ const ServiceRecordsContainerAdmin = () => {
                             return el
                         const client = {
                             ...el.client,
-                            name: clientData.first_name,
+                            name: clientData.first_name !== '' ?
+                                clientData.first_name :
+                                'Пользователь',
                             surname: clientData.second_name,
                             patronymic: clientData.third_name
                         }
@@ -185,7 +187,7 @@ const ServiceRecordsContainerAdmin = () => {
     }
 
     return (
-        <ScreenTemplate>
+        <>
             <View>
                 <Text
                     style={globalStyles.pageTitle}
@@ -466,7 +468,7 @@ const ServiceRecordsContainerAdmin = () => {
                     </>
                 )}
             </Loadable>
-        </ScreenTemplate>
+        </>
     )
 }
 

@@ -9,6 +9,7 @@ import Button from 'components/Elements/Button/Button'
 import InputField from 'components/Elements/InputField/InputField'
 import { numberFormatter } from 'utils/formatters'
 import { GlobalStylesContext } from 'global/styles/GlobalStylesWrapper'
+import FillLoading from 'components/Elements/Loadable/FillLoading'
 
 const TextEdit = ({
     isFocused,
@@ -23,6 +24,8 @@ const TextEdit = ({
         getStylesInfo,
         setStylesInfo,
         resetStyleInfo,
+        isLoading,
+        isSubmitting
     } = useDesign()
 
     useEffect(() => {
@@ -58,7 +61,10 @@ const TextEdit = ({
     }
 
     return (
-        <View>
+        <View
+            pointerEvents={isSubmitting ? 'none' : 'auto'}
+        >
+            {isLoading && <FillLoading/>}
             <View
                 style={styles.section}
             >
@@ -103,11 +109,13 @@ const TextEdit = ({
                 style={styles.buttonContainer}
             >
                 <Button
+                    disabled={!fontSize || isSubmitting}
                     primary
                     title="Сохранить"
                     onPress={onSaveStyles}
                 />
                 <Button
+                    disabled={isSubmitting}
                     title="Сбросить стиль"
                     onPress={onResetStyle}
                 />

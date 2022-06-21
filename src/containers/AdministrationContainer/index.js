@@ -1,5 +1,4 @@
 import ItemSlider from "components/Elements/ItemSlider/ItemSlider"
-import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate"
 import React, { useState, useEffect, useContext } from "react"
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native"
 import MastersControl from "./masters/MastersControl"
@@ -60,8 +59,8 @@ const AdministrationContainer = () => {
             const mastersData = mastersRes.data
             const servicesData = servicesRes.data
             const workplacesData = workplacesRes.data
-            if (!mastersData.success || 
-                !servicesData.success || 
+            if (!mastersData.success ||
+                !servicesData.success ||
                 !workplacesData.success)
                 return
             mastersData.data.forEach(el => {
@@ -82,76 +81,86 @@ const AdministrationContainer = () => {
     }
 
     return (
-        <ScreenTemplate>
-            <View
-                style={styles.container}
-            >
-                <Text
-                    style={globalStyles.pageTitle}
-                >
-                    Администрирование
-                </Text>
-                <ItemSlider
-                    data={modeSliderItems}
-                    onItemSelected={(item) => setSelectedMode(item.mode)}
-                    horizontal
-                    itemComponent={({ isSelected, item }) => (
-                        <Text
-                            style={
-                                [
-                                    globalStyles.text,
-                                    isSelected ?
-                                        styles.sliderItemSelectedText :
-                                        styles.sliderItemText
-                                ]}
-                        >
-                            {item.text}
-                        </Text >
-                    )}
-                />
-                <View
-                    style={styles.editSection}
-                >
-                    {selectedMode === MODE_MASTERS &&
-                        <Loadable
-                            status={mastersAndServicesLoadingStatus}
-                            onLoadingComponent={MastersAndServicesLoading}
-                            onFailComponent={() => MastersAndServicesLoadingFail(getMastersAndServices)}
-                        >
-                            <MastersControl
-                                {...{
-                                    masters,
-                                    setMasters,
-                                    services
-                                }}
-                            />
-                        </Loadable>
-                    }
-                    {selectedMode === MODE_SERVICES &&
-                        <Loadable
-                            status={mastersAndServicesLoadingStatus}
-                            onLoadingComponent={MastersAndServicesLoading}
-                            onFailComponent={() => MastersAndServicesLoadingFail(getMastersAndServices)}
-                        >
-                            <ServicesControl
-                                {...{
-                                    masters,
-                                    services,
-                                    setServices,
-                                    workplaces
-                                }}
-                            />
-                        </Loadable>
-                    }
-                    {selectedMode === MODE_DESIGN &&
-                        <DesignControl/>
-                    }
-                    {selectedMode === MODE_CONTENT &&
-                        <ContentControl />
-                    }
-                </View>
-            </View>
-        </ScreenTemplate>
+        <View
+            style={styles.container}
+        >
+            {userInfo.permission === 'admin' ? (
+                <>
+                    <Text
+                        style={globalStyles.pageTitle}
+                    >
+                        Администрирование
+                    </Text>
+                    <ItemSlider
+                        data={modeSliderItems}
+                        onItemSelected={(item) => setSelectedMode(item.mode)}
+                        horizontal
+                        itemComponent={({ isSelected, item }) => (
+                            <Text
+                                style={
+                                    [
+                                        globalStyles.text,
+                                        isSelected ?
+                                            styles.sliderItemSelectedText :
+                                            styles.sliderItemText
+                                    ]}
+                            >
+                                {item.text}
+                            </Text >
+                        )}
+                    />
+                    <View
+                        style={styles.editSection}
+                    >
+                        {selectedMode === MODE_MASTERS &&
+                            <Loadable
+                                status={mastersAndServicesLoadingStatus}
+                                onLoadingComponent={MastersAndServicesLoading}
+                                onFailComponent={() => MastersAndServicesLoadingFail(getMastersAndServices)}
+                            >
+                                <MastersControl
+                                    {...{
+                                        masters,
+                                        setMasters,
+                                        services
+                                    }}
+                                />
+                            </Loadable>
+                        }
+                        {selectedMode === MODE_SERVICES &&
+                            <Loadable
+                                status={mastersAndServicesLoadingStatus}
+                                onLoadingComponent={MastersAndServicesLoading}
+                                onFailComponent={() => MastersAndServicesLoadingFail(getMastersAndServices)}
+                            >
+                                <ServicesControl
+                                    {...{
+                                        masters,
+                                        services,
+                                        setServices,
+                                        workplaces
+                                    }}
+                                />
+                            </Loadable>
+                        }
+                        {selectedMode === MODE_DESIGN &&
+                            <DesignControl />
+                        }
+                        {selectedMode === MODE_CONTENT &&
+                            <ContentControl />
+                        }
+                    </View>
+                </>
+            ) : (
+                <>
+                    <Text
+                        style={globalStyles.pageTitle}
+                    >
+                        Раздел доступен только администраторам
+                    </Text>
+                </>
+            )}
+        </View>
     )
 }
 

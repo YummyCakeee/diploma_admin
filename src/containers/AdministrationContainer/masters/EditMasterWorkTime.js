@@ -96,7 +96,6 @@ const EditMasterWorkTime = ({ masters, selectedMaster, workTime, setWorkTime }) 
                 }
             })
             .catch(err => {
-                console.log(err)
                 setLoadingStatus(loadableStatus.FAIL)
             })
     }
@@ -139,7 +138,7 @@ const EditMasterWorkTime = ({ masters, selectedMaster, workTime, setWorkTime }) 
         setIsDatePickerShow(false)
         if (event.type === 'set' && selectedDate){
             const newDate = dateSwapYearAndMonthFormatter(dateTimeSplitter(selectedDate).date, '.')
-            for (day of workTime) {
+            for (const day of workTime) {
                 if (day.date === newDate) {
                     Toast.show("Эта дата уже есть в списке")
                     return
@@ -434,7 +433,7 @@ const styles = StyleSheet.create({
     },
     sliderContainer: {
         height: 150,
-        width: 200,
+        width: '40%',
         paddingHorizontal: 5,
         borderColor: Color.Gray,
         backgroundColor: getColorWithOpacity(Color.Gray, 0.1),
@@ -468,7 +467,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginHorizontal: 2,
         borderWidth: 1,
-        borderColor: Color.Gray
+        borderColor: Color.Gray,
     },
     timeSelect: {
         display: 'flex',

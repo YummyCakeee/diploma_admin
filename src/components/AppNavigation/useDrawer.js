@@ -12,18 +12,6 @@ const useDrawer = () => {
             section: 'top',
         },
         {
-            label: 'Записаться на услуги',
-            icon: () => ScissorsIcon({color: Color.White}),
-            screen: Screen.SigningForServices,
-            section: 'top',
-        },
-        {
-            label: 'Мои записи',
-            icon: () => ListIcon({color: Color.White}),
-            screen: Screen.ServiceRecords,
-            section: 'top',
-        },
-        {
             label: 'Записи на услуги',
             icon: () => ListIcon({color: Color.White}),
             screen: Screen.ServiceRecordsAdmin,

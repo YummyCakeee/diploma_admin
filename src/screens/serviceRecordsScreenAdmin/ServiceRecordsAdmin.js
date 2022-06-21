@@ -1,9 +1,12 @@
 import React from "react"
 import ServiceRecordsContainerAdmin from "containers/ServiceRecordsContainerAdmin"
+import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate"
 
 const ServiceRecordsAdmin = () => {
-    return(
-        <ServiceRecordsContainerAdmin/>
+    return (
+        <ScreenTemplate>
+            <ServiceRecordsContainerAdmin />
+        </ScreenTemplate>
     )
 }
 

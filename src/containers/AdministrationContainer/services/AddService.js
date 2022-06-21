@@ -70,7 +70,9 @@ const AddService = ({
                 validateOnMount
             >
                 {({ handleSubmit, isSubmitting, isValid }) => (
-                    <>
+                    <View
+                        pointerEvents={isSubmitting ? 'none': 'auto'}
+                    >
                         <Text
                             style={globalStyles.title}
                         >
@@ -116,7 +118,7 @@ const AddService = ({
                                 disabled={isSubmitting || !isValid}
                             />
                         </View>
-                    </>
+                    </View>
                 )}
             </Formik>
         </View>

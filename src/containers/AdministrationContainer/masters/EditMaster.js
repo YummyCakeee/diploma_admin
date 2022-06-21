@@ -35,7 +35,7 @@ const EditMaster = ({ masters, setMasters, services }) => {
     const [workTime, setWorkTime] = useState([])
     const userInfo = useSelector(userSelector)
     const {
-        setConfirmActionModalState
+        setConfirmActionModalState,
     } = useContext(ModalControllerContext)
 
     useEffect(() => {
@@ -129,7 +129,8 @@ const EditMaster = ({ masters, setMasters, services }) => {
             setConfirmActionModalState({
                 text: "Вы уверены, что хотите удалить мастера " +
                     `${master.surname} ${master.name}?`,
-                onConfirm: () => deleteMaster(master.id)
+                onConfirm: () => deleteMaster(master.id),
+                onDismiss: () => setConfirmActionModalState(false)
             })
     }
 
@@ -172,6 +173,7 @@ const EditMaster = ({ masters, setMasters, services }) => {
             {({ handleSubmit, isValid, isSubmitting }) => (
                 <View
                     pointerEvents={isSubmitting ? 'none' : 'auto'}
+                    style={styles.container}
                 >
                     <View
                         style={styles.horizontalSection}
@@ -310,7 +312,7 @@ const EditMaster = ({ masters, setMasters, services }) => {
 
 const styles = StyleSheet.create({
     container: {
-
+        paddingHorizontal: 5,
     },
     horizontalSection: {
         display: 'flex',
@@ -320,7 +322,7 @@ const styles = StyleSheet.create({
     },
     sliderContainer: {
         height: 200,
-        width: 170,
+        width: 150,
         paddingHorizontal: 5,
         borderColor: Color.Gray,
         backgroundColor: getColorWithOpacity(Color.Gray, 0.1),
@@ -332,7 +334,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        width: '100%'
+        maxWidth: '100%'
     },
     sliderItemText: {
         color: Color.Gray,

@@ -9,6 +9,7 @@ import Button from 'components/Elements/Button/Button'
 import InputField from 'components/Elements/InputField/InputField'
 import { numberFormatter } from 'utils/formatters'
 import { GlobalStylesContext } from 'global/styles/GlobalStylesWrapper'
+import FillLoading from 'components/Elements/Loadable/FillLoading'
 
 const HeaderTitleEdit = ({
     isFocused
@@ -22,6 +23,8 @@ const HeaderTitleEdit = ({
         getStylesInfo,
         setStylesInfo,
         resetStyleInfo,
+        isSubmitting,
+        isLoading,
         styleNames
     } = useDesign()
 
@@ -42,7 +45,7 @@ const HeaderTitleEdit = ({
     }
 
     const onSetStylesRequestSuccess = (res) => {
-        Toast.show("Стили для шапки обновлены")
+        Toast.show("Стили для заголовка шапки обновлены")
     }
 
     const onSaveStyles = () => {
@@ -58,7 +61,10 @@ const HeaderTitleEdit = ({
     }
 
     return (
-        <View>
+        <View
+            pointerEvents={isSubmitting ? 'none' : 'auto'}
+        >
+            {isLoading && <FillLoading/>}
             <View
                 style={styles.section}
             >
@@ -68,7 +74,7 @@ const HeaderTitleEdit = ({
                     <Text
                         style={globalStyles.text}
                     >
-                        Цвет кнопки
+                        Цвет заголовка
                     </Text>
                 </View>
                 <ColorPicker
@@ -88,7 +94,7 @@ const HeaderTitleEdit = ({
                     <Text
                         style={globalStyles.text}
                     >
-                        Размер шрифта на кнопке
+                        Размер шрифта
                     </Text>
                 </View>
                 <InputField
@@ -103,11 +109,13 @@ const HeaderTitleEdit = ({
                 style={styles.buttonContainer}
             >
                 <Button
+                    disabled={!fontSize || isSubmitting}
                     primary
                     title="Сохранить"
                     onPress={onSaveStyles}
                 />
                 <Button
+                    disabled={isSubmitting}
                     title="Сбросить стиль"
                     onPress={onResetStyle}
                 />

@@ -6,6 +6,7 @@ import useContent from "../useContent"
 import Toast from 'react-native-simple-toast'
 import Button from "components/Elements/Button/Button"
 import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
+import FillLoading from "components/Elements/Loadable/FillLoading"
 
 const HeaderEdit = ({ isFocused }) => {
 
@@ -13,6 +14,8 @@ const HeaderEdit = ({ isFocused }) => {
     const {
         getContentInfo,
         setContentInfo,
+        isLoading,
+        isSubmitting,
         contentNames,
     } = useContent()
     const globalStyles = useContext(GlobalStylesContext)
@@ -41,7 +44,10 @@ const HeaderEdit = ({ isFocused }) => {
     }
 
     return (
-        <View>
+        <View
+            pointerEvents={isSubmitting ? 'none' : 'auto'}
+        >
+            {isLoading && <FillLoading/>}
             <View
                 style={styles.section}
             >
@@ -65,6 +71,7 @@ const HeaderEdit = ({ isFocused }) => {
             >
                 <Button
                     primary
+                    disabled={isSubmitting}
                     title="Сохранить"
                     onPress={onSaveContent}
                 />

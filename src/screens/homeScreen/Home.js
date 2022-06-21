@@ -1,9 +1,12 @@
 import React from "react"
 import HomeContainer from "containers/HomeContainer/index"
+import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate"
 
 const Home = () => {
     return (
-        <HomeContainer/>
+        <ScreenTemplate>
+            <HomeContainer />
+        </ScreenTemplate>
     )
 }
 

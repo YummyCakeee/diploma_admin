@@ -19,7 +19,7 @@ const FormCheckbox = (props) => {
     return (
         <Checkbox 
             checked={value === 'true'}
-            {...props}
+            {...inputProps}
             onCheckChanged={() => onChange(name)(value === 'true' ? 'false' : 'true')}
             onBlur={() => {
                 setFieldTouched(name)

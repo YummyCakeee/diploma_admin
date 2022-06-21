@@ -1,55 +1,65 @@
-import React, { useContext, useState } from "react"
-import { StyleSheet, Text } from "react-native"
-import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate"
-import BannerSlider from "components/BannerSlider/BannerSlider"
-import BannerImage from "components/Elements/BannerImage/BannerImage"
-import SignUpForServices from "components/Elements/SignUpForServices/SignUpForServices"
-import OurServices from "components/OurServices/OurServices"
+import React, { useContext } from "react"
+import { StyleSheet, Text, View } from "react-native"
 import HomeSection from "./HomeSection"
 import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
+import { ArrowIcon } from "components/Elements/Icons/Index"
+import { Color } from "global/styles/constants"
 
 const HomeContainer = () => {
-    const [images, setImages] = useState([
-        'https://mglb.ru/upload/iblock/346/f0e39337_6c1b_41d5_952a_339ba54ebd7c.jpg',
-        'https://avatars.mds.yandex.net/get-altay/1583511/2a0000016bf53c3d2af0e9cdc93e1e417eab/XXL',
-        'https://burobiz-a.akamaihd.net/uploads/images/38059/large_17d7306e264ac2fed78642a2784e73f4.jpg',
-        'https://phonoteka.org/uploads/posts/2021-05/1620291711_61-phonoteka_org-p-barbershop-fon-62.jpg',
-        'https://avatars.mds.yandex.net/get-altay/2134557/2a0000016cde3b1c431082f2d91e8a6b5fc2/XXL',
-        'https://mykaleidoscope.ru/uploads/posts/2020-02/1581707138_22-p-sbori-zhenikhov-v-barbershope-58.jpg',
-    ])
     const globalStyles = useContext(GlobalStylesContext)
 
     return (
-        <ScreenTemplate>
-                <Text style={globalStyles.pageTitle}>Главная</Text>
-                <BannerSlider
-                    autoSlide
-                    items={images.map(el => (
-                        <BannerImage
-                            source={el}
+        <>
+            <Text style={globalStyles.pageTitle}>Добро пожаловать</Text>
+            <HomeSection>
+                <View
+                    style={styles.openMenuSection}
+                >
+                    <View
+                        style={styles.arrowContainer}
+                    >
+                        <ArrowIcon
+                            color={Color.White}
                         />
-                    ))}
-                />
-                <HomeSection>
-                    <SignUpForServices />
-                </HomeSection>
-                <HomeSection>
-                    <OurServices />
-                </HomeSection>
-                <BannerSlider
-                    autoSlide
-                    items={images.map(el => (
-                        <BannerImage
-                            source={el}
-                        />
-                    ))}
-                />
-        </ScreenTemplate>
+                    </View>
+                    <Text
+                        style={[
+                            globalStyles.pageTitle,
+                            globalStyles.centeredElement
+                        ]}
+                    >
+                        Откройте боковое меню
+                    </Text>
+                </View>
+            </HomeSection>
+            <HomeSection>
+                <Text
+                    style={[
+                        globalStyles.text,
+                        globalStyles.pageTitle
+                    ]}
+                >
+                    Чувствуйте свою власть
+                </Text>
+            </HomeSection>
+        </>
     )
 }
 
 const styles = StyleSheet.create({
-
+    openMenuSection: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    arrowContainer: {
+        transform: [{
+            rotate: '-90deg'
+        }],
+        marginRight: 5,
+        marginBottom: 5,
+    }
 })
 
 export default HomeContainer

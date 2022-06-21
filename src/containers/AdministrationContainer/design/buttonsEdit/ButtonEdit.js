@@ -9,6 +9,7 @@ import useDesign from "../useDesign"
 import Toast from 'react-native-simple-toast'
 import { Color } from "global/styles/constants"
 import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
+import FillLoading from "components/Elements/Loadable/FillLoading"
 
 const ButtonEdit = ({
     isFocused,
@@ -19,6 +20,8 @@ const ButtonEdit = ({
         getStylesInfo,
         setStylesInfo,
         resetStyleInfo,
+        isLoading,
+        isSubmitting
     } = useDesign()
 
     const [buttonColor, setButtonColor] = useState(Color.White)
@@ -63,7 +66,10 @@ const ButtonEdit = ({
     }
 
     return (
-        <>
+        <View
+            pointerEvents={isSubmitting ? 'none' : 'auto'}
+        >
+            {isLoading && <FillLoading/>}
             <View
                 style={styles.section}
             >
@@ -130,16 +136,18 @@ const ButtonEdit = ({
                 style={styles.buttonContainer}
             >
                 <Button
+                    disabled={!buttonTextSize || isSubmitting}
                     primary
                     title="Сохранить"
                     onPress={onSaveStyles}
                 />
                 <Button
+                    disabled={isSubmitting}
                     title="Сбросить стиль"
                     onPress={onResetStyle}
                 />
             </View>
-        </>
+        </View>
     )
 }
 

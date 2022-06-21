@@ -62,19 +62,20 @@ const CodeInputField: React.FC<codeInputFieldProps> = ({
     }, [startRemainingTime])
 
     const onCodeResendRequest = async () => {
+        if (resendCodeTimeLeft > 0) return
         const data = {
             action: "request",
             org: ORGANIZATION_ID,
             phone: simplePhoneNumberFormatter(phone),
-            userType: USER_TYPE,
+            app_type: USER_TYPE,
             fingerprint: NativeModules.PlatformConstants.Fingerprint
         }
         await axiosAPI.post(endpoint, data)
             .then(res => {
-                if (res.data?.success) {
+                if (res.data.success) {
                     setResendCodeTimeLeft(res.data.data.remaining_time)
-                } else if (!res.data?.success) {
-                    Toast.show(`Ошибка: ${res.data.message}`)
+                } else {
+                    Toast.show(`Ошибка: ${res.data.data.message}`)
                 }
             })
             .catch(error => {

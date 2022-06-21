@@ -69,7 +69,6 @@ const AddMaster = ({
             })
             .catch(err => {
                 Toast.show("Ошибка: Не удалось добавить мастера")
-                console.log(err)
             })
     }
 

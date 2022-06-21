@@ -128,7 +128,10 @@ const ServiceNode: React.FC<serviceNodeProps> = ({
                         </Text>
                     </View>
                     <View
-                        style={styles.section}
+                        style={[
+                            styles.section,
+                            styles.serviceDateSection
+                        ]}
                     >
                         <Text
                             style={globalStyles.text}
@@ -178,9 +181,11 @@ const styles = StyleSheet.create({
     },
     servicePriceSection: {
         marginLeft: 25,
+        marginRight: 5,
+        maxWidth: '50%'
     },
     serviceDateSection: {
-
+        maxWidth: '50%'
     },
     bottomHorizontalSection: {
         alignItems: 'flex-end'

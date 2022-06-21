@@ -7,6 +7,7 @@ import { styles } from '../../styles/styles'
 import ColorPicker from 'components/Elements/ColorPicker/ColorPicker'
 import Button from 'components/Elements/Button/Button'
 import { GlobalStylesContext } from 'global/styles/GlobalStylesWrapper'
+import FillLoading from 'components/Elements/Loadable/FillLoading'
 
 const HeaderMenuButtonEdit = ({
     isFocused
@@ -17,6 +18,8 @@ const HeaderMenuButtonEdit = ({
         getStylesInfo,
         setStylesInfo,
         resetStyleInfo,
+        isLoading,
+        isSubmitting,
         styleNames
     } = useDesign()
     const globalStyles = useContext(GlobalStylesContext)
@@ -50,7 +53,10 @@ const HeaderMenuButtonEdit = ({
     }
 
     return (
-        <View>
+        <View
+            pointerEvents={isSubmitting ? 'none' : 'auto'}
+        >
+            {isLoading && <FillLoading/>}
             <View
                 style={styles.section}
             >
@@ -74,11 +80,13 @@ const HeaderMenuButtonEdit = ({
                 style={styles.buttonContainer}
             >
                 <Button
+                    disabled={isSubmitting}
                     primary
                     title="Сохранить"
                     onPress={onSaveStyles}
                 />
                 <Button
+                    disabled={isSubmitting}
                     title="Сбросить стиль"
                     onPress={onResetStyle}
                 />

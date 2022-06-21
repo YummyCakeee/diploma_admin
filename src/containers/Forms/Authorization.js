@@ -30,7 +30,6 @@ import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper";
 
 const Authorization = ({
     onAuthSuccess = () => { },
-    onToggleSignType = () => { }
 }) => {
     const [stage, setStage] = useState(0)
     const [usePassword, setUsePassword] = useState(false)
@@ -55,7 +54,7 @@ const Authorization = ({
             let data = {
                 org: ORGANIZATION_ID,
                 phone: simplePhoneNumberFormatter(values.phone),
-                userType: USER_TYPE,
+                app_type: USER_TYPE,
                 fingerprint: NativeModules.PlatformConstants.Fingerprint,
             }
             if (usePassword) {
@@ -65,8 +64,8 @@ const Authorization = ({
                 return await axiosAPI.post(ENDPOINT_MAIN_AUTH, data)
                     .then(async (res) => {
                         if (res.data?.success) {
-                            const authToken = res.data.data.auth
-                            const refreshToken = res.data.data.refresh
+                            const authToken = res.data.data.auth_token
+                            const refreshToken = res.data.data.refresh_token
                             if (authToken && refreshToken) {
                                 return await updateUserInfo(authToken, refreshToken)
                             }
@@ -106,20 +105,20 @@ const Authorization = ({
                 action: 'confirm',
                 org: ORGANIZATION_ID,
                 phone: simplePhoneNumberFormatter(values.phone),
-                code: Number(values.code),
-                userType: USER_TYPE,
+                code: values.code,
+                app_type: USER_TYPE,
                 fingerprint: NativeModules.PlatformConstants.Fingerprint,
             }
             return await axiosAPI.post(ENDPOINT_MAIN_AUTH, data)
                 .then(async (res) => {
                     if (res.data?.success) {
-                        const authToken = res.data.data.auth
-                        const refreshToken = res.data.data.refresh
+                        const authToken = res.data.data.auth_token
+                        const refreshToken = res.data.data.refresh_token
                         if (authToken && refreshToken) {
                             return await updateUserInfo(authToken, refreshToken)
                         }
                     } else if (!res.data?.success) {
-                        Toast.show(`Ошибка: ${res.data.message}`)
+                        Toast.show(`Ошибка: ${res.data.data.message}`)
                     }
                 })
                 .catch(error => {
@@ -154,24 +153,6 @@ const Authorization = ({
                 setStage(0)
             })
 
-    const onToggleSignTypePreCallback = () => {
-        Animated.timing(passwordFieldHeight,
-            {
-                toValue: 0,
-                duration: 400,
-                easing: Easing.out(Easing.linear),
-                useNativeDriver: false,
-            }).start()
-        Animated.timing(usePasswordTextHeight,
-            {
-                toValue: 0,
-                duration: 400,
-                easing: Easing.out(Easing.linear),
-                useNativeDriver: false,
-            }).start()
-        setTimeout(() => onToggleSignType(), 400)
-    }
-
     const onUsePasswordPress = () => {
         if (!usePassword) {
             Animated.timing(passwordFieldHeight,
@@ -204,8 +185,10 @@ const Authorization = ({
                 }}
                 onSubmit={onSubmit}
             >
-                {({ handleSubmit, isValid, values, setFieldError }) => (
-                    <View>
+                {({ handleSubmit, isValid, isSubmitting, values, setFieldError }) => (
+                    <View
+                        pointerEvents={isSubmitting ? 'none' : 'auto'}
+                    >
                         <View
                             style={styles.dataSection}
                         >
@@ -292,16 +275,6 @@ const Authorization = ({
                                         }
                                     </Text>
                                 </Animated.View>
-                                <Text
-                                    style={[
-                                        globalStyles.text,
-                                        globalStyles.centeredElement,
-                                        { marginVertical: 10 }
-                                    ]}
-                                    onPress={() => onToggleSignTypePreCallback()}
-                                >
-                                    Нет аккаунта? Зарегистрируйтесь
-                                </Text>
                             </>
                         )}
                         {stage === 1 && (
@@ -329,7 +302,7 @@ const Authorization = ({
                             }
                             style={globalStyles.centeredElement}
                             onPress={handleSubmit}
-                            disabled={!isValid}
+                            disabled={!isValid || isSubmitting}
                         />
                     </View>
                 )}

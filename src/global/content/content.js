@@ -1,6 +1,6 @@
 const globalContent = {
     headerTitle: {
-        text: 'Барбершоп'
+        text: 'Ого, ваша админка'
     }
 }
 

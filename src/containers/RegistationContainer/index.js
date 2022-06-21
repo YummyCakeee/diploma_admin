@@ -3,23 +3,13 @@ import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate"
 import { StyleSheet, Text, View } from "react-native"
 import { useNavigation } from "@react-navigation/core"
 import Authorization from "containers/Forms/Authorization"
-import Registration from "containers/Forms/Registration"
 import { Screen } from "components/AppNavigation/AppNavigation"
 import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
-export const AUTH_TYPE = 'auth_type'
-export const REG_TYPE = 'reg_type'
 
 const RegistationContainer = () => {
 
-    const [signType, setSignType] = useState(AUTH_TYPE)
     const navigation = useNavigation()
     const globalStyles = useContext(GlobalStylesContext)
-
-    const onToggleSignType = () => {
-        signType === AUTH_TYPE ?
-            setSignType(REG_TYPE) :
-            setSignType(AUTH_TYPE)
-    }
 
     const onAuthSuccess = () => {
         navigation.reset({
@@ -27,21 +17,13 @@ const RegistationContainer = () => {
             routes: [{ name: Screen.Feed }]
         })
     }
-    const onRegSuccess = () => {
-        navigation.reset({
-            index: 0,
-            routes: [{ name: Screen.Feed }]
-        })
-    }
 
     return (
-        <ScreenTemplate {...{ headerHamburgerIcon: false }}>
+        <>
             <Text
                 style={[globalStyles.pageTitle, styles.mainTitle]}
             >
-                Войдите{' '}
-                или{'\n'}
-                зарегистрируйтесь
+                Войдите в аккаунт
             </Text>
             <View
                 style={styles.mainContainer}
@@ -53,21 +35,13 @@ const RegistationContainer = () => {
                         styles.signTypeText
                     ]}
                 >
-                    {signType === AUTH_TYPE ?
-                        'Вход в аккаунт' :
-                        'Регистрация'
-                    }
+                    Вход в аккаунт
                 </Text>
-                {signType === AUTH_TYPE ?
-                    <Authorization
-                        onAuthSuccess={onAuthSuccess}
-                        onToggleSignType={onToggleSignType} /> :
-                    <Registration
-                        onRegSuccess={onRegSuccess}
-                        onToggleSignType={onToggleSignType} />
-                }
+                <Authorization
+                    onAuthSuccess={onAuthSuccess}
+                />
             </View>
-        </ScreenTemplate>
+        </>
     )
 }
 

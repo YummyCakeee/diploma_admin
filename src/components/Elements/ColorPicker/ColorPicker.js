@@ -15,7 +15,9 @@ const ColorPicker = ({
     useEffect(() => {
         const newColor = hslToHex(hslColor.h, hslColor.s, hslColor.l, hslColor.o)
         if (newColor !== color)
+        try {
             setColor(newColor)
+        }catch{}
     }, [hslColor.h, hslColor.s, hslColor.l, hslColor.o])
 
     useEffect(() => {
@@ -24,29 +26,41 @@ const ColorPicker = ({
             newHsl.s !== hslColor.s ||
             newHsl.l !== hslColor.l ||
             newHsl.o !== hslColor.o)
+            try {
             setHslColor(newHsl)
+            }catch{}
     }, [color])
 
     const onColorInputFieldChange = (value) => {
         const hsl = hexToHSL(value)
+        try{
         setHslColor(hsl)
+        }catch{}
     }
 
     const onHueChange = (hue) => {
+        try {
         setHslColor({ ...hslColor, h: hue })
         setColorFullSatLum(hslToHex(hue, 100, 50, 1))
+        }catch{}
     }
 
     const onSaturationChange = (saturation) => {
+        try{
         setHslColor({ ...hslColor, s: saturation })
+        }catch{}
     }
 
     const onLuminenceChange = (luminance) => {
+        try {
         setHslColor({ ...hslColor, l: luminance })
+        }catch{}
     }
 
     const onOpacityChange = (opacity) => {
+        try {
         setHslColor({ ...hslColor, o: opacity })
+        }catch{}
     }
 
     return (

@@ -58,9 +58,6 @@ const OnlineChatRoomListContainer = () => {
     }
 
     return (
-        <ScreenTemplate
-            scrollable={false}
-        >
             <View
                 style={styles.container}
             >
@@ -131,10 +128,7 @@ const OnlineChatRoomListContainer = () => {
                     }
                 </Loadable>
             </View>
-
-        </ScreenTemplate>
     )
-
 }
 
 const styles = StyleSheet.create({

@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
     },
     inputFieldContainer: {
         marginTop: 10,
+        width: 180,
     }
 })
 

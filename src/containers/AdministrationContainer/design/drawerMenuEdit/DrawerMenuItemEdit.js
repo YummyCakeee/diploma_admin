@@ -9,6 +9,7 @@ import useDesign from "../useDesign"
 import Toast from 'react-native-simple-toast'
 import { Color } from "global/styles/constants"
 import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
+import FillLoading from "components/Elements/Loadable/FillLoading"
 
 const DrawerMenuItemEdit = ({
     isFocused,
@@ -19,6 +20,8 @@ const DrawerMenuItemEdit = ({
         getStylesInfo,
         setStylesInfo,
         resetStyleInfo,
+        isLoading,
+        isSubmitting,
     } = useDesign()
     const globalStyles = useContext(GlobalStylesContext)
 
@@ -63,7 +66,10 @@ const DrawerMenuItemEdit = ({
     }
 
     return (
-        <>
+        <View
+            pointerEvents={isSubmitting ? 'none' : 'auto'}
+        >
+            {isLoading && <FillLoading/>}
             <View
                 style={styles.section}
             >
@@ -130,16 +136,18 @@ const DrawerMenuItemEdit = ({
                 style={styles.buttonContainer}
             >
                 <Button
+                    disabled={!textSize || isSubmitting}
                     primary
                     title="Сохранить"
                     onPress={onSaveStyles}
                 />
                 <Button
+                    disabled={isSubmitting}
                     title="Сбросить стиль"
                     onPress={onResetStyle}
                 />
             </View>
-        </>
+        </View>
     )
 }
 

@@ -147,7 +147,10 @@ const SettingsContainer = () => {
                         </SettingsSection>
                         <View>
                             <Text
-                                style={globalStyles.text}
+                                style={[
+                                    globalStyles.text,
+                                    styles.signOutButton
+                                ]}
                                 onPress={onSignOut}
                             >
                                 Выйти из аккаунта
@@ -184,6 +187,10 @@ const styles = StyleSheet.create({
     },
     inputFieldContainer: {
         marginTop: 10,
+    },
+    signOutButton: {
+        alignSelf: 'flex-start',
+        marginBottom: 10
     }
 })
 

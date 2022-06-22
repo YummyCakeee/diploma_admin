@@ -268,7 +268,7 @@ const OnlineChatRoomContainer = ({
                 date: new Date(el.date),
                 user: el.user_id,
                 status:
-                    el.user !== userInfo.id ?
+                    el.user_id !== userInfo.id ?
                         messageStatus.READ :
                         el.read ?
                             messageStatus.READ :
@@ -276,7 +276,7 @@ const OnlineChatRoomContainer = ({
                 ref: createRef()
             }
             addMessageToList(allMessages, message)
-            if (el.user !== userInfo.id && el.read === messageStatus.UNREAD)
+            if (el.user_id !== userInfo.id && !el.read)
                 unreadMessages.push(message)
         })
         sortMessageList(allMessages)

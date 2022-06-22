@@ -5,7 +5,7 @@ import ScreenTemplate from "components/ScreenTemplate/ScreenTemplate"
 const OnlineChatRoom = (props) => {
 
     return (
-        <ScreenTemplate>
+        <ScreenTemplate scrollable={false}>
             <OnlineChatRoomContainer
                 {...props}
             />

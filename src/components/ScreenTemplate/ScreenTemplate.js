@@ -12,6 +12,7 @@ const ScreenTemplate = ({ children, style, headerHamburgerIcon, scrollable = tru
             <StatusBar
                 backgroundColor={Color.Black}
                 barStyle='light-content'
+                hidden
             />
             <ModalController>
                 <SafeAreaView style={[
@@ -39,6 +40,7 @@ const ScreenTemplate = ({ children, style, headerHamburgerIcon, scrollable = tru
 
 const styles = StyleSheet.create({
     childrenContainer: {
+        flex: 1,
         minHeight: Dimensions.get('window').height - 70
     }
 })

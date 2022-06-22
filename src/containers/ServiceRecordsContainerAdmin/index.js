@@ -195,7 +195,7 @@ const ServiceRecordsContainerAdmin = () => {
                     Записи клиентов на услуги
                 </Text>
             </View>
-            {masters.length > 0 && (
+            {masters.length > 0 && userInfo.permission === 'admin' && (
                 <Combobox
                     data={masters}
                     itemComponent={({ item }) => (

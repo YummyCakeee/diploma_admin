@@ -44,16 +44,20 @@ const OnlineChatRoomListContainer = () => {
             signal: controller.signal
         }).then(res => {
             const data = res.data
-            if (data.success)
-                setChatRooms(data.data?.map(el => (
-                    {
-                        id: el.id,
-                        userId: el.user_id
-                    })
-                ))
-            setLoadingStatus(loadableStatus.SUCCESS)
+            if (data.success) {
+                if (data.data) {
+                    data.data = data.data?.filter(el => el.user_id !== userInfo.id)
+                    setChatRooms(data.data?.map(el => (
+                        {
+                            id: el.id,
+                            userId: el.user_id
+                        })
+                    ))
+                }
+                setLoadingStatus(loadableStatus.SUCCESS)
+            }
         }).catch(err => {
-                setLoadingStatus(loadableStatus.FAIL)
+            setLoadingStatus(loadableStatus.FAIL)
         })
     }
 

@@ -1,7 +1,6 @@
 import { useNavigation } from "@react-navigation/native"
 import { Screen } from "components/AppNavigation/AppNavigation"
-import { USER_TYPE } from "constants/application"
-import { ENDPOINT_ADMINS } from "constants/endpoints"
+import { ENDPOINT_ADMINS, ENDPOINT_MASTERS } from "constants/endpoints"
 import { GlobalStylesContext } from "global/styles/GlobalStylesWrapper"
 import React, { useContext, useEffect, useState } from "react"
 import { StyleSheet, Text } from "react-native"
@@ -33,6 +32,22 @@ const ChatRoomMinimized = ({id = '', userId = ''}) => {
     const getChatInfo = async () => {
             const chatUsers = []
             await axiosAPI2.get(ENDPOINT_ADMINS,
+                {
+                    headers: createAuthorizationHeader(userInfo.authToken)
+                })
+            .then(res => {
+                const data = res.data
+                if (data.success) {
+                    chatUsers.push(...data.data)
+                }
+                else {
+                    Toast.show("Произошла ошибка при загрузке информации о чате: " + data.data.message)
+                }
+            })
+            .catch(err => {
+                Toast.show("Произошла ошибка при загрузке информации о чате")
+            })
+            await axiosAPI2.get(ENDPOINT_MASTERS,
                 {
                     headers: createAuthorizationHeader(userInfo.authToken)
                 })
